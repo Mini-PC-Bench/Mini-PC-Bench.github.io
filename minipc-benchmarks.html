@@ -252,7 +252,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 1100px;
+      min-width: 1500px;
     }
 
     thead th {
@@ -590,6 +590,10 @@
               <th data-col="timespy" title="3DMark Time Spy — DirectX 12 GPU benchmark (higher is better)">Time Spy <span class="sort-ind"></span></th>
               <th data-col="handbrake" title="HandBrake video encode time in seconds (lower is better ↓)">HB (s) ↓ <span class="sort-ind"></span></th>
               <th data-col="watts" title="Maximum power draw from wall under load (lower is better ↓)">Watts ↓ <span class="sort-ind"></span></th>
+              <th data-col="power_idle_watts" title="Power draw at idle in watts (lower is better ↓)">Idle W ↓ <span class="sort-ind"></span></th>
+              <th data-col="noise_idle" title="Fan noise at idle in dB(A) (lower is better ↓)">Idle dB ↓ <span class="sort-ind"></span></th>
+              <th data-col="noise_load" title="Fan noise at load (default profile) in dB(A) (lower is better ↓)">Load dB ↓ <span class="sort-ind"></span></th>
+              <th data-col="noise_perf" title="Fan noise at load (performance profile) in dB(A) (lower is better ↓)">Perf dB ↓ <span class="sort-ind"></span></th>
               <th data-col="composite" class="active" title="Average of all available normalized benchmark scores (0–100 each, relative to dataset max)">Score <span class="sort-ind">↓</span></th>
               <th data-col="efficiency" title="Score ÷ Watts × 10 — higher means more performance per watt">Eff. <span class="sort-ind"></span></th>
             </tr>
@@ -599,9 +603,11 @@
       </div>
 
       <p class="footnote">
-        <strong>Score</strong> = average of all 7 normalized benchmark scores. Higher-is-better metrics (CB R23, GB6, FireStrike, Time Spy) normalized to dataset max = 100. Lower-is-better metrics (HandBrake, Watts) excluded from Score — only CPU/GPU benchmarks are included.
-        <strong>Eff.</strong> = Score ÷ Watts × 10 (higher = better performance per watt).
-        <strong>HB (s)</strong> = HandBrake encode time in seconds — lower is better. <strong>↓</strong> in header = lower is better for that column.
+        <strong>Score</strong> = average of 6 normalized CPU+GPU benchmark scores (CB R23 ×2, GB6 ×2, FireStrike, Time Spy; each normalized to dataset max = 100).
+        <strong>Eff.</strong> = Score ÷ Watts × 10.
+        <strong>HB</strong> = HandBrake encode time (s). <strong>Idle W</strong> = power at desktop idle.
+        <strong>Idle/Load/Perf dB</strong> = fan noise at idle, load (default), and load (performance) profiles, measured at 30 cm.
+        All <strong>↓</strong> columns: lower is better. Noise and power metrics are not included in Score.
       </p>
     </div>
 
@@ -616,6 +622,10 @@
         <button class="chart-tab" data-chart="timespy">Time Spy</button>
         <button class="chart-tab" data-chart="handbrake">HandBrake ↓</button>
         <button class="chart-tab" data-chart="watts">Power Draw ↓</button>
+        <button class="chart-tab" data-chart="power_idle_watts">Idle Power ↓</button>
+        <button class="chart-tab" data-chart="noise_load">Noise · Load ↓</button>
+        <button class="chart-tab" data-chart="noise_perf">Noise · Perf ↓</button>
+        <button class="chart-tab" data-chart="noise_idle">Noise · Idle ↓</button>
       </div>
       <div id="chart-box" class="chart-box"></div>
     </div>
@@ -660,9 +670,16 @@
       { name: "GEEKOM A5 7430U", cb23s: 1401, cb23m: 6870, gb6s: 1924, gb6m: 6576, watts: 43, handbrake: 209, firestrike: 3857, timespy: 1189, noise: { idle: 29, load_default: 33, load_performance: 35 }, power_idle_watts: 6 },
     ];
 
+    // Flatten nested noise fields for uniform column access
+    DEVICES.forEach(d => {
+      d.noise_idle = d.noise.idle;
+      d.noise_load = d.noise.load_default;
+      d.noise_perf = d.noise.load_performance;
+    });
+
     // ── Compute derived metrics ───────────────────────────────────────
     const BENCH_HIGHER = ['cb23s', 'cb23m', 'gb6s', 'gb6m', 'firestrike', 'timespy'];
-    const BENCH_LOWER = ['handbrake']; // lower is better
+    const BENCH_LOWER = ['handbrake', 'noise_idle', 'noise_load', 'noise_perf', 'power_idle_watts']; // lower is better
     const ALL_BENCH = [...BENCH_HIGHER, ...BENCH_LOWER];
 
     const MAX_H = {};
@@ -700,16 +717,18 @@
     function renderInfoCards() {
       const byScore = [...DEVICES].sort((a, b) => b.composite - a.composite);
       const byEff = [...DEVICES].sort((a, b) => b.efficiency - a.efficiency);
-      const byCb23m = [...DEVICES].sort((a, b) => b.cb23m - a.cb23m);
       const byGpu = [...DEVICES].sort((a, b) => b.firestrike - a.firestrike);
+      const byQuiet = [...DEVICES].sort((a, b) => a.noise_load - b.noise_load);
+      const byIdle = [...DEVICES].sort((a, b) => a.power_idle_watts - b.power_idle_watts);
       const byWatts = [...DEVICES].sort((a, b) => a.watts - b.watts);
 
       const cards = [
         { label: 'Best Overall Score', value: fmtD(byScore[0].composite), device: byScore[0].name, cls: 'blue' },
         { label: 'Best Efficiency (Score/W)', value: fmtD(byEff[0].efficiency), device: byEff[0].name, cls: 'green' },
-        { label: 'Best CPU Multicore', value: byCb23m[0].cb23m.toLocaleString(), device: byCb23m[0].name, cls: 'blue' },
         { label: 'Best GPU (FireStrike)', value: byGpu[0].firestrike.toLocaleString(), device: byGpu[0].name, cls: 'amber' },
-        { label: 'Lowest Power Draw', value: byWatts[0].watts + 'W', device: byWatts[0].name, cls: 'green' },
+        { label: 'Quietest under Load', value: byQuiet[0].noise_load + ' dB', device: byQuiet[0].name, cls: 'green' },
+        { label: 'Lowest Idle Power', value: byIdle[0].power_idle_watts + 'W', device: byIdle[0].name, cls: 'green' },
+        { label: 'Lowest Max Power Draw', value: byWatts[0].watts + 'W', device: byWatts[0].name, cls: 'blue' },
       ];
 
       document.getElementById('info-grid').innerHTML = cards.map(c => `
@@ -752,7 +771,7 @@
         th.classList.toggle('active', active);
         const ind = th.querySelector('.sort-ind');
         if (!ind) return;
-        const isLowerCol = col === 'handbrake' || col === 'watts';
+        const isLowerCol = ['handbrake', 'watts', 'power_idle_watts', 'noise_idle', 'noise_load', 'noise_perf'].includes(col);
         if (active) {
           ind.textContent = sortDir === -1 ? (isLowerCol ? '↑ worst' : '↓') : (isLowerCol ? '↓ best' : '↑');
         } else {
@@ -768,7 +787,10 @@
         const pct = isLower
           ? (MIN_L[col] / val) * 100
           : MAX_H[col] ? (val / MAX_H[col]) * 100 : 0;
-        const suffix = isLower ? 's' : '';
+        const suffix = col === 'handbrake' ? 's'
+          : col === 'power_idle_watts' ? 'W'
+            : (col.startsWith('noise_')) ? 'dB'
+              : '';
         return `<td>${cellBar(pct, isLower ? ' amber' : '')}${fmt(val)}${suffix}</td>`;
       }
 
@@ -792,6 +814,10 @@
       ${benchCell(d.timespy, 'timespy')}
       ${benchCell(d.handbrake, 'handbrake')}
       <td class="watts-cell">${d.watts}W</td>
+      ${benchCell(d.power_idle_watts, 'power_idle_watts')}
+      ${benchCell(d.noise_idle, 'noise_idle')}
+      ${benchCell(d.noise_load, 'noise_load')}
+      ${benchCell(d.noise_perf, 'noise_perf')}
       <td class="score">${cellBar(sPct)}${fmtD(d.composite)}</td>
       <td class="eff"  >${cellBar(ePct, ' g')}${fmtD(d.efficiency)}</td>
     </tr>`;
@@ -808,6 +834,10 @@
       timespy: { title: '3DMark Time Spy', desc: 'Higher is better · DirectX 12 GPU benchmark', unit: '', lowerBetter: false },
       handbrake: { title: 'HandBrake Video Encode', desc: 'Lower is better · seconds to encode sample video', unit: 's', lowerBetter: true },
       watts: { title: 'Maximum Power Draw from the Wall', desc: 'Lower is better · watts under full CPU load', unit: 'W', lowerBetter: true },
+      power_idle_watts: { title: 'Power Draw at Idle', desc: 'Lower is better · watts at desktop idle', unit: 'W', lowerBetter: true },
+      noise_load: { title: 'Fan Noise at Load (Default Profile)', desc: 'Lower is better · dB(A) measured at 30 cm', unit: 'dB', lowerBetter: true },
+      noise_perf: { title: 'Fan Noise at Load (Performance Profile)', desc: 'Lower is better · dB(A) measured at 30 cm', unit: 'dB', lowerBetter: true },
+      noise_idle: { title: 'Fan Noise at Idle', desc: 'Lower is better · dB(A) measured at 30 cm', unit: 'dB', lowerBetter: true },
     };
 
     function renderChart() {
@@ -877,7 +907,8 @@
         } else {
           sortCol = col;
           // Watts and name: ascending makes more sense as default
-          sortDir = (col === 'watts' || col === 'name' || col === 'handbrake') ? 1 : -1;
+          const LOWER_COLS = new Set(['watts', 'handbrake', 'power_idle_watts', 'noise_idle', 'noise_load', 'noise_perf', 'name']);
+          sortDir = LOWER_COLS.has(col) ? 1 : -1;
         }
         renderTable();
       });
