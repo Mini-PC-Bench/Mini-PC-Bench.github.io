@@ -1,4 +1,5 @@
 [
+  { "name": "Minisforum AI X1 Pro HX 470", "cb23s": 2078, "cb23m": 22686, "gb6s": 2922, "gb6m": 11275, "watts": 94, "handbrake": 109, "firestrike": 5232, "timespy": 2033, "noise": { "idle": 29, "load_default": 40, "load_performance": 43 }, "power_idle_watts": 7 },
   { "name": "GEEKOM IT15 Ultra 9 285H", "cb23s": 2154, "cb23m": 15170, "gb6s": 3111, "gb6m": 15562, "watts": 87, "handbrake": 95, "firestrike": 8531, "timespy": 3862, "noise": { "idle": 29, "load_default": 44, "load_performance": 49 }, "power_idle_watts": 7 },
   { "name": "ASUS NUC 15 Pro+ Ultra 9 285H", "cb23s": 2147, "cb23m": 19349, "gb6s": 2953, "gb6m": 16083, "watts": 135, "handbrake": 75, "firestrike": 9420, "timespy": 3870, "noise": { "idle": 29, "load_default": 46, "load_performance": 55 }, "power_idle_watts": 11 },
   { "name": "Beelink SER10 MAX HX 470", "cb23s": 2092, "cb23m": 22705, "gb6s": 3000, "gb6m": 15569, "watts": 87, "handbrake": 77, "firestrike": 9673, "timespy": 3822, "noise": { "idle": 29, "load_default": 33, "load_performance": 36 }, "power_idle_watts": 8 },
