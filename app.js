@@ -53,7 +53,21 @@ const CHART_META = {
   power_idle_watts: { title: 'Power Draw at Idle', desc: 'Lower is better · watts at desktop idle', unit: 'W', lowerBetter: true },
   noise_load: { title: 'Fan Noise at Load (Default Profile)', desc: 'Lower is better · dB(A) measured at 30 cm', unit: 'dB', lowerBetter: true },
   noise_perf: { title: 'Fan Noise at Load (Performance Profile)', desc: 'Lower is better · dB(A) measured at 30 cm', unit: 'dB', lowerBetter: true },
-  noise_idle: { title: 'Fan Noise at Idle', desc: 'Lower is better · dB(A) measured at 30 cm', unit: 'dB', lowerBetter: true }
+  noise_idle: { title: 'Fan Noise at Idle', desc: 'Lower is better · dB(A) measured at 30 cm', unit: 'dB', lowerBetter: true },
+  // Multi-series chart
+  noise: {
+    title: 'Fan Noise · All Profiles',
+    desc: 'Lower is better · dB(A) measured at 30 cm',
+    unit: 'dB',
+    lowerBetter: true,
+    multiSeries: true,
+    defaultSortSeries: 'noise_load',
+    series: [
+      { key: 'noise_idle', label: 'Idle', colorVar: '--noise1' },
+      { key: 'noise_load', label: 'Load', colorVar: '--noise2' },
+      { key: 'noise_perf', label: 'Performance', colorVar: '--noise3' }
+    ]
+  }
 };
 
 let DEVICES = [];
@@ -64,6 +78,10 @@ let sortCol = 'composite';
 let sortDir = -1;
 let filterQ = '';
 let activeChart = 'cb23s';
+
+// Multi-series chart state
+let multiSeriesSort = 'noise_load';
+let multiSeriesMode = 'stacked'; // 'stacked' | 'grouped'
 
 const benchmarkTable = document.getElementById('benchmark-table');
 const infoGrid = document.getElementById('info-grid');
@@ -357,6 +375,177 @@ function renderColumnPicker() {
   });
 }
 
+// ── Multi-series chart helpers ──────────────────────────────────────────────
+
+function buildStackedSegments(device, meta, globalMax) {
+  const [s0, s1, s2] = meta.series;
+  const v0 = device[s0.key];
+  const v1 = device[s1.key];
+  const v2 = device[s2.key];
+
+  if (v0 == null && v1 == null && v2 == null) {
+    return `<span class="chart-segment-empty">no data</span>`;
+  }
+
+  const toW = v => v != null && globalMax ? ((v / globalMax) * 100).toFixed(2) : '0';
+  let segments = '';
+
+  // Segment 0: idle absolute
+  if (v0 != null) {
+    segments += `<div class="chart-segment" data-w="${toW(v0)}" style="width:0;background:var(${s0.colorVar})" title="${s0.label}: ${fmt(v0)}${meta.unit}"></div>`;
+  }
+
+  // Segment 1: load delta (or absolute if idle missing)
+  if (v1 != null) {
+    if (v0 != null) {
+      const delta = Math.max(v1 - v0, 0);
+      const w = ((delta / globalMax) * 100).toFixed(2);
+      segments += `<div class="chart-segment" data-w="${w}" style="width:0;background:var(${s1.colorVar})" title="${s1.label}: ${fmt(v1)}${meta.unit} (+${fmt(Math.round(delta))})"></div>`;
+    } else {
+      segments += `<div class="chart-segment" data-w="${toW(v1)}" style="width:0;background:var(${s1.colorVar})" title="${s1.label}: ${fmt(v1)}${meta.unit}"></div>`;
+    }
+  }
+
+  // Segment 2: perf delta (or absolute if load missing)
+  if (v2 != null) {
+    const base = v1 ?? v0;
+    if (base != null) {
+      const delta = Math.max(v2 - base, 0);
+      const w = ((delta / globalMax) * 100).toFixed(2);
+      segments += `<div class="chart-segment" data-w="${w}" style="width:0;background:var(${s2.colorVar})" title="${s2.label}: ${fmt(v2)}${meta.unit} (+${fmt(Math.round(delta))})"></div>`;
+    } else {
+      segments += `<div class="chart-segment" data-w="${toW(v2)}" style="width:0;background:var(${s2.colorVar})" title="${s2.label}: ${fmt(v2)}${meta.unit}"></div>`;
+    }
+  }
+
+  return segments;
+}
+
+function buildGroupedTracks(device, meta, globalMax) {
+  return meta.series.map(s => {
+    const val = device[s.key];
+    const pct = val != null && globalMax ? ((val / globalMax) * 100).toFixed(2) : '0';
+    return `<div class="chart-track chart-track-thin">
+      <div class="chart-fill" data-w="${pct}" style="width:0;background:var(${s.colorVar})" title="${s.label}: ${val != null ? fmt(val) + meta.unit : '—'}"></div>
+    </div>`;
+  }).join('');
+}
+
+function renderChartMultiSeries(meta) {
+  const devices = DEVICES.filter(d => meta.series.some(s => d[s.key] != null));
+
+  if (!devices.length) {
+    renderChartMessage('No noise data available.');
+    return;
+  }
+
+  // Global max across all series for proportional bar sizing
+  const globalMax = Math.max(...devices.flatMap(d => meta.series.map(s => d[s.key] ?? 0)), 0);
+
+  // Sort by selected series key (lower is better for noise)
+  const sorted = [...devices].sort((a, b) => {
+    const av = a[multiSeriesSort] ?? Infinity;
+    const bv = b[multiSeriesSort] ?? Infinity;
+    return av - bv;
+  });
+
+  // ── Controls ──
+  const sortPills = meta.series.map(s => `
+    <button class="chart-sort-pill${multiSeriesSort === s.key ? ' active' : ''}" data-sort="${s.key}">${s.label}</button>
+  `).join('');
+
+  const modeBtns = `
+    <button class="chart-mode-btn${multiSeriesMode === 'stacked' ? ' active' : ''}" data-mode="stacked" title="Stacked bars">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="3" width="12" height="3" rx="1" fill="currentColor"/><rect x="1" y="8" width="12" height="3" rx="1" fill="currentColor" opacity=".4"/></svg>
+    </button>
+    <button class="chart-mode-btn${multiSeriesMode === 'grouped' ? ' active' : ''}" data-mode="grouped" title="Grouped bars">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="2" width="4" height="10" rx="1" fill="currentColor"/><rect x="5.5" y="2" width="4" height="10" rx="1" fill="currentColor" opacity=".6"/><rect x="10" y="2" width="3" height="10" rx="1" fill="currentColor" opacity=".3"/></svg>
+    </button>`;
+
+  // ── Legend ──
+  const legendHtml = `
+    <div class="chart-legend">
+      ${meta.series.map(s => `
+        <span class="legend-item">
+          <span class="legend-dot" style="background:var(${s.colorVar})"></span>
+          <span>${s.label}</span>
+        </span>`).join('')}
+      ${multiSeriesMode === 'stacked' ? `<span class="legend-hint">Segments show delta from previous profile</span>` : ''}
+    </div>`;
+
+  // ── Rows ──
+  const rowsHtml = sorted.map((device, idx) => {
+    const isTop = idx < 3;
+    const primaryVal = device[multiSeriesSort];
+    const allVals = meta.series.map(s => device[s.key] != null ? `${fmt(device[s.key])}` : '—').join(' / ');
+    const numTitle = `${meta.series.map(s => `${s.label}: ${device[s.key] != null ? fmt(device[s.key]) + meta.unit : '—'}`).join(', ')}`;
+
+    if (multiSeriesMode === 'stacked') {
+      return `<div class="chart-row">
+        <div class="chart-label${isTop ? ' top' : ''}" title="${escapeHtml(device.name)}">${escapeHtml(device.name)}</div>
+        <div class="chart-track chart-track-stacked">
+          ${buildStackedSegments(device, meta, globalMax)}
+        </div>
+        <span class="chart-num chart-num-multi${isTop ? ' top' : ''}" title="${escapeHtml(numTitle)}">${allVals}${meta.unit}</span>
+      </div>`;
+    } else {
+      return `<div class="chart-row chart-row-grouped">
+        <div class="chart-label${isTop ? ' top' : ''}" title="${escapeHtml(device.name)}">${escapeHtml(device.name)}</div>
+        <div class="chart-track-group">
+          ${buildGroupedTracks(device, meta, globalMax)}
+        </div>
+        <span class="chart-num chart-num-multi${isTop ? ' top' : ''}" title="${escapeHtml(numTitle)}">${allVals}${meta.unit}</span>
+      </div>`;
+    }
+  }).join('');
+
+  chartBox.innerHTML = `
+    <div class="chart-head">
+      <div class="chart-head-row">
+        <div>
+          <div class="chart-title">${meta.title}</div>
+          <div class="chart-desc">${meta.desc} &nbsp;·&nbsp; ${sorted.length} devices</div>
+        </div>
+        <div class="chart-multi-controls">
+          <span class="chart-control-label">Sort by</span>
+          ${sortPills}
+          <span class="chart-control-sep"></span>
+          ${modeBtns}
+        </div>
+      </div>
+      ${legendHtml}
+    </div>
+    ${rowsHtml}`;
+
+  // Animate bars
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    chartBox.querySelectorAll('.chart-segment[data-w]').forEach(el => {
+      el.style.width = `${el.dataset.w}%`;
+    });
+    chartBox.querySelectorAll('.chart-fill[data-w]').forEach(el => {
+      el.style.width = `${el.dataset.w}%`;
+    });
+  }));
+
+  // Sort pill listeners
+  chartBox.querySelectorAll('.chart-sort-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      multiSeriesSort = btn.dataset.sort;
+      renderChart();
+    });
+  });
+
+  // Mode toggle listeners
+  chartBox.querySelectorAll('.chart-mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      multiSeriesMode = btn.dataset.mode;
+      renderChart();
+    });
+  });
+}
+
+// ── Single-series chart ─────────────────────────────────────────────────────
+
 function renderChart() {
   if (!DEVICES.length) {
     renderChartMessage('No chart data available.');
@@ -364,6 +553,12 @@ function renderChart() {
   }
 
   const meta = CHART_META[activeChart];
+
+  if (meta.multiSeries) {
+    renderChartMultiSeries(meta);
+    return;
+  }
+
   const isLower = meta.lowerBetter;
   const allDevices = DEVICES.filter(device => device[activeChart] != null);
   const sorted = [...allDevices].sort((a, b) => isLower

@@ -17,6 +17,10 @@
   --pow2: #10B981;
   --pow3: #34D399;
   --pow-dim: #94A3B8;
+  /* Noise multi-series: green → amber → red (quiet → loud) */
+  --noise1: #10B981;
+  --noise2: #F59E0B;
+  --noise3: #EF4444;
 }
 
 *,
@@ -535,6 +539,15 @@ td.table-message {
   color: #fff;
 }
 
+/* Multi-series tab gets a subtle visual distinction */
+.chart-tab-multi {
+  border-style: dashed;
+}
+
+.chart-tab-multi.active {
+  border-style: solid;
+}
+
 .chart-box {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -544,6 +557,15 @@ td.table-message {
 
 .chart-head {
   margin-bottom: 1.25rem;
+}
+
+/* Row inside chart-head: title/desc left, controls right */
+.chart-head-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .chart-title {
@@ -558,6 +580,121 @@ td.table-message {
   color: var(--muted);
   margin-top: .15rem;
 }
+
+/* ── Multi-series controls ────────────────────────────────────────────────── */
+
+.chart-multi-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.chart-control-label {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-right: 0.15rem;
+  white-space: nowrap;
+}
+
+.chart-control-sep {
+  display: inline-block;
+  width: 1px;
+  height: 16px;
+  background: var(--border);
+  margin: 0 0.25rem;
+}
+
+.chart-sort-pill {
+  padding: 0.22rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  color: var(--muted);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+
+.chart-sort-pill:hover {
+  color: var(--text);
+  border-color: #CBD5E1;
+}
+
+.chart-sort-pill.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.chart-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all .15s;
+  flex-shrink: 0;
+}
+
+.chart-mode-btn:hover {
+  color: var(--text);
+  border-color: #CBD5E1;
+}
+
+.chart-mode-btn.active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Legend ──────────────────────────────────────────────────────────────── */
+
+.chart-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: #F8FAFC;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  color: var(--text);
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.legend-hint {
+  font-size: 0.68rem;
+  color: var(--muted);
+  margin-left: auto;
+  font-style: italic;
+}
+
+/* ── Chart rows (shared) ─────────────────────────────────────────────────── */
 
 .chart-row {
   display: flex;
@@ -609,6 +746,77 @@ td.table-message {
   font-weight: 500;
 }
 
+/* ── Stacked multi-series bars ───────────────────────────────────────────── */
+
+.chart-track-stacked {
+  display: flex;
+  gap: 1px;
+  /* override the single-series overflow:hidden so segments animate correctly */
+  overflow: visible;
+  background: #F1F5F9;
+}
+
+.chart-segment {
+  height: 100%;
+  width: 0;
+  flex-shrink: 0;
+  transition: width .55s cubic-bezier(.16, 1, .3, 1);
+}
+
+.chart-segment:first-child {
+  border-radius: 3px 0 0 3px;
+}
+
+.chart-segment:last-child {
+  border-radius: 0 3px 3px 0;
+}
+
+.chart-segment:only-child {
+  border-radius: 3px;
+}
+
+.chart-segment-empty {
+  font-size: 0.65rem;
+  color: var(--muted);
+  padding: 0 0.5rem;
+  line-height: 23px;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* ── Grouped multi-series bars ───────────────────────────────────────────── */
+
+.chart-row-grouped {
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.chart-track-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  /* Vertically center in row */
+  padding-top: 2px;
+}
+
+.chart-track-thin {
+  height: 7px;
+  background: #F1F5F9;
+  border-radius: 2px;
+  overflow: hidden;
+  flex: none;
+}
+
+.chart-track-thin .chart-fill {
+  border-radius: 2px;
+}
+
+/* Wider num column for multi-series (shows all 3 values) */
+.chart-num-multi {
+  width: 120px;
+  font-size: 0.62rem;
+}
+
 @media (max-width: 600px) {
   .chart-label {
     width: 130px;
@@ -618,6 +826,11 @@ td.table-message {
   .chart-num {
     width: 60px;
     font-size: 0.64rem;
+  }
+
+  .chart-num-multi {
+    width: 90px;
+    font-size: 0.58rem;
   }
 
   .info-grid {
@@ -651,5 +864,18 @@ td.table-message {
 
   .column-options {
     grid-template-columns: 1fr;
+  }
+
+  .chart-head-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .chart-multi-controls {
+    width: 100%;
+  }
+
+  .legend-hint {
+    display: none;
   }
 }
