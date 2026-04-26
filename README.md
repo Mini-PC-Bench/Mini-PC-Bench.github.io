@@ -29,7 +29,7 @@ python3 -m http.server 8123
 Then open:
 
 ```text
-http://127.0.0.1:8123/minipc-benchmarks.html
+http://127.0.0.1:8123/
 ```
 
 ## Data Format
