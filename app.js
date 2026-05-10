@@ -268,6 +268,9 @@ function renderTableCell(column, device, metrics) {
   }
 
   if (column.id === 'name') {
+    if (device.affiliateLink) {
+      return `<td class="col-name"><a href="${escapeHtml(device.affiliateLink)}" target="_blank" rel="noopener noreferrer" title="View on retailer">${escapeHtml(device.name)}</a></td>`;
+    }
     return `<td class="col-name">${escapeHtml(device.name)}</td>`;
   }
 
