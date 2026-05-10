@@ -499,6 +499,34 @@ td.table-message {
   color: #9A3412;
 }
 
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color .15s, text-decoration .15s;
+  border-bottom: 1px solid transparent;
+}
+
+a:hover {
+  color: #1D4ED8;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 2px;
+}
+
+a:visited {
+  color: #7C3AED;
+}
+
+a:visited:hover {
+  color: #6D28D9;
+}
+
+a:focus-visible {
+  outline: 2px solid rgba(37, 99, 235, .25);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
 .footnote {
   font-size: 0.72rem;
   color: var(--muted);
