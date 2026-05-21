@@ -20,6 +20,8 @@ The page fetches `devices.json` at runtime, so it should be served over HTTP or 
 
 ## Local Preview
 
+### Linux / macOS
+
 Run a simple static server from this folder:
 
 ```bash
@@ -29,8 +31,24 @@ python3 -m http.server 8123
 Then open:
 
 ```text
-http://127.0.0.1:8123/minipc-benchmarks.html
+http://127.0.0.1:8123/
 ```
+
+### Windows
+
+No Python or Node required. Run the included PowerShell script (as Administrator):
+
+```powershell
+.\serve.ps1
+```
+
+Then open:
+
+```text
+http://localhost:80/
+```
+
+> **Note:** Port 80 requires an elevated PowerShell session. Alternatively, change the port in `serve.ps1` to anything above 1024 (e.g. `8123`) to run without Administrator privileges.
 
 ## Data Format
 
