@@ -96,10 +96,23 @@ Use this workflow each time you review a new device.
   "cb23m": 0,
   "gb6s": 0,
   "gb6m": 0,
+  "gbai_cpu": null,
+  "gbai_gpu": null,
   "watts": 0,
   "handbrake": 0,
+  "av1": null,
+  "av1_hw": null,
   "firestrike": 0,
   "timespy": 0,
+  "steelnomad": null,
+  "coding": null,
+  "photoshop": null,
+  "premiere": null,
+  "storage": null,
+  "wireless_audio": null,
+  "cpu_temp": null,
+  "ssd_temp": null,
+  "volume": null,
   "noise": {
     "idle": 0,
     "load_default": 0,
@@ -117,10 +130,23 @@ Use this workflow each time you review a new device.
 - `cb23m`: Cinebench R23 multi-core score. Higher is better.
 - `gb6s`: Geekbench 6 single-core score. Higher is better.
 - `gb6m`: Geekbench 6 multi-core score. Higher is better.
+- `gbai_cpu`: Geekbench AI CPU score. Higher is better.
+- `gbai_gpu`: Geekbench AI GPU score. Higher is better.
 - `watts`: Maximum power draw from the wall under load. Lower is better.
-- `handbrake`: Encode time in seconds. Lower is better.
+- `handbrake`: H264 encode time in seconds. Lower is better.
+- `av1`: AV1 software encode time in seconds. Lower is better.
+- `av1_hw`: AV1 hardware encode time in seconds. Lower is better.
 - `firestrike`: 3DMark Fire Strike score. Higher is better.
 - `timespy`: 3DMark Time Spy score. Higher is better.
+- `steelnomad`: 3DMark Steel Nomad score. Higher is better.
+- `coding`: Coding benchmark score. Higher is better.
+- `photoshop`: Photoshop benchmark score. Higher is better.
+- `premiere`: Premiere benchmark score. Higher is better.
+- `storage`: 3DMark Storage Benchmark score. Higher is better.
+- `wireless_audio`: Wireless Bluetooth audio benchmark score. Higher is better.
+- `cpu_temp`: Maximum CPU temperature under load in C. Lower is better.
+- `ssd_temp`: SSD temperature under load in C. Lower is better.
+- `volume`: Chassis volume in liters. Lower is better.
 - `noise.idle`: Fan noise at idle in dB(A) at 30 cm. Lower is better.
 - `noise.load_default`: Fan noise under load in default profile. Lower is better.
 - `noise.load_performance`: Fan noise under load in performance profile. Lower is better.
@@ -130,6 +156,7 @@ Use this workflow each time you review a new device.
 ### Notes
 
 - Use numbers (not quoted strings) for all benchmark, power, and noise values.
+- For optional metrics with missing data, use `null` instead of `0`.
 - If there is no affiliate URL, keep `affiliateLink` as an empty string.
 - Keep `devices.json` valid JSON: commas between objects, no trailing commas.
 - The app recalculates overall score and efficiency automatically from the numeric fields.

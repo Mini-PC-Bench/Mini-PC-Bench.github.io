@@ -20,8 +20,35 @@ const DEFAULT_VISIBLE_COLUMNS = [
   'efficiency'
 ];
 
-const BENCH_HIGHER = ['cb23s', 'cb23m', 'gb6s', 'gb6m', 'firestrike', 'timespy'];
-const BENCH_LOWER = ['handbrake', 'noise_idle', 'noise_load', 'noise_perf', 'power_idle_watts'];
+const BENCH_HIGHER = [
+  'cb23s',
+  'cb23m',
+  'gb6s',
+  'gb6m',
+  'gbai_cpu',
+  'gbai_gpu',
+  'firestrike',
+  'timespy',
+  'steelnomad',
+  'coding',
+  'photoshop',
+  'premiere',
+  'storage',
+  'wireless_audio'
+];
+const BENCH_LOWER = [
+  'handbrake',
+  'h264',
+  'av1',
+  'av1_hw',
+  'noise_idle',
+  'noise_load',
+  'noise_perf',
+  'power_idle_watts',
+  'cpu_temp',
+  'ssd_temp',
+  'volume'
+];
 
 const TABLE_COLUMNS = [
   { id: 'name', label: 'Device', pickerLabel: 'Device', title: 'Device name', headerClass: 'col-name', cellClass: 'col-name', alwaysVisible: true, sortDefaultDir: 1 },
@@ -29,11 +56,24 @@ const TABLE_COLUMNS = [
   { id: 'cb23m', label: 'CB R23 nT', pickerLabel: 'CB R23 Multi', title: 'Cinebench R23 Multi Core (higher is better)', sortDefaultDir: -1 },
   { id: 'gb6s', label: 'GB6 1T', pickerLabel: 'GB6 Single', title: 'Geekbench 6 Single Core (higher is better)', sortDefaultDir: -1 },
   { id: 'gb6m', label: 'GB6 nT', pickerLabel: 'GB6 Multi', title: 'Geekbench 6 Multi Core (higher is better)', sortDefaultDir: -1 },
+  { id: 'gbai_cpu', label: 'GB AI CPU', pickerLabel: 'Geekbench AI CPU', title: 'Geekbench AI CPU score (higher is better)', sortDefaultDir: -1 },
+  { id: 'gbai_gpu', label: 'GB AI GPU', pickerLabel: 'Geekbench AI GPU', title: 'Geekbench AI GPU score (higher is better)', sortDefaultDir: -1 },
   { id: 'firestrike', label: 'FireStrike', pickerLabel: 'Fire Strike', title: '3DMark Fire Strike - DirectX 11 GPU benchmark (higher is better)', sortDefaultDir: -1 },
   { id: 'timespy', label: 'Time Spy', pickerLabel: 'Time Spy', title: '3DMark Time Spy - DirectX 12 GPU benchmark (higher is better)', sortDefaultDir: -1 },
+  { id: 'steelnomad', label: 'Steel Nomad', pickerLabel: 'Steel Nomad', title: '3DMark Steel Nomad score (higher is better)', sortDefaultDir: -1 },
+  { id: 'coding', label: 'Coding', pickerLabel: 'Coding', title: 'Coding benchmark score (higher is better)', sortDefaultDir: -1 },
+  { id: 'photoshop', label: 'Photoshop', pickerLabel: 'Photoshop', title: 'Photoshop benchmark score (higher is better)', sortDefaultDir: -1 },
+  { id: 'premiere', label: 'Premiere', pickerLabel: 'Premiere', title: 'Premiere benchmark score (higher is better)', sortDefaultDir: -1 },
+  { id: 'storage', label: 'Storage', pickerLabel: 'Storage Benchmark', title: '3DMark Storage Benchmark score (higher is better)', sortDefaultDir: -1 },
+  { id: 'wireless_audio', label: 'BT Audio', pickerLabel: 'Wireless BT Audio', title: 'Wireless Bluetooth audio benchmark score (higher is better)', sortDefaultDir: -1 },
   { id: 'handbrake', label: 'HB (s) ↓', pickerLabel: 'HandBrake', title: 'HandBrake video encode time in seconds (lower is better)', lowerBetter: true, sortDefaultDir: 1 },
+  { id: 'av1', label: 'AV1 (s) ↓', pickerLabel: 'AV1 Encode', title: 'AV1 encode time in seconds (lower is better)', lowerBetter: true, sortDefaultDir: 1 },
+  { id: 'av1_hw', label: 'AV1 HW (s) ↓', pickerLabel: 'AV1 HW Encode', title: 'AV1 hardware encode time in seconds (lower is better)', lowerBetter: true, sortDefaultDir: 1 },
   { id: 'watts', label: 'Watts ↓', pickerLabel: 'Max Power Draw', title: 'Maximum power draw from wall under load (lower is better)', lowerBetter: true, cellClass: 'watts-cell', sortDefaultDir: 1 },
   { id: 'power_idle_watts', label: 'Idle W ↓', pickerLabel: 'Idle Power', title: 'Power draw at idle in watts (lower is better)', lowerBetter: true, sortDefaultDir: 1 },
+  { id: 'cpu_temp', label: 'CPU C ↓', pickerLabel: 'Max CPU Temp', title: 'Maximum CPU temperature under load in degrees Celsius (lower is better)', lowerBetter: true, sortDefaultDir: 1 },
+  { id: 'ssd_temp', label: 'SSD C ↓', pickerLabel: 'SSD Temp', title: 'SSD temperature under load in degrees Celsius (lower is better)', lowerBetter: true, sortDefaultDir: 1 },
+  { id: 'volume', label: 'Volume ↓', pickerLabel: 'Volume', title: 'Chassis volume in liters (lower is better)', lowerBetter: true, sortDefaultDir: 1 },
   { id: 'noise_idle', label: 'Idle dB ↓', pickerLabel: 'Idle Noise', title: 'Fan noise at idle in dB(A) (lower is better)', lowerBetter: true, sortDefaultDir: 1 },
   { id: 'noise_load', label: 'Load dB ↓', pickerLabel: 'Load Noise', title: 'Fan noise at load (default profile) in dB(A) (lower is better)', lowerBetter: true, sortDefaultDir: 1 },
   { id: 'noise_perf', label: 'Perf dB ↓', pickerLabel: 'Perf Noise', title: 'Fan noise at load (performance profile) in dB(A) (lower is better)', lowerBetter: true, sortDefaultDir: 1 },
@@ -46,11 +86,24 @@ const CHART_META = {
   cb23m: { title: 'Cinebench R23 · Multi Core CPU', desc: 'Higher is better', unit: '', lowerBetter: false },
   gb6s: { title: 'Geekbench 6 · Single Core CPU', desc: 'Higher is better', unit: '', lowerBetter: false },
   gb6m: { title: 'Geekbench 6 · Multi Core CPU', desc: 'Higher is better', unit: '', lowerBetter: false },
+  gbai_cpu: { title: 'Geekbench AI · CPU', desc: 'Higher is better', unit: '', lowerBetter: false },
+  gbai_gpu: { title: 'Geekbench AI · GPU', desc: 'Higher is better', unit: '', lowerBetter: false },
   firestrike: { title: '3DMark Fire Strike', desc: 'Higher is better · DirectX 11 GPU benchmark', unit: '', lowerBetter: false },
   timespy: { title: '3DMark Time Spy', desc: 'Higher is better · DirectX 12 GPU benchmark', unit: '', lowerBetter: false },
+  steelnomad: { title: '3DMark Steel Nomad', desc: 'Higher is better', unit: '', lowerBetter: false },
+  coding: { title: 'Coding', desc: 'Higher is better', unit: '', lowerBetter: false },
+  photoshop: { title: 'Photoshop', desc: 'Higher is better', unit: '', lowerBetter: false },
+  premiere: { title: 'Premiere', desc: 'Higher is better', unit: '', lowerBetter: false },
+  storage: { title: '3DMark Storage Benchmark', desc: 'Higher is better', unit: '', lowerBetter: false },
+  wireless_audio: { title: 'Wireless Bluetooth Audio', desc: 'Higher is better', unit: '', lowerBetter: false },
   handbrake: { title: 'HandBrake Video Encode', desc: 'Lower is better · seconds to encode sample video', unit: 's', lowerBetter: true },
+  av1: { title: 'AV1 Encoding', desc: 'Lower is better · seconds to encode sample video', unit: 's', lowerBetter: true },
+  av1_hw: { title: 'AV1 Encoding (Hardware)', desc: 'Lower is better · seconds to encode sample video', unit: 's', lowerBetter: true },
   watts: { title: 'Maximum Power Draw from the Wall', desc: 'Lower is better · watts under full CPU load', unit: 'W', lowerBetter: true },
   power_idle_watts: { title: 'Power Draw at Idle', desc: 'Lower is better · watts at desktop idle', unit: 'W', lowerBetter: true },
+  cpu_temp: { title: 'Maximum CPU Temperature', desc: 'Lower is better · measured under sustained load', unit: 'C', lowerBetter: true },
+  ssd_temp: { title: 'SSD Temperatures', desc: 'Lower is better · measured under sustained storage load', unit: 'C', lowerBetter: true },
+  volume: { title: 'Volume', desc: 'Lower is better · chassis size in liters', unit: 'L', lowerBetter: true },
   noise_load: { title: 'Fan Noise at Load (Default Profile)', desc: 'Lower is better · dB(A) measured at 30 cm', unit: 'dB', lowerBetter: true },
   noise_perf: { title: 'Fan Noise at Load (Performance Profile)', desc: 'Lower is better · dB(A) measured at 30 cm', unit: 'dB', lowerBetter: true },
   noise_idle: { title: 'Fan Noise at Idle', desc: 'Lower is better · dB(A) measured at 30 cm', unit: 'dB', lowerBetter: true },
@@ -156,6 +209,21 @@ function renderChartMessage(message) {
 function normalizeDevices(data) {
   DEVICES = data.map(device => ({
     ...device,
+    handbrake: device.handbrake ?? device.h264 ?? null,
+    h264: device.h264 ?? device.handbrake ?? null,
+    av1: device.av1 ?? null,
+    av1_hw: device.av1_hw ?? device.av1_hardware ?? null,
+    gbai_cpu: device.gbai_cpu ?? device.geekbench_ai_cpu ?? null,
+    gbai_gpu: device.gbai_gpu ?? device.geekbench_ai_gpu ?? null,
+    steelnomad: device.steelnomad ?? device.steel_nomad ?? null,
+    coding: device.coding ?? null,
+    photoshop: device.photoshop ?? null,
+    premiere: device.premiere ?? null,
+    storage: device.storage ?? device.storage_benchmark ?? null,
+    ssd_temp: device.ssd_temp ?? device.ssd_temperature ?? null,
+    wireless_audio: device.wireless_audio ?? device.bluetooth_audio ?? null,
+    cpu_temp: device.cpu_temp ?? device.max_cpu_temp ?? null,
+    volume: device.volume ?? device.chassis_volume_l ?? null,
     noise_idle: device.noise_idle ?? device.noise?.idle ?? null,
     noise_load: device.noise_load ?? device.noise?.load_default ?? null,
     noise_perf: device.noise_perf ?? device.noise?.load_performance ?? null
@@ -253,8 +321,14 @@ function renderBenchCell(column, value) {
     : MAX_H[column.id] ? (value / MAX_H[column.id]) * 100 : 0;
   const suffix = column.id === 'handbrake'
     ? 's'
+    : column.id === 'av1' || column.id === 'av1_hw'
+      ? 's'
     : column.id === 'power_idle_watts'
       ? 'W'
+      : column.id === 'cpu_temp' || column.id === 'ssd_temp'
+        ? 'C'
+        : column.id === 'volume'
+          ? 'L'
       : column.id.startsWith('noise_')
         ? 'dB'
         : '';
@@ -564,6 +638,10 @@ function renderChart() {
 
   const isLower = meta.lowerBetter;
   const allDevices = DEVICES.filter(device => device[activeChart] != null);
+  if (!allDevices.length) {
+    renderChartMessage('No data available for this metric yet.');
+    return;
+  }
   const sorted = [...allDevices].sort((a, b) => isLower
     ? (a[activeChart] ?? Infinity) - (b[activeChart] ?? Infinity)
     : (b[activeChart] ?? 0) - (a[activeChart] ?? 0));
