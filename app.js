@@ -254,12 +254,22 @@ function renderInfoCards() {
     return;
   }
 
-  const byScore = [...DEVICES].sort((a, b) => b.composite - a.composite);
-  const byEff = [...DEVICES].sort((a, b) => b.efficiency - a.efficiency);
-  const byGpu = [...DEVICES].sort((a, b) => b.firestrike - a.firestrike);
-  const byQuiet = [...DEVICES].sort((a, b) => a.noise_load - b.noise_load);
-  const byIdle = [...DEVICES].sort((a, b) => a.power_idle_watts - b.power_idle_watts);
-  const byWatts = [...DEVICES].sort((a, b) => a.watts - b.watts);
+  const sortHigher = (key) => [...DEVICES].filter(device => device[key] != null).sort((a, b) => b[key] - a[key]);
+  const sortLower = (key) => [...DEVICES].filter(device => device[key] != null).sort((a, b) => a[key] - b[key]);
+
+  const byScore = sortHigher('composite');
+  const byEff = sortHigher('efficiency');
+  const byGpu = sortHigher('firestrike');
+  const byQuiet = sortLower('noise_load');
+  const byIdle = sortLower('power_idle_watts');
+  const byWatts = sortLower('watts');
+
+  const hasCoreMetrics = byScore.length && byEff.length && byGpu.length;
+  const hasPowerMetrics = byQuiet.length && byIdle.length && byWatts.length;
+  if (!hasCoreMetrics || !hasPowerMetrics) {
+    infoGrid.innerHTML = '';
+    return;
+  }
 
   const cards = [
     { label: 'Best Overall Score', value: fmtD(byScore[0].composite), device: byScore[0].name, cls: 'blue' },
