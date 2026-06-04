@@ -172,10 +172,14 @@ Use the importer script to map benchmark values from the `source` folder into `d
 Optional parameters:
 
 ```powershell
-./process-source.ps1 -SourceDir ./source -DevicesPath ./devices.json
+./process-source.ps1 -SourceDir ./source -DevicesPath ./devices.json -AutoAddDevices $false
 ```
 
-The importer reads the benchmark CSVs, selects the preferred row per file, resolves each source device label, and writes the merged metrics back into `devices.json`.
+- `SourceDir`: path to the source CSV folder (default: `./source`)
+- `DevicesPath`: path to devices.json (default: `./devices.json`)
+- `AutoAddDevices`: if `$true`, automatically create new device entries for unresolved source labels; if `$false` (default), add unresolved names to the report (default: `$false`)
+
+The importer reads the benchmark CSVs, selects the preferred row per file, resolves each source device label, and writes the merged metrics back into `devices.json`. When `AutoAddDevices` is enabled, new devices are added with all metrics set to `null` and populated as metrics are imported.
 
 ### Resolver Order
 

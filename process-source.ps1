@@ -1,6 +1,7 @@
 param(
   [string]$SourceDir = "./source",
-  [string]$DevicesPath = "./devices.json"
+  [string]$DevicesPath = "./devices.json",
+  [bool]$AutoAddDevices = $false
 )
 
 Set-StrictMode -Version Latest
@@ -234,10 +235,28 @@ function Resolve-DeviceName {
 
     $deviceIdentityTokens = @(Get-IdentityTokens -Tokens $deviceTokens)
     if ($rawIdentityTokens.Count -gt 0 -and $deviceIdentityTokens.Count -gt 0) {
+      $deviceIdentitySet = [System.Collections.Generic.HashSet[string]]::new([string[]]$deviceIdentityTokens)
+
+      # Device identity tokens must overlap with source (existing check)
       $hasIdentityOverlap = $false
       foreach ($token in $deviceIdentityTokens) {
         if ($rawIdentitySet.Contains($token)) {
           $hasIdentityOverlap = $true
+          break
+        }
+      }
+
+      if (-not $hasIdentityOverlap) {
+        continue
+      }
+
+      # All source identity tokens must also appear in device. This prevents
+      # CPU-model-only matches across different product lines, e.g.
+      # 'ASUS ROG NUC 970 Ultra 9 185H' must not match 'GEEKOM GT1 Mega Ultra 9 185H'
+      # because source identity token '970' is absent from the device.
+      foreach ($token in $rawIdentityTokens) {
+        if (-not $deviceIdentitySet.Contains($token)) {
+          $hasIdentityOverlap = $false
           break
         }
       }
@@ -275,6 +294,59 @@ function Resolve-DeviceName {
   }
 
   return $null
+}
+
+function New-DeviceTemplate {
+  param([string]$DeviceName)
+
+  return [pscustomobject]@{
+    name = $DeviceName
+    cb23s = $null
+    cb23m = $null
+    gb6s = $null
+    gb6m = $null
+    gbai_cpu = $null
+    gbai_gpu = $null
+    watts = $null
+    handbrake = $null
+    h264 = $null
+    av1 = $null
+    av1_hw = $null
+    firestrike = $null
+    timespy = $null
+    steelnomad = $null
+    coding = $null
+    photoshop = $null
+    premiere = $null
+    storage = $null
+    wireless_audio = $null
+    cpu_temp = $null
+    ssd_temp = $null
+    volume = $null
+    noise = [pscustomobject]@{
+      idle = $null
+      load_default = $null
+      load_performance = $null
+    }
+    power_idle_watts = $null
+    affiliateLink = ""
+  }
+}
+
+function Get-SourceLabels {
+  param([string]$FilePath)
+
+  if (-not (Test-Path -LiteralPath $FilePath)) {
+    return @()
+  }
+
+  $firstLine = Get-Content -LiteralPath $FilePath -TotalCount 1
+  if ([string]::IsNullOrWhiteSpace($firstLine)) {
+    return @()
+  }
+
+  $headers = $firstLine.Split(',') | Select-Object -Skip 1
+  return @($headers | ForEach-Object { $_.Trim() } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
 }
 
 function Set-DeviceMetric {
@@ -396,6 +468,43 @@ foreach ($device in $devices) {
 }
 
 $updatedCount = 0
+$autoAdded = [System.Collections.Generic.HashSet[string]]::new()
+
+# Pre-pass: collect all unique source labels across all spec files and Fan Noise,
+# then auto-add every unresolved label upfront (with canonical lookup updated).
+# This makes the script idempotent: the device list is fully stable before any
+# metric values are written, so run 1 and run 2 produce identical results.
+if ($AutoAddDevices) {
+  $allSourceLabels = [System.Collections.Generic.HashSet[string]]::new()
+
+  foreach ($spec in $specs) {
+    $path = Join-Path $SourceDir $spec.File
+    foreach ($label in (Get-SourceLabels -FilePath $path)) {
+      [void]$allSourceLabels.Add($label)
+    }
+  }
+
+  $fanNoisePathPre = Join-Path $SourceDir 'Fan Noise.csv'
+  foreach ($label in (Get-SourceLabels -FilePath $fanNoisePathPre)) {
+    [void]$allSourceLabels.Add($label)
+  }
+
+  foreach ($rawName in ($allSourceLabels | Sort-Object)) {
+    $result = Resolve-DeviceName -RawName $rawName -KnownDevices $devices -CanonicalLookup $canonicalLookup -TokenLookup $tokenLookup -Aliases $aliases
+    if (-not $result) {
+      $newDevice = New-DeviceTemplate -DeviceName $rawName
+      $devices += $newDevice
+      $devicesByName[$rawName] = $newDevice
+      $tokenLookup[$rawName] = @(Get-NormalizedTokens -Name $rawName)
+      $newCanonical = Get-CanonicalName -Name $rawName
+      if (-not [string]::IsNullOrWhiteSpace($newCanonical) -and -not $canonicalLookup.ContainsKey($newCanonical)) {
+        $canonicalLookup[$newCanonical] = $rawName
+      }
+      [void]$autoAdded.Add($rawName)
+    }
+  }
+}
+
 $unresolved = [System.Collections.Generic.HashSet[string]]::new()
 $fuzzyMatches = @()
 $aliasMatches = @()
@@ -493,6 +602,12 @@ $json = $devices | ConvertTo-Json -Depth 10
 Set-Content -LiteralPath $DevicesPath -Value $json -Encoding UTF8
 
 Write-Host "Updated metric entries: $updatedCount"
+
+if ($autoAdded.Count -gt 0) {
+  Write-Host ""
+  Write-Host "Auto-added new devices:"
+  $autoAdded | Sort-Object | ForEach-Object { Write-Host "  + $_" }
+}
 
 if ($fuzzyMatches.Count -gt 0) {
   Write-Host ""
