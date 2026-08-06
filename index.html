@@ -105,6 +105,19 @@
     </div>
 
   </main>
+
+  <div id="device-detail-overlay" class="device-detail-overlay" hidden>
+    <div class="device-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="device-detail-title">
+      <button id="device-detail-close" class="device-detail-close" type="button" aria-label="Close device details">Close</button>
+      <div class="device-detail-head">
+        <p class="device-detail-kicker">Mini PC details</p>
+        <h2 id="device-detail-title" class="device-detail-title">Device details</h2>
+        <p id="device-detail-summary" class="device-detail-summary"></p>
+      </div>
+      <div id="device-detail-body" class="device-detail-body"></div>
+    </div>
+  </div>
+
   <script src="./app.js" defer></script>
 </body>
 

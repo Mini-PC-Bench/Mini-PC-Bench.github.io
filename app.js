@@ -123,6 +123,59 @@ const CHART_META = {
   }
 };
 
+const DETAIL_METRIC_GROUPS = [
+  {
+    title: 'Links',
+    type: 'links'
+  },
+  {
+    title: 'Quick View',
+    items: ['composite', 'efficiency', 'watts', 'power_idle_watts', 'volume']
+  },
+  {
+    title: 'CPU',
+    items: ['cb23s', 'cb23m', 'gb6s', 'gb6m', 'gbai_cpu']
+  },
+  {
+    title: 'GPU & Pro Apps',
+    items: ['gbai_gpu', 'firestrike', 'timespy', 'steelnomad', 'coding', 'photoshop', 'premiere']
+  },
+  {
+    title: 'Media, Thermals & Acoustics',
+    items: ['handbrake', 'av1', 'av1_hw', 'noise_idle', 'noise_load', 'noise_perf', 'cpu_temp', 'ssd_temp', 'storage', 'wireless_audio']
+  }
+];
+
+const DETAIL_METRICS = {
+  composite: { label: 'Composite score', decimals: 1 },
+  efficiency: { label: 'Efficiency', decimals: 1 },
+  watts: { label: 'Max power draw', unit: 'W' },
+  power_idle_watts: { label: 'Idle power', unit: 'W' },
+  volume: { label: 'Volume', unit: 'L', decimals: 2 },
+  cb23s: { label: 'Cinebench R23 single' },
+  cb23m: { label: 'Cinebench R23 multi' },
+  gb6s: { label: 'Geekbench 6 single' },
+  gb6m: { label: 'Geekbench 6 multi' },
+  gbai_cpu: { label: 'Geekbench AI CPU' },
+  gbai_gpu: { label: 'Geekbench AI GPU' },
+  firestrike: { label: '3DMark Fire Strike' },
+  timespy: { label: '3DMark Time Spy' },
+  steelnomad: { label: '3DMark Steel Nomad' },
+  coding: { label: 'Coding', decimals: 3 },
+  photoshop: { label: 'Photoshop' },
+  premiere: { label: 'Premiere' },
+  handbrake: { label: 'H264 encode', unit: 's' },
+  av1: { label: 'AV1 encode', unit: 's' },
+  av1_hw: { label: 'AV1 hardware encode', unit: 's' },
+  noise_idle: { label: 'Idle noise', unit: 'dB' },
+  noise_load: { label: 'Load noise', unit: 'dB' },
+  noise_perf: { label: 'Performance noise', unit: 'dB' },
+  cpu_temp: { label: 'CPU temperature', unit: 'C' },
+  ssd_temp: { label: 'SSD temperature', unit: 'C' },
+  storage: { label: 'Storage score' },
+  wireless_audio: { label: 'Wireless BT audio', decimals: 1 }
+};
+
 let DEVICES = [];
 let MAX_H = {};
 let MIN_L = {};
@@ -131,6 +184,7 @@ let sortCol = 'composite';
 let sortDir = -1;
 let filterQ = '';
 let activeChart = 'cb23s';
+let activeDeviceName = null;
 
 // Multi-series chart state
 let multiSeriesSort = 'noise_load';
@@ -144,10 +198,133 @@ const chartBox = document.getElementById('chart-box');
 const columnToggleBtn = document.getElementById('column-toggle');
 const columnMenuEl = document.getElementById('column-menu');
 const columnOptionsEl = document.getElementById('column-options');
+const deviceDetailOverlay = document.getElementById('device-detail-overlay');
+const deviceDetailCloseBtn = document.getElementById('device-detail-close');
+const deviceDetailTitle = document.getElementById('device-detail-title');
+const deviceDetailSummary = document.getElementById('device-detail-summary');
+const deviceDetailBody = document.getElementById('device-detail-body');
 
 const fmt = v => v == null ? '—' : v.toLocaleString();
 const fmtD = (v, d = 1) => v == null ? '—' : v.toFixed(d);
 const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+
+function normalizeDeviceLinks(device) {
+  const links = [];
+
+  if (Array.isArray(device.links)) {
+    device.links.forEach(link => {
+      if (!link || typeof link !== 'object') return;
+      const url = typeof link.url === 'string' ? link.url.trim() : '';
+      if (!url) return;
+      links.push({
+        label: typeof link.label === 'string' && link.label.trim() ? link.label.trim() : 'Open link',
+        url,
+        kind: typeof link.kind === 'string' ? link.kind.trim().toLowerCase() : ''
+      });
+    });
+  }
+
+  if (typeof device.affiliateLink === 'string' && device.affiliateLink.trim()) {
+    links.push({ label: 'Affiliate link', url: device.affiliateLink.trim(), kind: 'affiliate' });
+  }
+
+  if (typeof device.youtubeLink === 'string' && device.youtubeLink.trim()) {
+    links.push({ label: 'YouTube review', url: device.youtubeLink.trim(), kind: 'youtube' });
+  }
+
+  const deduped = [];
+  const seen = new Set();
+  links.forEach(link => {
+    if (seen.has(link.url)) return;
+    seen.add(link.url);
+    deduped.push(link);
+  });
+
+  return deduped;
+}
+
+function findDeviceByName(name) {
+  return DEVICES.find(device => device.name === name) ?? null;
+}
+
+function formatDetailMetricValue(metricId, value) {
+  const config = DETAIL_METRICS[metricId] ?? {};
+  if (value == null) return null;
+  const formatted = typeof config.decimals === 'number' ? fmtD(value, config.decimals) : fmt(value);
+  return `${formatted}${config.unit ?? ''}`;
+}
+
+function renderDetailMetrics(group, device) {
+  const items = group.items
+    .map(metricId => {
+      const value = formatDetailMetricValue(metricId, device[metricId]);
+      if (value == null) return '';
+      const label = DETAIL_METRICS[metricId]?.label ?? metricId;
+      return `<div class="detail-stat"><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`;
+    })
+    .filter(Boolean)
+    .join('');
+
+  if (!items) return '';
+
+  return `<section class="detail-section">
+    <h3>${escapeHtml(group.title)}</h3>
+    <dl class="detail-stats-grid">${items}</dl>
+  </section>`;
+}
+
+function renderDetailLinks(device) {
+  const items = device.links.map(link => {
+    const meta = link.kind ? `<span class="detail-link-kind">${escapeHtml(link.kind)}</span>` : '';
+    return `<a class="detail-link-card" href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer">
+      <span class="detail-link-label">${escapeHtml(link.label)}</span>
+      ${meta}
+    </a>`;
+  }).join('');
+
+  if (!items) {
+    return `<section class="detail-section">
+      <h3>Links</h3>
+      <p class="detail-empty">No outbound links added yet. This popover already supports affiliate links, YouTube reviews, and additional custom links.</p>
+    </section>`;
+  }
+
+  return `<section class="detail-section">
+    <h3>Links</h3>
+    <div class="detail-links-grid">${items}</div>
+  </section>`;
+}
+
+function renderDeviceSummary(device) {
+  const parts = [];
+  if (device.composite) parts.push(`score ${fmtD(device.composite)}`);
+  if (device.watts != null) parts.push(`${fmt(device.watts)}W max draw`);
+  if (device.noise_load != null) parts.push(`${fmt(device.noise_load)}dB load noise`);
+  if (device.links.length) parts.push(`${device.links.length} saved link${device.links.length === 1 ? '' : 's'}`);
+  return parts.join(' · ');
+}
+
+function openDeviceDetail(deviceName) {
+  const device = findDeviceByName(deviceName);
+  if (!device) return;
+
+  activeDeviceName = device.name;
+  deviceDetailTitle.textContent = device.name;
+  deviceDetailSummary.textContent = renderDeviceSummary(device);
+  deviceDetailBody.innerHTML = DETAIL_METRIC_GROUPS.map(group => {
+    if (group.type === 'links') return renderDetailLinks(device);
+    return renderDetailMetrics(group, device);
+  }).filter(Boolean).join('');
+  deviceDetailOverlay.hidden = false;
+  document.body.classList.add('detail-open');
+  deviceDetailCloseBtn.focus();
+}
+
+function closeDeviceDetail() {
+  activeDeviceName = null;
+  deviceDetailOverlay.hidden = true;
+  document.body.classList.remove('detail-open');
+}
 
 function getColumnById(id) {
   return TABLE_COLUMNS.find(column => column.id === id);
@@ -209,6 +386,7 @@ function renderChartMessage(message) {
 function normalizeDevices(data) {
   DEVICES = data.map(device => ({
     ...device,
+    links: normalizeDeviceLinks(device),
     handbrake: device.handbrake ?? device.h264 ?? null,
     h264: device.h264 ?? device.handbrake ?? null,
     av1: device.av1 ?? null,
@@ -352,10 +530,10 @@ function renderTableCell(column, device, metrics) {
   }
 
   if (column.id === 'name') {
-    if (device.affiliateLink) {
-      return `<td class="col-name"><a href="${escapeHtml(device.affiliateLink)}" target="_blank" rel="noopener noreferrer" title="View on retailer">${escapeHtml(device.name)}</a></td>`;
-    }
-    return `<td class="col-name">${escapeHtml(device.name)}</td>`;
+    const linkCount = device.links.length
+      ? `<span class="device-name-meta">${device.links.length} link${device.links.length === 1 ? '' : 's'}</span>`
+      : '<span class="device-name-meta">details</span>';
+    return `<td class="col-name"><button type="button" class="device-name-trigger" data-device-name="${escapeHtml(device.name)}"><span>${escapeHtml(device.name)}</span>${linkCount}</button></td>`;
   }
 
   if (column.id === 'watts') {
@@ -435,6 +613,12 @@ function renderTable() {
         sortDir = column.sortDefaultDir ?? -1;
       }
       renderTable();
+    });
+  });
+
+  benchmarkTable.querySelectorAll('.device-name-trigger').forEach(button => {
+    button.addEventListener('click', () => {
+      openDeviceDetail(button.dataset.deviceName);
     });
   });
 }
@@ -765,7 +949,18 @@ document.addEventListener('click', event => {
 });
 
 document.addEventListener('keydown', event => {
-  if (event.key === 'Escape') setColumnMenuOpen(false);
+  if (event.key === 'Escape') {
+    setColumnMenuOpen(false);
+    if (!deviceDetailOverlay.hidden) closeDeviceDetail();
+  }
+});
+
+deviceDetailCloseBtn.addEventListener('click', () => {
+  closeDeviceDetail();
+});
+
+deviceDetailOverlay.addEventListener('click', event => {
+  if (event.target === deviceDetailOverlay) closeDeviceDetail();
 });
 
 visibleColumns = loadVisibleColumns();
