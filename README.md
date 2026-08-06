@@ -8,6 +8,7 @@ Static benchmark comparison page for mini PCs, designed to be hosted on GitHub P
 - `styles.css` - page styles
 - `app.js` - client-side logic for loading data, rendering charts/table, and saving column visibility
 - `devices.json` - benchmark dataset consumed by the page
+- `device-links.json` - editorial links keyed by device id
 
 ## GitHub Pages
 
@@ -16,7 +17,7 @@ Static benchmark comparison page for mini PCs, designed to be hosted on GitHub P
 3. Set the source to deploy from your default branch.
 4. Open the published URL after Pages finishes building.
 
-The page fetches `devices.json` at runtime, so it should be served over HTTP or HTTPS. Opening the HTML directly with `file://` will usually fail because browsers block local `fetch()` requests.
+The page fetches `devices.json` and `device-links.json` at runtime, so it should be served over HTTP or HTTPS. Opening the HTML directly with `file://` will usually fail because browsers block local `fetch()` requests.
 
 ## Local Preview
 
@@ -57,6 +58,7 @@ http://localhost:80/
 ```json
 [
   {
+    "id": "example-device",
     "name": "Example Device",
     "cb23s": 2000,
     "cb23m": 15000,
@@ -71,10 +73,28 @@ http://localhost:80/
       "load_default": 40,
       "load_performance": 45
     },
-    "power_idle_watts": 8,
-    "affiliateLink": "https://example.com/affiliate-link"
+    "power_idle_watts": 8
   }
 ]
+```
+
+`device-links.json` stores links separately and is keyed by the same stable device id:
+
+```json
+{
+  "example-device": [
+    {
+      "label": "Affiliate link",
+      "url": "https://example.com/buy",
+      "kind": "affiliate"
+    },
+    {
+      "label": "YouTube review",
+      "url": "https://youtube.com/watch?v=example",
+      "kind": "youtube"
+    }
+  ]
+}
 ```
 
 ## Add a New Mini PC Entry
@@ -83,14 +103,16 @@ Use this workflow each time you review a new device.
 
 1. Open `devices.json`.
 2. Add one new object inside the top-level array.
-3. Keep field names exactly as shown below.
-4. Save the file and refresh the page.
-5. Check table view, chart view, and search for the new device name.
+3. Add the same `id` key to `device-links.json` with either `[]` or a list of links.
+4. Keep field names exactly as shown below.
+5. Save the files and refresh the page.
+6. Check table view, chart view, search, and the device details popup.
 
 #### Copy/Paste Template
 
 ```json
 {
+  "id": "brand-model-cpu",
   "name": "Brand Model CPU",
   "cb23s": null,
   "cb23m": null,
@@ -119,13 +141,19 @@ Use this workflow each time you review a new device.
     "load_default": null,
     "load_performance": null
   },
-  "power_idle_watts": null,
-  "affiliateLink": ""
+  "power_idle_watts": null
+}
+```
+
+```json
+{
+  "brand-model-cpu": []
 }
 ```
 
 #### Field Reference
 
+- `id`: Stable slug used to map links and identify the device internally. Keep it unique and do not reuse it for another product.
 - `name`: Device label shown in table/cards/charts.
 - `cb23s`: Cinebench R23 single-core score. Higher is better.
 - `cb23m`: Cinebench R23 multi-core score. Higher is better.
@@ -152,7 +180,14 @@ Use this workflow each time you review a new device.
 - `noise.load_default`: Fan noise under load in default profile. Lower is better.
 - `noise.load_performance`: Fan noise under load in performance profile. Lower is better.
 - `power_idle_watts`: Idle power draw from the wall. Lower is better.
-- `affiliateLink`: Optional URL used for clickable device name. Leave `""` for no link.
+
+### Link File Reference
+
+- `label`: Link text shown in the popup.
+- `url`: Full outbound URL.
+- `kind`: Short type tag. Current UI has built-in icons for `affiliate` and `youtube`.
+- Link order is preserved exactly as written in `device-links.json`.
+- If a mini PC has no links yet, use an empty array: `"device-id": []`.
 
 ## Source Data Workflow
 
@@ -179,7 +214,7 @@ Optional parameters:
 - `DevicesPath`: path to devices.json (default: `./devices.json`)
 - `AutoAddDevices`: if `$true`, automatically create new device entries for unresolved source labels; if `$false` (default), add unresolved names to the report (default: `$false`)
 
-The importer reads the benchmark CSVs, selects the preferred row per file, resolves each source device label, and writes the merged metrics back into `devices.json`. When `AutoAddDevices` is enabled, new devices are added with all metrics set to `null` and populated as metrics are imported.
+The importer reads the benchmark CSVs, selects the preferred row per file, resolves each source device label, and writes the merged metrics back into `devices.json`. When `AutoAddDevices` is enabled, new devices are added with all metrics set to `null` and populated as metrics are imported. The importer also ensures every device has a stable unique `id`.
 
 ### Resolver Order
 
@@ -290,7 +325,8 @@ When `process-source.ps1` reports unresolved names, use this decision flow:
 1. If the unresolved name is a variant of an existing device, add/update an alias in `process-source.ps1` (`$aliases` table).
 2. If it auto-resolves correctly in the `Fuzzy matches` section, an alias is optional. Add one only if you want the mapping to be explicit and stable.
 3. If it is a truly new device, add a new object to `devices.json` using the template above.
-4. Run `./process-source.ps1` again and confirm the unresolved list is reduced or empty.
+4. Add the same `id` to `device-links.json`, usually with `[]` first.
+5. Run `./process-source.ps1` again and confirm the unresolved list is reduced or empty.
 
 ### Alias Mapping Example
 
@@ -312,8 +348,8 @@ Treat the unresolved list as a work queue for the current import run:
 
 - Use numbers (not quoted strings) for all benchmark, power, and noise values.
 - For optional metrics with missing data, use `null` instead of `0`.
-- If there is no affiliate URL, keep `affiliateLink` as an empty string.
 - Keep `devices.json` valid JSON: commas between objects, no trailing commas.
+- Keep `device-links.json` valid JSON and keyed by existing device ids.
 - The app recalculates overall score and efficiency automatically from the numeric fields.
 - Prefer aliases for ambiguous labels or labels you do not want depending on fuzzy-match behavior.
 - Use `./transpose-source.ps1` to inspect the exact raw source labels before adding aliases.

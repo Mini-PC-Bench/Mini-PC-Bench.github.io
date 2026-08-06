@@ -701,6 +701,26 @@ a:focus-visible {
   text-decoration: none;
 }
 
+.detail-link-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.detail-link-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .72);
+  color: #1D4ED8;
+  font-size: 0.78rem;
+  font-weight: 700;
+  flex: 0 0 auto;
+}
+
 .detail-link-label {
   font-weight: 600;
 }

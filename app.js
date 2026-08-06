@@ -1,4 +1,5 @@
 const DATA_URL = './devices.json';
+const LINKS_URL = './device-links.json';
 const COLUMN_STORAGE_KEY = 'minipc-benchmarks.visible-columns';
 const META_SUFFIX = 'Cinebench R23 &nbsp;·&nbsp; Geekbench 6 &nbsp;·&nbsp; 3DMark &nbsp;·&nbsp; HandBrake &nbsp;·&nbsp; Power draw &nbsp;·&nbsp; Efficiency score';
 
@@ -184,7 +185,8 @@ let sortCol = 'composite';
 let sortDir = -1;
 let filterQ = '';
 let activeChart = 'cb23s';
-let activeDeviceName = null;
+let activeDeviceId = null;
+let linksLoaded = false;
 
 // Multi-series chart state
 let multiSeriesSort = 'noise_load';
@@ -208,11 +210,11 @@ const fmt = v => v == null ? '—' : v.toLocaleString();
 const fmtD = (v, d = 1) => v == null ? '—' : v.toFixed(d);
 const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 
-function normalizeDeviceLinks(device) {
+function normalizeDeviceLinks(rawLinks) {
   const links = [];
 
-  if (Array.isArray(device.links)) {
-    device.links.forEach(link => {
+  if (Array.isArray(rawLinks)) {
+    rawLinks.forEach(link => {
       if (!link || typeof link !== 'object') return;
       const url = typeof link.url === 'string' ? link.url.trim() : '';
       if (!url) return;
@@ -222,14 +224,6 @@ function normalizeDeviceLinks(device) {
         kind: typeof link.kind === 'string' ? link.kind.trim().toLowerCase() : ''
       });
     });
-  }
-
-  if (typeof device.affiliateLink === 'string' && device.affiliateLink.trim()) {
-    links.push({ label: 'Affiliate link', url: device.affiliateLink.trim(), kind: 'affiliate' });
-  }
-
-  if (typeof device.youtubeLink === 'string' && device.youtubeLink.trim()) {
-    links.push({ label: 'YouTube review', url: device.youtubeLink.trim(), kind: 'youtube' });
   }
 
   const deduped = [];
@@ -243,8 +237,23 @@ function normalizeDeviceLinks(device) {
   return deduped;
 }
 
-function findDeviceByName(name) {
-  return DEVICES.find(device => device.name === name) ?? null;
+function findDeviceById(id) {
+  return DEVICES.find(device => device.id === id) ?? null;
+}
+
+function slugifyDeviceName(name) {
+  return String(name ?? '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function resolveDeviceId(device) {
+  if (typeof device.id === 'string' && device.id.trim()) {
+    return device.id.trim();
+  }
+
+  return slugifyDeviceName(device.name);
 }
 
 function formatDetailMetricValue(metricId, value) {
@@ -274,10 +283,22 @@ function renderDetailMetrics(group, device) {
 }
 
 function renderDetailLinks(device) {
+  if (!linksLoaded) {
+    return `<section class="detail-section">
+      <h3>Links</h3>
+      <p class="detail-empty">Loading outbound links…</p>
+    </section>`;
+  }
+
   const items = device.links.map(link => {
+    const kindIcon = link.kind === 'affiliate'
+      ? '<span class="detail-link-icon" aria-hidden="true">$</span>'
+      : link.kind === 'youtube'
+        ? '<span class="detail-link-icon" aria-hidden="true">▶</span>'
+        : '<span class="detail-link-icon" aria-hidden="true">↗</span>';
     const meta = link.kind ? `<span class="detail-link-kind">${escapeHtml(link.kind)}</span>` : '';
     return `<a class="detail-link-card" href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer">
-      <span class="detail-link-label">${escapeHtml(link.label)}</span>
+      <span class="detail-link-head">${kindIcon}<span class="detail-link-label">${escapeHtml(link.label)}</span></span>
       ${meta}
     </a>`;
   }).join('');
@@ -285,7 +306,7 @@ function renderDetailLinks(device) {
   if (!items) {
     return `<section class="detail-section">
       <h3>Links</h3>
-      <p class="detail-empty">No outbound links added yet. This popover already supports affiliate links, YouTube reviews, and additional custom links.</p>
+      <p class="detail-empty">No outbound links added for this mini PC yet.</p>
     </section>`;
   }
 
@@ -304,24 +325,28 @@ function renderDeviceSummary(device) {
   return parts.join(' · ');
 }
 
-function openDeviceDetail(deviceName) {
-  const device = findDeviceByName(deviceName);
-  if (!device) return;
-
-  activeDeviceName = device.name;
+function renderDeviceDetail(device) {
   deviceDetailTitle.textContent = device.name;
   deviceDetailSummary.textContent = renderDeviceSummary(device);
   deviceDetailBody.innerHTML = DETAIL_METRIC_GROUPS.map(group => {
     if (group.type === 'links') return renderDetailLinks(device);
     return renderDetailMetrics(group, device);
   }).filter(Boolean).join('');
+}
+
+function openDeviceDetail(deviceId) {
+  const device = findDeviceById(deviceId);
+  if (!device) return;
+
+  activeDeviceId = device.id;
+  renderDeviceDetail(device);
   deviceDetailOverlay.hidden = false;
   document.body.classList.add('detail-open');
   deviceDetailCloseBtn.focus();
 }
 
 function closeDeviceDetail() {
-  activeDeviceName = null;
+  activeDeviceId = null;
   deviceDetailOverlay.hidden = true;
   document.body.classList.remove('detail-open');
 }
@@ -384,28 +409,45 @@ function renderChartMessage(message) {
 }
 
 function normalizeDevices(data) {
-  DEVICES = data.map(device => ({
-    ...device,
-    links: normalizeDeviceLinks(device),
-    handbrake: device.handbrake ?? device.h264 ?? null,
-    h264: device.h264 ?? device.handbrake ?? null,
-    av1: device.av1 ?? null,
-    av1_hw: device.av1_hw ?? device.av1_hardware ?? null,
-    gbai_cpu: device.gbai_cpu ?? device.geekbench_ai_cpu ?? null,
-    gbai_gpu: device.gbai_gpu ?? device.geekbench_ai_gpu ?? null,
-    steelnomad: device.steelnomad ?? device.steel_nomad ?? null,
-    coding: device.coding ?? null,
-    photoshop: device.photoshop ?? null,
-    premiere: device.premiere ?? null,
-    storage: device.storage ?? device.storage_benchmark ?? null,
-    ssd_temp: device.ssd_temp ?? device.ssd_temperature ?? null,
-    wireless_audio: device.wireless_audio ?? device.bluetooth_audio ?? null,
-    cpu_temp: device.cpu_temp ?? device.max_cpu_temp ?? null,
-    volume: device.volume ?? device.chassis_volume_l ?? null,
-    noise_idle: device.noise_idle ?? device.noise?.idle ?? null,
-    noise_load: device.noise_load ?? device.noise?.load_default ?? null,
-    noise_perf: device.noise_perf ?? device.noise?.load_performance ?? null
-  }));
+  const seenIds = new Set();
+
+  DEVICES = data.map(device => {
+    const id = resolveDeviceId(device);
+
+    if (!id) {
+      throw new Error(`Device is missing a usable id: ${device.name ?? 'unknown device'}`);
+    }
+
+    if (seenIds.has(id)) {
+      throw new Error(`Duplicate device id found: ${id}`);
+    }
+
+    seenIds.add(id);
+
+    return {
+      ...device,
+      id,
+      links: [],
+      handbrake: device.handbrake ?? device.h264 ?? null,
+      h264: device.h264 ?? device.handbrake ?? null,
+      av1: device.av1 ?? null,
+      av1_hw: device.av1_hw ?? device.av1_hardware ?? null,
+      gbai_cpu: device.gbai_cpu ?? device.geekbench_ai_cpu ?? null,
+      gbai_gpu: device.gbai_gpu ?? device.geekbench_ai_gpu ?? null,
+      steelnomad: device.steelnomad ?? device.steel_nomad ?? null,
+      coding: device.coding ?? null,
+      photoshop: device.photoshop ?? null,
+      premiere: device.premiere ?? null,
+      storage: device.storage ?? device.storage_benchmark ?? null,
+      ssd_temp: device.ssd_temp ?? device.ssd_temperature ?? null,
+      wireless_audio: device.wireless_audio ?? device.bluetooth_audio ?? null,
+      cpu_temp: device.cpu_temp ?? device.max_cpu_temp ?? null,
+      volume: device.volume ?? device.chassis_volume_l ?? null,
+      noise_idle: device.noise_idle ?? device.noise?.idle ?? null,
+      noise_load: device.noise_load ?? device.noise?.load_default ?? null,
+      noise_perf: device.noise_perf ?? device.noise?.load_performance ?? null
+    };
+  });
 
   MAX_H = {};
   BENCH_HIGHER.forEach(column => {
@@ -424,6 +466,26 @@ function normalizeDevices(data) {
     device.composite = scores.length ? scores.reduce((sum, value) => sum + value, 0) / scores.length : 0;
     device.efficiency = device.watts ? (device.composite / device.watts) * 10 : 0;
   });
+}
+
+function applyDeviceLinks(linksByDeviceId) {
+  const lookup = linksByDeviceId && typeof linksByDeviceId === 'object' ? linksByDeviceId : {};
+
+  DEVICES = DEVICES.map(device => ({
+    ...device,
+    links: normalizeDeviceLinks(lookup[device.id])
+  }));
+
+  linksLoaded = true;
+
+  if (!deviceDetailOverlay.hidden && activeDeviceId) {
+    const activeDevice = findDeviceById(activeDeviceId);
+    if (activeDevice) {
+      renderDeviceDetail(activeDevice);
+    }
+  }
+
+  renderTable();
 }
 
 function renderInfoCards() {
@@ -533,7 +595,7 @@ function renderTableCell(column, device, metrics) {
     const linkCount = device.links.length
       ? `<span class="device-name-meta">${device.links.length} link${device.links.length === 1 ? '' : 's'}</span>`
       : '<span class="device-name-meta">details</span>';
-    return `<td class="col-name"><button type="button" class="device-name-trigger" data-device-name="${escapeHtml(device.name)}"><span>${escapeHtml(device.name)}</span>${linkCount}</button></td>`;
+    return `<td class="col-name"><button type="button" class="device-name-trigger" data-device-id="${escapeHtml(device.id)}"><span>${escapeHtml(device.name)}</span>${linkCount}</button></td>`;
   }
 
   if (column.id === 'watts') {
@@ -618,7 +680,7 @@ function renderTable() {
 
   benchmarkTable.querySelectorAll('.device-name-trigger').forEach(button => {
     button.addEventListener('click', () => {
-      openDeviceDetail(button.dataset.deviceName);
+      openDeviceDetail(button.dataset.deviceId);
     });
   });
 }
@@ -900,9 +962,34 @@ async function loadData() {
     renderInfoCards();
     renderTable();
     renderChart();
+    loadLinks();
   } catch (error) {
     console.error(error);
     setErrorState('Could not load devices.json. Serve this folder over HTTP or open the GitHub Pages site instead of using file://.');
+  }
+}
+
+async function loadLinks() {
+  try {
+    const response = await fetch(LINKS_URL, { cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    applyDeviceLinks(data);
+  } catch (error) {
+    console.error(error);
+    linksLoaded = true;
+
+    if (!deviceDetailOverlay.hidden && activeDeviceId) {
+      const activeDevice = findDeviceById(activeDeviceId);
+      if (activeDevice) {
+        renderDeviceDetail(activeDevice);
+      }
+    }
+
+    renderTable();
   }
 }
 

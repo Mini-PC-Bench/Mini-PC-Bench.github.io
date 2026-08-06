@@ -300,6 +300,7 @@ function New-DeviceTemplate {
   param([string]$DeviceName)
 
   return [pscustomobject]@{
+    id = $null
     name = $DeviceName
     cb23s = $null
     cb23m = $null
@@ -329,7 +330,48 @@ function New-DeviceTemplate {
       load_performance = $null
     }
     power_idle_watts = $null
-    affiliateLink = ""
+  }
+}
+
+function Get-DeviceSlug {
+  param([string]$Name)
+
+  if ([string]::IsNullOrWhiteSpace($Name)) {
+    return ''
+  }
+
+  $slug = $Name.ToLowerInvariant()
+  $slug = [regex]::Replace($slug, '[^a-z0-9]+', '-')
+  $slug = $slug.Trim('-')
+  return $slug
+}
+
+function Ensure-UniqueDeviceIds {
+  param([object[]]$Devices)
+
+  $usedIds = [System.Collections.Generic.HashSet[string]]::new()
+
+  foreach ($device in $Devices) {
+    $baseId = ''
+    if ($device.PSObject.Properties.Name -contains 'id' -and -not [string]::IsNullOrWhiteSpace($device.id)) {
+      $baseId = [string]$device.id
+    } else {
+      $baseId = Get-DeviceSlug -Name $device.name
+    }
+
+    if ([string]::IsNullOrWhiteSpace($baseId)) {
+      throw "Unable to generate id for device '$($device.name)'"
+    }
+
+    $candidateId = $baseId
+    $suffix = 2
+    while ($usedIds.Contains($candidateId)) {
+      $candidateId = "$baseId-$suffix"
+      $suffix++
+    }
+
+    $device | Add-Member -NotePropertyName id -NotePropertyValue $candidateId -Force
+    [void]$usedIds.Add($candidateId)
   }
 }
 
@@ -466,6 +508,8 @@ $devicesByName = @{}
 foreach ($device in $devices) {
   $devicesByName[$device.name] = $device
 }
+
+Ensure-UniqueDeviceIds -Devices $devices
 
 $updatedCount = 0
 $autoAdded = [System.Collections.Generic.HashSet[string]]::new()
