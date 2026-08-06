@@ -1,5 +1,6 @@
 const DATA_URL = './devices.json';
 const LINKS_URL = './device-links.json';
+const DEVICE_QUERY_PARAM = 'device';
 const COLUMN_STORAGE_KEY = 'minipc-benchmarks.visible-columns';
 const META_SUFFIX = 'Cinebench R23 &nbsp;·&nbsp; Geekbench 6 &nbsp;·&nbsp; 3DMark &nbsp;·&nbsp; HandBrake &nbsp;·&nbsp; Power draw &nbsp;·&nbsp; Efficiency score';
 
@@ -241,6 +242,25 @@ function findDeviceById(id) {
   return DEVICES.find(device => device.id === id) ?? null;
 }
 
+function getDeviceIdFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const raw = params.get(DEVICE_QUERY_PARAM);
+  return raw && raw.trim() ? raw.trim() : null;
+}
+
+function setDeviceIdInUrl(deviceId, { replace = false } = {}) {
+  const url = new URL(window.location.href);
+
+  if (deviceId) {
+    url.searchParams.set(DEVICE_QUERY_PARAM, deviceId);
+  } else {
+    url.searchParams.delete(DEVICE_QUERY_PARAM);
+  }
+
+  const method = replace ? 'replaceState' : 'pushState';
+  window.history[method]({}, '', url);
+}
+
 function slugifyDeviceName(name) {
   return String(name ?? '')
     .toLowerCase()
@@ -334,7 +354,7 @@ function renderDeviceDetail(device) {
   }).filter(Boolean).join('');
 }
 
-function openDeviceDetail(deviceId) {
+function openDeviceDetail(deviceId, { syncUrl = true, replaceHistory = false } = {}) {
   const device = findDeviceById(deviceId);
   if (!device) return;
 
@@ -342,13 +362,51 @@ function openDeviceDetail(deviceId) {
   renderDeviceDetail(device);
   deviceDetailOverlay.hidden = false;
   document.body.classList.add('detail-open');
+
+  if (syncUrl) {
+    const currentInUrl = getDeviceIdFromUrl();
+    if (currentInUrl !== device.id) {
+      setDeviceIdInUrl(device.id, { replace: replaceHistory });
+    }
+  }
+
   deviceDetailCloseBtn.focus();
 }
 
-function closeDeviceDetail() {
+function closeDeviceDetail({ syncUrl = true, replaceHistory = false } = {}) {
   activeDeviceId = null;
   deviceDetailOverlay.hidden = true;
   document.body.classList.remove('detail-open');
+
+  if (syncUrl && getDeviceIdFromUrl() != null) {
+    setDeviceIdInUrl(null, { replace: replaceHistory });
+  }
+}
+
+function syncDeviceDetailFromUrl() {
+  const targetId = getDeviceIdFromUrl();
+
+  if (!targetId) {
+    if (!deviceDetailOverlay.hidden) {
+      closeDeviceDetail({ syncUrl: false });
+    }
+    return;
+  }
+
+  const targetDevice = findDeviceById(targetId);
+  if (!targetDevice) {
+    setDeviceIdInUrl(null, { replace: true });
+    if (!deviceDetailOverlay.hidden) {
+      closeDeviceDetail({ syncUrl: false });
+    }
+    return;
+  }
+
+  if (activeDeviceId === targetId && !deviceDetailOverlay.hidden) {
+    return;
+  }
+
+  openDeviceDetail(targetId, { syncUrl: false });
 }
 
 function getColumnById(id) {
@@ -962,6 +1020,7 @@ async function loadData() {
     renderInfoCards();
     renderTable();
     renderChart();
+    syncDeviceDetailFromUrl();
     loadLinks();
   } catch (error) {
     console.error(error);
@@ -1048,6 +1107,11 @@ deviceDetailCloseBtn.addEventListener('click', () => {
 
 deviceDetailOverlay.addEventListener('click', event => {
   if (event.target === deviceDetailOverlay) closeDeviceDetail();
+});
+
+window.addEventListener('popstate', () => {
+  if (!DEVICES.length) return;
+  syncDeviceDetailFromUrl();
 });
 
 visibleColumns = loadVisibleColumns();
