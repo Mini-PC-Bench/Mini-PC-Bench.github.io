@@ -302,34 +302,34 @@ function New-DeviceTemplate {
   return [pscustomobject]@{
     id = $null
     name = $DeviceName
+    noise = [pscustomobject]@{
+      idle = $null
+      load_default = $null
+      load_performance = $null
+    }
     cb23s = $null
     cb23m = $null
     gb6s = $null
     gb6m = $null
     gbai_cpu = $null
     gbai_gpu = $null
-    watts = $null
-    handbrake = $null
-    h264 = $null
-    av1 = $null
-    av1_hw = $null
     firestrike = $null
     timespy = $null
     steelnomad = $null
+    storage = $null
     coding = $null
     photoshop = $null
     premiere = $null
-    storage = $null
-    wireless_audio = $null
+    h264 = $null
+    handbrake = $null
+    av1 = $null
+    av1_hw = $null
+    watts = $null
+    power_idle_watts = $null
     cpu_temp = $null
     ssd_temp = $null
     volume = $null
-    noise = [pscustomobject]@{
-      idle = $null
-      load_default = $null
-      load_performance = $null
-    }
-    power_idle_watts = $null
+    wireless_audio = $null
   }
 }
 
@@ -373,6 +373,69 @@ function Ensure-UniqueDeviceIds {
     $device | Add-Member -NotePropertyName id -NotePropertyValue $candidateId -Force
     [void]$usedIds.Add($candidateId)
   }
+}
+
+function ConvertTo-OrderedDevice {
+  param([object]$Device)
+
+  $noiseOrder = @('idle', 'load_default', 'load_performance')
+
+  function ConvertTo-OrderedNoise {
+    param([object]$Noise)
+
+    if ($null -eq $Noise) {
+      return $null
+    }
+
+    $orderedNoise = [ordered]@{}
+
+    foreach ($key in $noiseOrder) {
+      $prop = $Noise.PSObject.Properties[$key]
+      $orderedNoise[$key] = if ($null -ne $prop) { $prop.Value } else { $null }
+    }
+
+    foreach ($prop in $Noise.PSObject.Properties) {
+      if ($orderedNoise.Contains($prop.Name)) {
+        continue
+      }
+
+      $orderedNoise[$prop.Name] = $prop.Value
+    }
+
+    return [pscustomobject]$orderedNoise
+  }
+
+  $ordered = [ordered]@{}
+  $templatePropertyNames = (New-DeviceTemplate -DeviceName '').PSObject.Properties.Name
+
+  foreach ($propertyName in $templatePropertyNames) {
+    if ($propertyName -eq 'noise') {
+      $noiseProp = $Device.PSObject.Properties['noise']
+      $ordered['noise'] = if ($null -ne $noiseProp) {
+        ConvertTo-OrderedNoise -Noise $noiseProp.Value
+      } else {
+        $null
+      }
+      continue
+    }
+
+    $deviceProperty = $Device.PSObject.Properties[$propertyName]
+    $ordered[$propertyName] = if ($null -ne $deviceProperty) { $deviceProperty.Value } else { $null }
+  }
+
+  foreach ($property in $Device.PSObject.Properties) {
+    if ($ordered.Contains($property.Name)) {
+      continue
+    }
+
+    if ($property.Name -eq 'noise') {
+      $ordered[$property.Name] = ConvertTo-OrderedNoise -Noise $property.Value
+    } else {
+      $ordered[$property.Name] = $property.Value
+    }
+  }
+
+  return [pscustomobject]$ordered
 }
 
 function Get-SourceLabels {
@@ -642,7 +705,7 @@ foreach ($rawName in $noisePerf.Keys) {
   $updatedCount++
 }
 
-$json = $devices | ConvertTo-Json -Depth 10
+$json = @($devices | ForEach-Object { ConvertTo-OrderedDevice -Device $_ }) | ConvertTo-Json -Depth 10
 Set-Content -LiteralPath $DevicesPath -Value $json -Encoding UTF8
 
 Write-Host "Updated metric entries: $updatedCount"
