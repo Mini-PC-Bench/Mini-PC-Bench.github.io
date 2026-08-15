@@ -1,7 +1,48 @@
 {
-  "minisforum-ai-x1-pro-hx-470": [],
-  "geekom-it15-ultra-9-285h": [],
-  "asus-nuc-15-pro-ultra-9-285h": [],
+  "minisforum-ai-x1-pro-hx-470": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/Yz2J0D4XgxE",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/3Q2S2Jg"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/8CUoXr",
+      "kind": "affiliate"
+    }
+  ],
+  "geekom-it15-ultra-9-285h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/YoMCbmH2DVA",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website US",
+      "url": "https://shrsl.com/4xb81"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/EeaA2",
+      "kind": "affiliate"
+    }
+  ],
+  "asus-nuc-15-pro-ultra-9-285h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/Y5fTqvwC1X4",
+      "kind": "youtube"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/pqAl8yB",
+      "kind": "affiliate"
+    }
+  ],
   "beelink-ser10-max-hx-470": [
     {
       "label": "Review Video",
@@ -18,120 +59,1082 @@
       "kind": "affiliate"
     }
   ],
-  "beelink-gti15-ultra-9-285h": [],
-  "beelink-ser9-hx-370": [],
-  "acemagic-f5a-hx-370": [],
-  "asus-nuc-14-pro-ai-ultra-9-288v": [],
-  "peladn-ho5-hx-370": [],
-  "geekom-gt1-mega-ultra-9-185h": [],
-  "msi-cubi-nuc-1m-core-7-150u": [],
-  "geekom-a7-max-7940hs": [],
-  "beelink-gti14-ultra-7-155h": [],
-  "msi-cubi-z-ai-8m-8845hs": [],
-  "bosgame-p3-plus-7840hs": [],
-  "beelink-ser9-h-255": [],
-  "reatan-silver-9-i9-12900hk": [],
-  "minisforum-um750l-7545u": [],
-  "chuwi-aubox-i9-13900hk": [],
-  "msi-cubi-nuc-ai-1umg-ultra-7-155h": [],
-  "trigkey-r8-8745hs": [],
-  "minix-n713-i7-13620h": [],
-  "geekom-a8-8745hs": [],
-  "gmktek-m6-ultra-7640hs": [],
-  "minix-eu512-ai-ultra-5-125h": [],
-  "minix-ngc-n512-i5-12600h": [],
-  "reatan-s8-i9-12900h": [],
-  "minisforum-m1-pro-125h": [],
-  "chuwi-larkbox-s-i3-1220p": [],
-  "kamrui-am08-pro-7735hs": [],
-  "genmachine-li6000-pro-6800h": [],
-  "chuwi-ubox-6600h": [],
-  "geekom-a5-pro-7530u": [],
-  "geekom-a5-7430u": [],
-  "minisforum-um760-gen4": [],
-  "acemagic-w1-gen4": [],
-  "geekom-it13-i7-13700h": [],
-  "geekom-it13-i7-13700h-gen4": [],
-  "asus-nuc-16-pro-x7-358h": [],
-  "minisforum-um890-pro-8945hs": [],
-  "minix-ngc-nr660-6600h": [],
-  "aoostar-godz-gen4": [],
-  "asus-rog-gr70-9955hx3d": [],
-  "asus-rog-gr70-rtx-5070-laptop": [],
-  "asus-rog-nuc-15-ultra-9-275hx": [],
-  "asus-rog-nuc-970-gen4": [],
-  "asus-rog-nuc-970-rtx-4070m": [],
-  "asus-rog-nuc-970-ultra-9-185h": [],
-  "gmktec-evo-x2-gen4": [],
-  "infplane-hilbert-gen4": [],
+  "beelink-gti15-ultra-9-285h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/sjcaeqWxwqE",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/4pF35Vy"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/mT5ckP",
+      "kind": "affiliate"
+    }
+  ],
+  "beelink-ser9-hx-370": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/XQpsWijbj4U",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://beelink.sjv.io/APkL3N"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/SYNXg",
+      "kind": "affiliate"
+    }
+  ],
+  "acemagic-f5a-hx-370": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/hifXjL8pWfc",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website US",
+      "url": "https://tidd.ly/41XZcS6"
+    },
+    {
+      "label": "Official Website EU",
+      "url": "https://acemagic.eu/products/f5a-minipc?aff=30"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/d4e0vNV",
+      "kind": "affiliate"
+    }
+  ],
+  "asus-nuc-14-pro-ai-ultra-9-288v": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/U_yDdNF9OJk",
+      "kind": "youtube"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/pqAl8yB",
+      "kind": "affiliate"
+    }
+  ],
+  "peladn-ho5-hx-370": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/TTZdBDvckS8",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://peladn.us/products/peladn-ho5-amd-ryzen%E2%84%A2-ai-9-hx-370?sca_ref=10485797.dwwUyzbzO9"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://amzn.to/4bueALJ",
+      "kind": "affiliate"
+    }
+  ],
+  "geekom-gt1-mega-ultra-9-185h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/vaP0_VjfVZg",
+      "kind": "youtube"
+    },    
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/UWRdvtM",
+      "kind": "affiliate"
+    }
+  ],
+  "msi-cubi-nuc-1m-core-7-150u": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/0F5S8zi7lEM",
+      "kind": "youtube"
+    },    
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/HLiIWnD",
+      "kind": "affiliate"
+    }
+  ],
+  "geekom-a7-max-7940hs": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/OK7LuQS-8sk",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Official Website US",
+      "url": "https://tidd.ly/4qPsP1P",
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/BKcX",
+      "kind": "affiliate"
+    }
+  ],
+  "beelink-gti14-ultra-7-155h":  [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/OK7LuQS-8sk",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Official Website",
+      "url": "https://beelink.sjv.io/0GzMLY",
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/yIiWZ",
+      "kind": "affiliate"
+    }
+  ],
+  "msi-cubi-z-ai-8m-8845hs": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/N95QOo_OHbg",
+      "kind": "youtube"
+    },    
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/yeNBl2h",
+      "kind": "affiliate"
+    }
+  ],
+  "bosgame-p3-plus-7840hs": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/79OPLwuzY8Q",
+      "kind": "youtube"
+    },    
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/KP5CbIE",
+      "kind": "affiliate"
+    }
+  ],
+  "beelink-ser9-h-255": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/MVOB69RU8KA",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Official Website",
+      "url": "https://beelink.sjv.io/JK0N3N",
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/KP5CbIE",
+      "kind": "affiliate"
+    }
+  ],
+  "reatan-silver-9-i9-12900hk": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/Aj_SBx-0lTY",
+      "kind": "youtube"
+    },    
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/Kyh9GRB",
+      "kind": "affiliate"
+    }
+  ],
+  "minisforum-um750l-7545u": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/6MmoqbgkOAQ",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Official Website",
+      "url": "https://shrsl.com/4xmk2",
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/37Y6k",
+      "kind": "affiliate"
+    }
+  ],
+  "chuwi-aubox-i9-13900hk": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/r8dAodjgEms",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Official Website",
+      "url": "https://bit.ly/3UP7Ka9",
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/usxWLCr",
+      "kind": "affiliate"
+    }
+  ],
+  "msi-cubi-nuc-ai-1umg-ultra-7-155h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/lAbRw4DgOoQ",
+      "kind": "youtube"
+    },    
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/UWRdvtM",
+      "kind": "affiliate"
+    }
+  ],
+  "trigkey-r8-8745hs": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/5EWGWWZepqU",
+      "kind": "youtube"
+    },    
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/alIIiX",
+      "kind": "affiliate"
+    }
+  ],
+  "minix-n713-i7-13620h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/YVGHI9g0CjE",
+      "kind": "youtube"
+    },    
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/Kx0LuN",
+      "kind": "affiliate"
+    }
+  ],
+  "geekom-a8-8745hs": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/oOTx4wkN3BM",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/4ngNzh3",
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://amzn.to/3LpyWdO",
+      "kind": "affiliate"
+    }
+  ],
+  "gmktek-m6-ultra-7640hs": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/NcsC0sclByo",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/4nSw5Zd",
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/KIBkUnW",
+      "kind": "affiliate"
+    }
+  ],
+  "minix-eu512-ai-ultra-5-125h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/YVGHI9g0CjE",
+      "kind": "youtube"
+    },    
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/Kx0LuN",
+      "kind": "affiliate"
+    }
+  ],
+  "minix-ngc-n512-i5-12600h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/Te8dj9JlVzQ",
+      "kind": "youtube"
+    },    
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/DHA98YL",
+      "kind": "affiliate"
+    }
+  ],
+  "reatan-s8-i9-12900h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/FHxq2AUcWfM",
+      "kind": "youtube"
+    },    
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/PIJmjA",
+      "kind": "affiliate"
+    }
+  ],
+  "minisforum-m1-pro-125h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/ZEWRbuQ7h_U",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/3Lkn7Wm",
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/eJb7f9",
+      "kind": "affiliate"
+    }
+  ],
+  "chuwi-larkbox-s-i3-1220p": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/w6Wz8Dka4x4",
+      "kind": "youtube"
+    },    
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/vUTh4",
+      "kind": "affiliate"
+    }
+  ],
+  "kamrui-am08-pro-7735hs": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/MsWor9jWv6E",
+      "kind": "youtube"
+    },    
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/5rxQapA",
+      "kind": "affiliate"
+    }
+  ],
+  "genmachine-li6000-pro-6800h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/2QlXcO4vByg",
+      "kind": "youtube"
+    },    
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/5rxQapA",
+      "kind": "affiliate"
+    }
+  ],
+  "chuwi-ubox-6600h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/Evfsv856AvQ",
+      "kind": "youtube"
+    },    
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/CnyxX",
+      "kind": "affiliate"
+    }
+  ],
+  "geekom-a5-pro-7530u": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/x6xWSLriLUY",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/4rrXLFy",
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/usxWLCr",
+      "kind": "affiliate"
+    }
+  ],
+  "geekom-a5-7430u": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/hTRYKdSfqi4",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/4ig2CIG",
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/AOWBVgB",
+      "kind": "affiliate"
+    }
+  ],
+  "geekom-it13-i7-13700h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/gu4qROW0IzE",
+      "kind": "youtube"
+    },    
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/NEwRgTY",
+      "kind": "affiliate"
+    }
+  ],
+  "asus-nuc-16-pro-x7-358h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/a-KMJDMqWK4",
+      "kind": "youtube"
+    },    
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/9hLs",
+      "kind": "affiliate"
+    }
+  ],
+  "minisforum-um890-pro-8945hs": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/Nmg4qaZMh7A",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/4xIQHI1",
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/mAHX",
+      "kind": "affiliate"
+    }
+  ],
+  "minix-ngc-nr660-6600h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/dzlkQ-Mf9kQ",
+      "kind": "youtube"
+    },    
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/FoLH",
+      "kind": "affiliate"
+    }
+  ],
+  "asus-rog-gr70-9955hx3d": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/MQeAO_O1HI4",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/4bLNwqX",
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/nU2PUg",
+      "kind": "affiliate"
+    }
+  ],
+  "asus-rog-nuc-15-ultra-9-275hx": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/P4ditSHT5l0",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/4bNMieX",
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/ELYA",
+      "kind": "affiliate"
+    }
+  ],
+  "asus-rog-nuc-970-ultra-9-185h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/YW33GvO9KEU",
+      "kind": "youtube"
+    },    
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/UWRdvtM",
+      "kind": "affiliate"
+    }
+  ],
   "intel-nuc-11-e-i7-1165g7": [],
-  "intel-nuc-11-e-rtx-2060m": [],
-  "intel-nuc-12-e-arc-a770m": [],
-  "intel-nuc-12-e-i7-12700h": [],
-  "minisforum-atomman-g1-pro-8945hx": [],
-  "minisforum-atomman-g1-pro-rtx-5060": [],
-  "minisforum-atomman-g7-pt-7945hx": [],
-  "minisforum-atomman-g7-pt-radeon-7600m-xt": [],
-  "minisforum-hx90g-5900hx": [],
-  "minisforum-hx90g-radeon-6600m": [],
-  "minisforum-hx99g-6900hx": [],
-  "minisforum-hx99g-radeon-6600m": [],
-  "minisforum-ms-a2-gen4": [],
-  "minisforum-nucxi7-i7-11800h": [],
-  "minisforum-nucxi7-rtx-3070m": [],
-  "acemagic-s1-n95": [],
-  "acemagic-t8-plus-n100": [],
-  "acemagic-vista-v1-n150": [],
-  "acepc-picobox-pro-sata": [],
-  "aiffro-k100-n100": [],
-  "aoostar-n1-pro-n150": [],
-  "beelink-eq12-n100": [],
-  "beelink-eq12-pro-n305": [],
-  "beelink-eq13-n200": [],
-  "beelink-eq14-n150": [],
-  "beelink-me-mini-nvme": [],
-  "beelink-s12-pro-n100": [],
-  "blackview-mp60-n150": [],
-  "blackview-mp80-n97": [],
-  "dreamquest-pro-n95": [],
-  "geekom-mini-air12-lite-n100": [],
-  "geekom-miniair-12-nvme": [],
-  "geekom-miniair12-n100": [],
-  "gmktec-g10-nvme": [],
-  "gmktec-g10-3500u": [],
-  "gmktec-g2-plus-n150": [],
-  "gmktec-g3-n100": [],
-  "gmktec-g9-1tb-twsc-nvme": [],
-  "gmktec-nucbox-g5-n97": [],
-  "intel-nuc-11e-nvme": [],
-  "kamrui-ak2-plus-n100": [],
-  "mele-overclock-4c-n95": [],
-  "mele-quieter-4c-n100": [],
-  "minix-neo-z150-aero-n150": [],
-  "minix-neo-z97-n97": [],
-  "minix-z100-0db-n100": [],
-  "minix-z150-0db-n150": [],
-  "minix-z300-0db-512gb-foresee-nvme": [],
-  "minix-z300-0db-i3-n300": [],
-  "morefine-m6-n200": [],
-  "morefine-m8s-n150": [],
-  "morefine-m8s-plus-512gb-sk900-nvme": [],
-  "morefine-m9-nvme": [],
-  "neosmay-ac8-n-n200": [],
-  "neosmay-ac8-v2-n100": [],
-  "peladn-512gb-ssd-sata": [],
-  "peladn-wi6-n150": [],
-  "peladn-wo4-nvme": [],
-  "peladn-wo4-5600h": [],
-  "peladn-wo4-r5-5500u": [],
-  "wo-we-p5-nvme": [],
-  "bosgame-vta-439-gen4": [],
-  "bosgame-vta-439-hx-470": [],
-  "minisforum-uh125-pro-ultra-5-125h": [],
-  "acemagic-f5a-hx-470": [],
-  "bosgame-vti-490-gen4": [],
-  "bosgame-vti-490-x7-358h": [],
-  "geekom-it13-max-ultra-9-185h": [],
-  "getorli-gt103-512gb-gen3": [],
-  "getorli-gt103-6600h": []
-}
+  "intel-nuc-12-e-i7-12700h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/VchgDi860Ec",
+      "kind": "youtube"
+    },    
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/XkS3AP3",
+      "kind": "affiliate"
+    }
+  ],
+  "minisforum-atomman-g1-pro-8945hx": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/OJsIPsxtI3g",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/4u6EVWJ",
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/G7AIzXj",
+      "kind": "affiliate"
+    }
+  ],
+  "minisforum-atomman-g7-pt-7945hx": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/vzi8sX4vzY0",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/pKizaJ",
+      "kind": "affiliate"
+    }
+  ],
+  "minisforum-hx90g-5900hx": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/_sLPrVyvKyg",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/6wFzmzQ",
+      "kind": "affiliate"
+    }
+  ],
+  "minisforum-hx99g-6900hx": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/ePq0JhAzBTQ",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/p9MH6Cr",
+      "kind": "affiliate"
+    }
+  ],
+  "minisforum-nucxi7-i7-11800h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/CDJdYARVKyM",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/0ZfLem",
+      "kind": "affiliate"
+    }
+  ],
+  "acemagic-s1-n95": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/BC8cxnS0G-4",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/hSKLD",
+      "kind": "affiliate"
+    }
+  ],
+  "acemagic-t8-plus-n100": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/ZrQB1ElwoXA",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/BySsvKr",
+      "kind": "affiliate"
+    }
+  ],
+  "acemagic-vista-v1-n150": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/heX11qAbAFM",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Official Website US",
+      "url": "https://tidd.ly/4pxn1dH",
+    },   
+    {
+      "label": "Official Website EU",
+      "url": "https://acemagic.eu/products/v1-minipc?aff=30",
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/Rht8dc",
+      "kind": "affiliate"
+    }
+  ],
+  "aiffro-k100-n100": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/zcKxSYH4_D4",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/TYi1B",
+      "kind": "affiliate"
+    }
+  ],
+  "aoostar-n1-pro-n150": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/WXenzO8huQQ",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/QbWW6q",
+      "kind": "affiliate"
+    }
+  ],
+  "beelink-eq12-n100": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/ZRkmYZMRYng",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/pIYGKC",
+      "kind": "affiliate"
+    }
+  ],
+  "beelink-eq12-pro-n305": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/VqiG1nAxzMA",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/fiR7j",
+      "kind": "affiliate"
+    }
+  ],
+  "beelink-eq13-n200": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/RINQ2vNqaKo",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/EDKe",
+      "kind": "affiliate"
+    }
+  ],
+  "beelink-eq14-n150": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/KLB_F424QQ0",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/clvJsG",
+      "kind": "affiliate"
+    }
+  ],
+  "beelink-s12-pro-n100": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/RwRkn3X3lsQ",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/wJob",
+      "kind": "affiliate"
+    }
+  ],
+  "blackview-mp60-n150": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/SDksT774iE4",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/wJob",
+      "kind": "affiliate"
+    }
+  ],
+  "blackview-mp80-n97": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/8EvsGAM1n4s",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/bFVd70f",
+      "kind": "affiliate"
+    }
+  ],
+  "dreamquest-pro-n95": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/mB46JmnZO7s",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/8xELs",
+      "kind": "affiliate"
+    }
+  ],
+  "geekom-mini-air12-lite-n100": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/hjVYivlari8",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/GpKmf",
+      "kind": "affiliate"
+    }
+  ],
+  "geekom-miniair12-n100": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/XA8c3PeV0tw",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/UBgDFPh",
+      "kind": "affiliate"
+    }
+  ],
+  "gmktec-g10-3500u": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/ksITiqy640Q",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Official Website US",
+      "url": "https://tidd.ly/3WjCDUE",
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/iq2C",
+      "kind": "affiliate"
+    }
+  ],
+  "gmktec-g2-plus-n150": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/XCUKJ-AgGmY",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/pSHO5",
+      "kind": "affiliate"
+    }
+  ],
+  "gmktec-g3-n100": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/Mv-UqxTJ4Zc",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/sYOv",
+      "kind": "affiliate"
+    }
+  ],
+  "gmktec-nucbox-g5-n97": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/cZd73SO6Jxg",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/fks4fLc",
+      "kind": "affiliate"
+    }
+  ],
+  "kamrui-ak2-plus-n100": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/FlIenneQyYI",
+      "kind": "youtube" 
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/RBPL",
+      "kind": "affiliate"
+    }
+  ],
+  "mele-overclock-4c-n95": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/pT_7OmJumRI",
+      "kind": "youtube" 
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/BD3rS",
+      "kind": "affiliate"
+    }
+  ],
+  "mele-quieter-4c-n100": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/56VG5RqF5tQ",
+      "kind": "youtube" 
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/uN7vUwp",
+      "kind": "affiliate"
+    }
+  ],
+  "minix-neo-z150-aero-n150": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/MFDXjNiX4Tc",
+      "kind": "youtube" 
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/V6NH1j",
+      "kind": "affiliate"
+    }
+  ],
+  "minix-neo-z97-n97": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/04dvRy1hFlc",
+      "kind": "youtube" 
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/CcZgJ",
+      "kind": "affiliate"
+    }
+  ],
+  "minix-z100-0db-n100": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/_hp-pJ9Olrg",
+      "kind": "youtube" 
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/U2ECq2z",
+      "kind": "affiliate"
+    }
+  ],
+  "minix-z150-0db-n150": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/E80ZVrHNFME",
+      "kind": "youtube" 
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/VQIlTx",
+      "kind": "affiliate"
+    }
+  ],
+  "minix-z300-0db-i3-n300": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/eEjGuWOwghk",
+      "kind": "youtube" 
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/7vod0O",
+      "kind": "affiliate"
+    }
+  ],
+  "morefine-m6-n200": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/KED9K1_0TNI",
+      "kind": "youtube" 
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/lfggJ",
+      "kind": "affiliate"
+    }
+  ],
+  "morefine-m8s-n150": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/ZQ_c9qPwpKo",
+      "kind": "youtube" 
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/uckAKL",
+      "kind": "affiliate"
+    }
+  ],
+  "neosmay-ac8-n-n200": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/d-BMqHGyv2o",
+      "kind": "youtube" 
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/ZBJjeWf",
+      "kind": "affiliate"
+    }
+  ],
+  "neosmay-ac8-v2-n100": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/O5sBluM3HQE",
+      "kind": "youtube" 
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/ct9sn",
+      "kind": "affiliate"
+    }
+  ],
+  "peladn-wi6-n150": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/wYb7QUgE_7A",
+      "kind": "youtube" 
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/KnBRws",
+      "kind": "affiliate"
+    }
+  ],
+  "peladn-wo4-5600h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/2k1HKCXZFDA",
+      "kind": "youtube" 
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/hKCOA7",
+      "kind": "affiliate"
+    }
+  ],
+  "peladn-wo4-r5-5500u": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/4-6rhy8vDLM",
+      "kind": "youtube" 
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/x6NAqu",
+      "kind": "affiliate"
+    }
+  ],
+  "bosgame-vta-439-hx-470": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/YQPX99PhaiM",
+      "kind": "youtube" 
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/xKUAy",
+      "kind": "affiliate"
+    }
+  ],
+  "minisforum-uh125-pro-ultra-5-125h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/Gz_h8_MKw0o",
+      "kind": "youtube" 
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/OBT8e4",
+      "kind": "affiliate"
+    }
+  ],
+  "acemagic-f5a-hx-470": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/qZeSqijjYO8",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Official Website US",
+      "url": "https://tidd.ly/4vGLBLY",
+    },   
+    {
+      "label": "Official Website EU",
+      "url": "https://acemagic.eu/products/acemagic-f5a-amd-ryzen-ai9-hx-470-mini-pc?aff=30",
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/AkauHw",
+      "kind": "affiliate"
+    }
+  ],
+  "bosgame-vti-490-x7-358h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/VjoTVJHZPsw",
+      "kind": "youtube" 
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/zGaTk9",
+      "kind": "affiliate"
+    }
+  ],
+  "geekom-it13-max-ultra-9-185h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/NtdNlw5300c",
+      "kind": "youtube"
+    },   
+    {
+      "label": "Official Website US",
+      "url": "https://tidd.ly/4fbkxhV",
+    },   
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/yJgdm",
+      "kind": "affiliate"
+    }
+  ],
+  "getorli-gt103-6600h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/yrYAO5NXBd8",
+      "kind": "youtube"
+    },    
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/CmdaHA",
+      "kind": "affiliate"
+    }
+  ],
