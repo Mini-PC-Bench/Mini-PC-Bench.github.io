@@ -1,6 +1,7 @@
 param(
   [string]$SourceDir = "./source",
   [string]$DevicesPath = "./devices.json",
+  [string]$MappingPath = "./source-device-map.json",
   [bool]$AutoAddDevices = $false
 )
 
@@ -102,198 +103,63 @@ function Get-RowValues {
   return $result
 }
 
-$noiseWords = @(
-  'dc', 'gen3', 'gen4', 'gen5', 'default', 'performance',
-  'load', 'controller', 'drive', 'metres', 'feet',
-  'kingston', 'crucial', 'micron', 'samsung', 'wd', 'lexar',
-  'airdisk', 'biwin', 'phison', 'wodposit', 'xincuu', 'twsc',
-  'gb', 'tb'
-)
-
-function Get-NormalizedTokens {
-  param([string]$Name)
-
-  if ([string]::IsNullOrWhiteSpace($Name)) {
-    return @()
-  }
-
-  $normalized = $Name.ToLowerInvariant()
-  $normalized = [regex]::Replace($normalized, '\([^)]*\)', ' ')
-  $normalized = [regex]::Replace($normalized, '(?<!\d)(\d+(?:\.\d+)?)\s*(tb|gb)\b', ' ')
-  $normalized = [regex]::Replace($normalized, '\bgen\s*[0-9]+\b', ' ')
-  $normalized = [regex]::Replace($normalized, '[^a-z0-9]+', ' ')
-
-  $tokens = @()
-  foreach ($token in ($normalized -split '\s+')) {
-    if ([string]::IsNullOrWhiteSpace($token)) {
-      continue
-    }
-
-    if ($noiseWords -contains $token) {
-      continue
-    }
-
-    $tokens += $token
-  }
-
-  return $tokens | Select-Object -Unique
-}
-
-function Get-CanonicalName {
-  param([string]$Name)
-
-  $tokens = Get-NormalizedTokens -Name $Name
-  if ($tokens.Count -eq 0) {
-    return ''
-  }
-
-  return ($tokens -join ' ').Trim()
-}
-
-function Get-IdentityTokens {
-  param([string[]]$Tokens)
-
-  if (-not $Tokens) {
-    return @()
-  }
-
-  # Identity tokens carry digits and usually encode model/CPU identity.
-  return @($Tokens | Where-Object {
-    $_ -match '\d' -and $_.Length -ge 3
-  })
-}
-
-function Get-CanonicalPreferenceScore {
-  param([string]$Name)
-
-  if ([string]::IsNullOrWhiteSpace($Name)) {
-    return -999
-  }
-
-  $score = 100
-  $lower = $Name.ToLowerInvariant()
-
-  # Prefer base model names over variants with parenthetical suffixes.
-  if ($Name -match '\(') {
-    $score -= 25
-  }
-
-  # Penalize storage/generation suffixes that should not win canonical matching.
-  if ($lower -match '\bgen\s*[0-9]+\b') {
-    $score -= 20
-  }
-  if ($lower -match '\b\d+(?:\.\d+)?\s*(tb|gb)\b') {
-    $score -= 20
-  }
-
-  # Slightly prefer shorter, cleaner canonical names.
-  $score -= [math]::Min([math]::Floor($Name.Length / 40), 10)
-
-  return $score
-}
-
 function Resolve-DeviceName {
   param(
     [string]$RawName,
     [object[]]$KnownDevices,
     [hashtable]$CanonicalLookup,
-    [hashtable]$TokenLookup,
     [hashtable]$Aliases
   )
 
   if ($Aliases.ContainsKey($RawName)) {
-    return @{ name = $Aliases[$RawName]; method = 'alias' }
+    $targetId = [string]$Aliases[$RawName]
+    $target = $KnownDevices | Where-Object { [string]$_.id -eq $targetId } | Select-Object -First 1
+    if ($null -eq $target) {
+      throw "Mapping for '$RawName' points to unknown device id '$targetId'"
+    }
+    return @{ name = $target.name; method = 'mapping' }
   }
 
-  $canonical = Get-CanonicalName -Name $RawName
-  if ([string]::IsNullOrWhiteSpace($canonical)) {
+  $exactName = $RawName.Trim()
+  if ([string]::IsNullOrWhiteSpace($exactName)) {
     return $null
   }
 
-  if ($CanonicalLookup.ContainsKey($canonical)) {
-    return @{ name = $CanonicalLookup[$canonical]; method = 'canonical' }
-  }
-
-  $rawTokens = Get-NormalizedTokens -Name $RawName
-  if ($rawTokens.Count -eq 0) {
-    return $null
-  }
-
-  $rawIdentityTokens = @(Get-IdentityTokens -Tokens $rawTokens)
-  $rawIdentitySet = [System.Collections.Generic.HashSet[string]]::new([string[]]$rawIdentityTokens)
-
-  $rawSet = [System.Collections.Generic.HashSet[string]]::new([string[]]$rawTokens)
-
-  $bestName = $null
-  $bestScore = -1.0
-
-  foreach ($device in $KnownDevices) {
-    $deviceTokens = $TokenLookup[$device.name]
-    if ($deviceTokens.Count -eq 0) {
-      continue
-    }
-
-    $deviceIdentityTokens = @(Get-IdentityTokens -Tokens $deviceTokens)
-    if ($rawIdentityTokens.Count -gt 0 -and $deviceIdentityTokens.Count -gt 0) {
-      $deviceIdentitySet = [System.Collections.Generic.HashSet[string]]::new([string[]]$deviceIdentityTokens)
-
-      # Device identity tokens must overlap with source (existing check)
-      $hasIdentityOverlap = $false
-      foreach ($token in $deviceIdentityTokens) {
-        if ($rawIdentitySet.Contains($token)) {
-          $hasIdentityOverlap = $true
-          break
-        }
-      }
-
-      if (-not $hasIdentityOverlap) {
-        continue
-      }
-
-      # All source identity tokens must also appear in device. This prevents
-      # CPU-model-only matches across different product lines, e.g.
-      # 'ASUS ROG NUC 970 Ultra 9 185H' must not match 'GEEKOM GT1 Mega Ultra 9 185H'
-      # because source identity token '970' is absent from the device.
-      foreach ($token in $rawIdentityTokens) {
-        if (-not $deviceIdentitySet.Contains($token)) {
-          $hasIdentityOverlap = $false
-          break
-        }
-      }
-
-      if (-not $hasIdentityOverlap) {
-        continue
-      }
-    }
-
-    $intersection = 0
-    foreach ($token in $deviceTokens) {
-      if ($rawSet.Contains($token)) {
-        $intersection++
-      }
-    }
-
-    if ($intersection -lt 2) {
-      continue
-    }
-
-    $denominator = [math]::Max($deviceTokens.Count, $rawTokens.Count)
-    if ($denominator -le 0) {
-      continue
-    }
-
-    $score = $intersection / $denominator
-    if ($score -gt $bestScore) {
-      $bestScore = $score
-      $bestName = $device.name
-    }
-  }
-
-  if ($bestScore -ge 0.34) {
-    return @{ name = $bestName; method = 'fuzzy'; score = $bestScore }
+  if ($CanonicalLookup.ContainsKey($exactName)) {
+    return @{ name = $CanonicalLookup[$exactName]; method = 'exact' }
   }
 
   return $null
+}
+
+function Get-DeviceSlug {
+  param([string]$Name)
+
+  $slug = $Name.ToLowerInvariant()
+  $slug = [regex]::Replace($slug, '[^a-z0-9]+', '-')
+  return $slug.Trim('-')
+}
+
+function New-UniqueDeviceId {
+  param(
+    [string]$Name,
+    [System.Collections.Generic.HashSet[string]]$UsedIds
+  )
+
+  $baseId = Get-DeviceSlug -Name $Name
+  if ([string]::IsNullOrWhiteSpace($baseId)) {
+    throw "Unable to generate id for device '$Name'"
+  }
+
+  $candidate = $baseId
+  $suffix = 2
+  while ($UsedIds.Contains($candidate)) {
+    $candidate = "$baseId-$suffix"
+    $suffix++
+  }
+
+  [void]$UsedIds.Add($candidate)
+  return $candidate
 }
 
 function New-DeviceTemplate {
@@ -333,19 +199,6 @@ function New-DeviceTemplate {
   }
 }
 
-function Get-DeviceSlug {
-  param([string]$Name)
-
-  if ([string]::IsNullOrWhiteSpace($Name)) {
-    return ''
-  }
-
-  $slug = $Name.ToLowerInvariant()
-  $slug = [regex]::Replace($slug, '[^a-z0-9]+', '-')
-  $slug = $slug.Trim('-')
-  return $slug
-}
-
 function Ensure-UniqueDeviceIds {
   param([object[]]$Devices)
 
@@ -356,7 +209,7 @@ function Ensure-UniqueDeviceIds {
     if ($device.PSObject.Properties.Name -contains 'id' -and -not [string]::IsNullOrWhiteSpace($device.id)) {
       $baseId = [string]$device.id
     } else {
-      $baseId = Get-DeviceSlug -Name $device.name
+      $baseId = New-UniqueDeviceId -Name $device.name -UsedIds $usedIds
     }
 
     if ([string]::IsNullOrWhiteSpace($baseId)) {
@@ -364,10 +217,8 @@ function Ensure-UniqueDeviceIds {
     }
 
     $candidateId = $baseId
-    $suffix = 2
-    while ($usedIds.Contains($candidateId)) {
-      $candidateId = "$baseId-$suffix"
-      $suffix++
+    if ($usedIds.Contains($candidateId)) {
+      $candidateId = New-UniqueDeviceId -UsedIds $usedIds
     }
 
     $device | Add-Member -NotePropertyName id -NotePropertyValue $candidateId -Force
@@ -505,41 +356,19 @@ if (-not (Test-Path -LiteralPath $SourceDir)) {
 
 $devices = Get-Content -LiteralPath $DevicesPath -Raw | ConvertFrom-Json
 
-$canonicalLookup = @{}
-$tokenLookup = @{}
-foreach ($device in $devices) {
-  $canonical = Get-CanonicalName -Name $device.name
-  if (-not [string]::IsNullOrWhiteSpace($canonical)) {
-    if (-not $canonicalLookup.ContainsKey($canonical)) {
-      $canonicalLookup[$canonical] = $device.name
-    } else {
-      $existing = $canonicalLookup[$canonical]
-      $existingScore = Get-CanonicalPreferenceScore -Name $existing
-      $candidateScore = Get-CanonicalPreferenceScore -Name $device.name
-      if ($candidateScore -gt $existingScore) {
-        $canonicalLookup[$canonical] = $device.name
-      }
-    }
-  }
-  $tokenLookup[$device.name] = @(Get-NormalizedTokens -Name $device.name)
+if (-not (Test-Path -LiteralPath $MappingPath)) {
+  throw "Source mapping file not found: $MappingPath"
 }
 
-$aliases = @{
-  'Beelink SER10 MAX 1TB Crucial (Gen4)' = 'Beelink SER10 MAX HX 470'
-  'Beelink SER10 MAX 1TB Crucial' = 'Beelink SER10 MAX HX 470'
-  'Beelink SER9 H255 (Gen4)' = 'Beelink SER9 H 255'
-  'Beelink SER9 H255' = 'Beelink SER9 H 255'
-  'Beelink SER9 H 255 1TB Crucial (Gen4)' = 'Beelink SER9 H 255'
-  'ASUS NUC 15 Pro+ 1TB Micron (Gen4)' = 'ASUS NUC 15 Pro+ Ultra 9 285H'
-  'ASUS NUC 14 Pro AI 1TB WD (Gen4)' = 'ASUS NUC 14 Pro AI Ultra 9 288V'
-  'GEEKOM GT1 Mega 2TB Crucial (Gen4)' = 'GEEKOM GT1 Mega Ultra 9 185H'
-  'GEEKOM IT15 2TB Crucial (Gen4)' = 'GEEKOM IT15 Ultra 9 285H'
-  'MSI CUBI Z AI 8M 1TB Phison (Gen4)' = 'MSI CUBI Z AI 8M 8845HS'
-  'MSI CUBI NUC AI 1UMG 1TB WD (Gen4)' = 'MSI CUBI NUC AI 1UMG Ultra 7 155H'
-  'Minix NGC N512 512GB Kingston (Gen4)' = 'Minix NGC N512 i5-12600H'
-  'Minisforum AI X1 Pro 1TB Kingston (Gen4)' = 'Minisforum AI X1 Pro HX 470'
-  'Minisforum M1 Pro 1TB Kingston (Gen4)' = 'Minisforum M1 Pro-125H'
-  'Minisforum UM750L 1TB Kingston (Gen4)' = 'Minisforum UM750L 7545U'
+$mappingObject = Get-Content -LiteralPath $MappingPath -Raw | ConvertFrom-Json
+$aliases = @{}
+foreach ($mappingProperty in $mappingObject.PSObject.Properties) {
+  $aliases[$mappingProperty.Name] = [string]$mappingProperty.Value
+}
+
+$canonicalLookup = @{}
+foreach ($device in $devices) {
+  $canonicalLookup[$device.name] = $device.name
 }
 
 $specs = @(
@@ -548,11 +377,11 @@ $specs = @(
   @{ File = 'Geekbench 6 Single Core.csv'; Key = 'gb6s'; Rows = @('Default') },
   @{ File = 'Geekbench 6 Multicore.csv'; Key = 'gb6m'; Rows = @('Default') },
   @{ File = 'Geekbench AI CPU.csv'; Key = 'gbai_cpu'; Rows = @('Quantised', 'Single', 'Default') },
-  @{ File = 'Geekbench AI GPU.csv'; Key = 'gbai_gpu'; Rows = @('Half', 'Single', 'Default') },
-  @{ File = '3DMark Fire Strike.csv'; Key = 'firestrike'; Rows = @('Default') },
-  @{ File = '3DMark Time Spy.csv'; Key = 'timespy'; Rows = @('Default') },
-  @{ File = '3DMark Steel Nomad.csv'; Key = 'steelnomad'; Rows = @('Default') },
-  @{ File = '3DMark Storage Benchmark.csv'; Key = 'storage'; Rows = @('Default') },
+  @{ File = 'Geekbench AI GPU.csv'; Key = 'gbai_gpu'; Kind = 'gpu'; Rows = @('Half', 'Single', 'Default') },
+  @{ File = '3DMark Fire Strike.csv'; Key = 'firestrike'; Kind = 'gpu'; Rows = @('Default') },
+  @{ File = '3DMark Time Spy.csv'; Key = 'timespy'; Kind = 'gpu'; Rows = @('Default') },
+  @{ File = '3DMark Steel Nomad.csv'; Key = 'steelnomad'; Kind = 'gpu'; Rows = @('Default') },
+  @{ File = '3DMark Storage Benchmark.csv'; Key = 'storage'; Kind = 'storage'; Rows = @('Default') },
   @{ File = 'Coding.csv'; Key = 'coding'; Rows = @('Default') },
   @{ File = 'Photoshop.csv'; Key = 'photoshop'; Rows = @('Default') },
   @{ File = 'Premiere.csv'; Key = 'premiere'; Rows = @('Default') },
@@ -562,7 +391,7 @@ $specs = @(
   @{ File = 'Maximum Power Draw.csv'; Key = 'watts'; Rows = @('Default') },
   @{ File = 'Idle Power Draw.csv'; Key = 'power_idle_watts'; Rows = @('Default') },
   @{ File = 'Maximum CPU Temperature.csv'; Key = 'cpu_temp'; Rows = @('Default') },
-  @{ File = 'SSD Temperatures.csv'; Key = 'ssd_temp'; Rows = @('Drive', 'Default', 'Controller') },
+  @{ File = 'SSD Temperatures.csv'; Key = 'ssd_temp'; Kind = 'storage'; Rows = @('Drive', 'Default', 'Controller') },
   @{ File = 'Volume.csv'; Key = 'volume'; Rows = @('Default') },
   @{ File = 'Wireless Bluetooth Audio.csv'; Key = 'wireless_audio'; Rows = @('Metres', 'Default') }
 )
@@ -574,56 +403,80 @@ foreach ($device in $devices) {
 
 Ensure-UniqueDeviceIds -Devices $devices
 
+$usedIds = [System.Collections.Generic.HashSet[string]]::new()
+foreach ($device in $devices) {
+  [void]$usedIds.Add([string]$device.id)
+}
+
 $updatedCount = 0
 $autoAdded = [System.Collections.Generic.HashSet[string]]::new()
+$mappingMatches = @()
+$unresolved = [System.Collections.Generic.HashSet[string]]::new()
+$orphans = [System.Collections.Generic.HashSet[string]]::new()
 
-# Pre-pass: collect all unique source labels across all spec files and Fan Noise,
-# then auto-add every unresolved label upfront (with canonical lookup updated).
-# This makes the script idempotent: the device list is fully stable before any
-# metric values are written, so run 1 and run 2 produce identical results.
+foreach ($mappingProperty in $mappingObject.PSObject.Properties) {
+  $targetId = [string]$mappingProperty.Value
+  if (-not ($usedIds.Contains($targetId))) {
+    throw "Source mapping for '$($mappingProperty.Name)' points to unknown device id '$targetId'"
+  }
+}
+
+# Pre-pass: collect source labels before importing metrics so unresolved labels
+# can be reported and ordinary new devices can receive IDs consistently.
 if ($AutoAddDevices) {
-  $allSourceLabels = [System.Collections.Generic.HashSet[string]]::new()
+  $sourceKindsByLabel = @{}
 
   foreach ($spec in $specs) {
     $path = Join-Path $SourceDir $spec.File
+    $kind = if ($spec.ContainsKey('Kind')) { $spec.Kind } else { '' }
     foreach ($label in (Get-SourceLabels -FilePath $path)) {
-      [void]$allSourceLabels.Add($label)
+      if (-not $sourceKindsByLabel.ContainsKey($label) -or -not [string]::IsNullOrWhiteSpace($kind)) {
+        $sourceKindsByLabel[$label] = $kind
+      }
     }
   }
 
   $fanNoisePathPre = Join-Path $SourceDir 'Fan Noise.csv'
   foreach ($label in (Get-SourceLabels -FilePath $fanNoisePathPre)) {
-    [void]$allSourceLabels.Add($label)
+    if (-not $sourceKindsByLabel.ContainsKey($label)) {
+      $sourceKindsByLabel[$label] = ''
+    }
   }
 
-  foreach ($rawName in ($allSourceLabels | Sort-Object)) {
-    $result = Resolve-DeviceName -RawName $rawName -KnownDevices $devices -CanonicalLookup $canonicalLookup -TokenLookup $tokenLookup -Aliases $aliases
+  foreach ($rawName in ($sourceKindsByLabel.Keys | Sort-Object)) {
+    $kind = $sourceKindsByLabel[$rawName]
+    $result = Resolve-DeviceName -RawName $rawName -KnownDevices $devices -CanonicalLookup $canonicalLookup -Aliases $aliases
     if (-not $result) {
+      [void]$unresolved.Add($rawName)
+      if ($kind -eq 'gpu' -or $kind -eq 'storage') {
+        [void]$orphans.Add($rawName)
+        continue
+      }
+
       $newDevice = New-DeviceTemplate -DeviceName $rawName
+      $newDevice.id = New-UniqueDeviceId -Name $rawName -UsedIds $usedIds
       $devices += $newDevice
       $devicesByName[$rawName] = $newDevice
-      $tokenLookup[$rawName] = @(Get-NormalizedTokens -Name $rawName)
-      $newCanonical = Get-CanonicalName -Name $rawName
-      if (-not [string]::IsNullOrWhiteSpace($newCanonical) -and -not $canonicalLookup.ContainsKey($newCanonical)) {
-        $canonicalLookup[$newCanonical] = $rawName
-      }
+      $canonicalLookup[$rawName] = $rawName
       [void]$autoAdded.Add($rawName)
+      [void]$unresolved.Remove($rawName)
     }
   }
 }
 
-$unresolved = [System.Collections.Generic.HashSet[string]]::new()
-$fuzzyMatches = @()
-$aliasMatches = @()
 
 foreach ($spec in $specs) {
   $path = Join-Path $SourceDir $spec.File
   $metricValues = Get-RowValues -FilePath $path -PreferredRows $spec.Rows
 
   foreach ($rawName in $metricValues.Keys) {
-    $result = Resolve-DeviceName -RawName $rawName -KnownDevices $devices -CanonicalLookup $canonicalLookup -TokenLookup $tokenLookup -Aliases $aliases
+    $kind = if ($spec.ContainsKey('Kind')) { $spec.Kind } else { '' }
+    $result = Resolve-DeviceName -RawName $rawName -KnownDevices $devices -CanonicalLookup $canonicalLookup -Aliases $aliases
     if (-not $result) {
       [void]$unresolved.Add($rawName)
+      if ($kind -eq 'gpu' -or $kind -eq 'storage') {
+        [void]$orphans.Add($rawName)
+      }
       continue
     }
 
@@ -631,14 +484,15 @@ foreach ($spec in $specs) {
     $device = $devicesByName[$resolvedName]
     if (-not $device) {
       [void]$unresolved.Add($rawName)
+      if ($kind -eq 'gpu' -or $kind -eq 'storage') {
+        [void]$orphans.Add($rawName)
+      }
       continue
     }
 
-    # Track match methods
-    if ($result.method -eq 'fuzzy') {
-      $fuzzyMatches += @{ raw = $rawName; resolved = $resolvedName; score = $result.score }
-    } elseif ($result.method -eq 'alias') {
-      $aliasMatches += @{ raw = $rawName; resolved = $resolvedName }
+    # Track explicit mapping decisions for the import audit.
+    if ($result.method -eq 'mapping') {
+      $mappingMatches += @{ raw = $rawName; resolved = $resolvedName }
     }
 
     Set-DeviceMetric -Device $device -Key $spec.Key -Value $metricValues[$rawName]
@@ -652,17 +506,15 @@ $noiseLoad = Get-RowValues -FilePath $fanNoisePath -PreferredRows @('Load Defaul
 $noisePerf = Get-RowValues -FilePath $fanNoisePath -PreferredRows @('Load Performance', 'Performance')
 
 foreach ($rawName in $noiseIdle.Keys) {
-  $result = Resolve-DeviceName -RawName $rawName -KnownDevices $devices -CanonicalLookup $canonicalLookup -TokenLookup $tokenLookup -Aliases $aliases
+  $result = Resolve-DeviceName -RawName $rawName -KnownDevices $devices -CanonicalLookup $canonicalLookup -Aliases $aliases
   if (-not $result) {
     [void]$unresolved.Add($rawName)
     continue
   }
 
   $resolvedName = $result.name
-  if ($result.method -eq 'fuzzy') {
-    $fuzzyMatches += @{ raw = $rawName; resolved = $resolvedName; score = $result.score }
-  } elseif ($result.method -eq 'alias') {
-    $aliasMatches += @{ raw = $rawName; resolved = $resolvedName }
+  if ($result.method -eq 'mapping') {
+    $mappingMatches += @{ raw = $rawName; resolved = $resolvedName }
   }
 
   Set-DeviceMetric -Device $devicesByName[$resolvedName] -Key 'noise_idle' -Value $noiseIdle[$rawName]
@@ -670,17 +522,15 @@ foreach ($rawName in $noiseIdle.Keys) {
 }
 
 foreach ($rawName in $noiseLoad.Keys) {
-  $result = Resolve-DeviceName -RawName $rawName -KnownDevices $devices -CanonicalLookup $canonicalLookup -TokenLookup $tokenLookup -Aliases $aliases
+  $result = Resolve-DeviceName -RawName $rawName -KnownDevices $devices -CanonicalLookup $canonicalLookup -Aliases $aliases
   if (-not $result) {
     [void]$unresolved.Add($rawName)
     continue
   }
 
   $resolvedName = $result.name
-  if ($result.method -eq 'fuzzy') {
-    $fuzzyMatches += @{ raw = $rawName; resolved = $resolvedName; score = $result.score }
-  } elseif ($result.method -eq 'alias') {
-    $aliasMatches += @{ raw = $rawName; resolved = $resolvedName }
+  if ($result.method -eq 'mapping') {
+    $mappingMatches += @{ raw = $rawName; resolved = $resolvedName }
   }
 
   Set-DeviceMetric -Device $devicesByName[$resolvedName] -Key 'noise_load' -Value $noiseLoad[$rawName]
@@ -688,17 +538,15 @@ foreach ($rawName in $noiseLoad.Keys) {
 }
 
 foreach ($rawName in $noisePerf.Keys) {
-  $result = Resolve-DeviceName -RawName $rawName -KnownDevices $devices -CanonicalLookup $canonicalLookup -TokenLookup $tokenLookup -Aliases $aliases
+  $result = Resolve-DeviceName -RawName $rawName -KnownDevices $devices -CanonicalLookup $canonicalLookup -Aliases $aliases
   if (-not $result) {
     [void]$unresolved.Add($rawName)
     continue
   }
 
   $resolvedName = $result.name
-  if ($result.method -eq 'fuzzy') {
-    $fuzzyMatches += @{ raw = $rawName; resolved = $resolvedName; score = $result.score }
-  } elseif ($result.method -eq 'alias') {
-    $aliasMatches += @{ raw = $rawName; resolved = $resolvedName }
+  if ($result.method -eq 'mapping') {
+    $mappingMatches += @{ raw = $rawName; resolved = $resolvedName }
   }
 
   Set-DeviceMetric -Device $devicesByName[$resolvedName] -Key 'noise_perf' -Value $noisePerf[$rawName]
@@ -710,30 +558,28 @@ Set-Content -LiteralPath $DevicesPath -Value $json -Encoding UTF8
 
 Write-Host "Updated metric entries: $updatedCount"
 
+if ($mappingMatches.Count -gt 0) {
+  Write-Host ""
+  Write-Host "Explicit source mappings used:"
+  $mappingMatches | Sort-Object -Property raw -Unique | ForEach-Object {
+    Write-Host "  '$($_.raw)' -> '$($_.resolved)'"
+  }
+}
+
 if ($autoAdded.Count -gt 0) {
   Write-Host ""
   Write-Host "Auto-added new devices:"
   $autoAdded | Sort-Object | ForEach-Object { Write-Host "  + $_" }
 }
 
-if ($fuzzyMatches.Count -gt 0) {
-  Write-Host ""
-  Write-Host "Fuzzy matches (auto-resolved using token scoring, score >= 0.34):"
-  $fuzzyMatches | Sort-Object -Property raw -Unique | ForEach-Object {
-    Write-Host "  '$($_.raw)' -> '$($_.resolved)' (score: $([math]::Round($_.score, 3)))"
-  }
-}
-
-if ($aliasMatches.Count -gt 0) {
-  Write-Host ""
-  Write-Host "Alias matches (explicit mappings):"
-  $aliasMatches | Sort-Object -Property raw -Unique | ForEach-Object {
-    Write-Host "  '$($_.raw)' -> '$($_.resolved)'"
-  }
-}
-
 if ($unresolved.Count -gt 0) {
   Write-Host ""
   Write-Host "Unresolved source names:"
   $unresolved | Sort-Object | ForEach-Object { Write-Host " - $_" }
+}
+
+if ($orphans.Count -gt 0) {
+  Write-Host ""
+  Write-Host "Potential component orphans (explicit mapping required):"
+  $orphans | Sort-Object | ForEach-Object { Write-Host " - $_" }
 }

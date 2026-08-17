@@ -9,6 +9,8 @@ Static benchmark comparison page for mini PCs, designed to be hosted on GitHub P
 - `app.js` - client-side logic for loading data, rendering charts/table, and saving column visibility
 - `devices.json` - benchmark dataset consumed by the page
 - `device-links.json` - editorial links keyed by device id
+- `source-device-map.json` - reviewed raw source-label ownership mappings used by the importer
+- `sync-device-links.ps1` - adds missing empty link entries from `devices.json`
 
 ## GitHub Pages
 
@@ -212,71 +214,47 @@ Optional parameters:
 
 - `SourceDir`: path to the source CSV folder (default: `./source`)
 - `DevicesPath`: path to devices.json (default: `./devices.json`)
-- `AutoAddDevices`: if `$true`, automatically create new device entries for unresolved source labels; if `$false` (default), add unresolved names to the report (default: `$false`)
+- `AutoAddDevices`: if `$true`, automatically create new device entries for unresolved non-component labels; if `$false` (default), add unresolved names to the report
 
 The importer reads the benchmark CSVs, selects the preferred row per file, resolves each source device label, and writes the merged metrics back into `devices.json`. When `AutoAddDevices` is enabled, new devices are added with all metrics set to `null` and populated as metrics are imported. The importer also ensures every device has a stable unique `id`.
+
+GPU and storage benchmark headers may describe a component rather than the whole host, for example `Minisforum AtomMan G1 Pro RTX 5060` or `Minisforum AtomMan G1 Pro 1TB Kingston (Gen4)`. For GPU metrics, the importer removes the GPU suffix before matching; for storage metrics, it removes capacity, drive vendor, and generation suffixes. These resolutions are reported during import and their values are written to the host device. This context-specific normalization is not applied to CPU or application benchmarks.
+
+At the start of an import, the script also checks existing records whose names are clearly GPU or storage variants. A component record is removed only when it matches a host and has no conflicting non-null metrics. If both records contain different benchmark values, the records are retained and the script prints `Skipped conflicting component device ...`; this usually indicates a real hardware configuration variant, such as the same chassis with a different discrete GPU.
+
+Keep `AutoAddDevices` disabled until component resolutions and unresolved names have been reviewed. A source label should become a new device only when it represents a separately tracked physical configuration, not merely a GPU, SSD, drive-generation, or storage-capacity label.
 
 ### Resolver Order
 
 `process-source.ps1` resolves source labels in this order:
 
-1. `alias`: exact match in the `$aliases` table.
-2. `canonical`: normalized source name matches a normalized canonical device name already in `devices.json`.
-3. `fuzzy`: token overlap score is high enough to auto-resolve the device.
-4. `unresolved`: no safe match was found.
+1. `mapping`: exact source label exists in `source-device-map.json` and points to a valid device id.
+2. `exact`: source label exactly matches a device name in `devices.json`.
+3. `unresolved`: no explicit or exact match exists.
 
-### Name Normalization Rules
+The importer does not use fuzzy matching or component-name stripping to decide device identity. Unresolved labels from GPU and storage benchmark scopes are listed as potential component orphans until they receive an explicit mapping.
 
-The resolver normalizes names before canonical and fuzzy matching:
+### Source Mapping File
 
-- lowercases the label
-- removes parenthetical suffixes such as `(Gen4)`
-- removes storage sizes such as `512GB` and `1TB`
-- removes generation tags such as `Gen3`, `Gen4`, and `Gen5`
-- splits on non-alphanumeric characters
-- removes noise words such as SSD vendor names and storage units
-- keeps unique tokens only
+`source-device-map.json` maps each reviewed raw CSV label to the stable `id` of its owner device. Mapping targets are validated before import. Keep the raw CSV labels unchanged and add a mapping entry when a label is a component or naming variant of an existing device.
 
-### Fuzzy Matching Rules
-
-Fuzzy matching is intentionally conservative:
-
-- at least 2 normalized tokens must overlap
-- score is `intersection / max(rawTokenCount, deviceTokenCount)`
-- score must be at least `0.34`
-- if both names contain identity tokens, they must overlap
-
-Identity tokens are normalized tokens that contain digits and are at least 3 characters long. This helps prevent false positives such as matching unrelated devices that happen to share a brand or generic model family.
-
-### Canonical Name Preference
-
-If multiple entries normalize to the same canonical key, the importer prefers the cleaner base name. It penalizes names with:
-
-- parenthetical suffixes
-- generation suffixes
-- storage suffixes
-- extra length
-
-This prevents variants such as storage-specific labels from overriding the intended canonical device name.
+When `AutoAddDevices` creates a new device, it assigns a stable slug derived from the device name. If that slug already exists, it adds a numeric suffix such as `-2`. Existing ids are preserved, so links remain stable.
 
 ### Importer Output
 
 `process-source.ps1` logs the result of the import run:
 
 - `Updated metric entries`: number of metrics written into `devices.json`
-- `Fuzzy matches`: auto-resolved source labels with their token score
-- `Alias matches`: source labels resolved through the explicit alias table
-- `Unresolved source names`: labels that still need either a new alias or a new device entry
+- `Explicit source mappings used`: reviewed source labels resolved through `source-device-map.json`
+- `Unresolved source names`: labels that still need either a mapping or a new device entry
+- `Potential component orphans`: unresolved labels from GPU or storage benchmark scopes that need explicit ownership
 
 Example output:
 
 ```text
 Updated metric entries: 746
 
-Fuzzy matches (auto-resolved using token scoring, score >= 0.34):
-  'Minisforum M1 Pro (Gen4)' -> 'Minisforum M1 Pro-125H' (score: 0.75)
-
-Alias matches (explicit mappings):
+Explicit source mappings used:
   'Minisforum M1 Pro 1TB Kingston (Gen4)' -> 'Minisforum M1 Pro-125H'
 ```
 
@@ -322,17 +300,16 @@ Guidelines:
 
 When `process-source.ps1` reports unresolved names, use this decision flow:
 
-1. If the unresolved name is a variant of an existing device, add/update an alias in `process-source.ps1` (`$aliases` table).
-2. If it auto-resolves correctly in the `Fuzzy matches` section, an alias is optional. Add one only if you want the mapping to be explicit and stable.
-3. If it is a truly new device, add a new object to `devices.json` using the template above.
-4. Add the same `id` to `device-links.json`, usually with `[]` first.
-5. Run `./process-source.ps1` again and confirm the unresolved list is reduced or empty.
+1. If the unresolved name belongs to an existing device, add an entry to `source-device-map.json` using that device's `id`.
+2. If it is a truly new device, add a new object to `devices.json` using the template above.
+3. Add the same `id` to `device-links.json`, usually with `[]` first.
+4. Run the importer again and confirm the unresolved and orphan lists are reduced or empty.
 
-### Alias Mapping Example
+### Mapping Example
 
-```powershell
-$aliases = @{
-  'Source Label With Storage/Gen Suffix' = 'Canonical Device Name'
+```json
+{
+  "Source Label With Storage/Gen Suffix": "existing-device-id"
 }
 ```
 
@@ -341,7 +318,7 @@ $aliases = @{
 Treat the unresolved list as a work queue for the current import run:
 
 - add new devices for models you want to track in `devices.json`
-- add aliases for labels that represent existing devices with extra storage or generation suffixes
+- add explicit mappings for labels that represent existing devices with extra storage or generation suffixes
 - use `./transpose-source.ps1` to inspect the exact raw labels before deciding which path to take
 
 ### Notes
@@ -351,7 +328,7 @@ Treat the unresolved list as a work queue for the current import run:
 - Keep `devices.json` valid JSON: commas between objects, no trailing commas.
 - Keep `device-links.json` valid JSON and keyed by existing device ids.
 - The app recalculates overall score and efficiency automatically from the numeric fields.
-- Prefer aliases for ambiguous labels or labels you do not want depending on fuzzy-match behavior.
+- Prefer explicit mappings for ambiguous labels or labels that must not depend on name similarity.
 - Use `./transpose-source.ps1` to inspect the exact raw source labels before adding aliases.
 
 ## Default Visible Columns
