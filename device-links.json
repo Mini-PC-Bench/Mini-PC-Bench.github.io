@@ -1156,9 +1156,57 @@
       "kind": "affiliate"
     }
   ],
-  "aoostar-godz-7435hs": [],
-  "infplane-hilbert-ai-max-395": [],
-  "asus-nuc-14-pro-ultra-9-185h": [],
-  "gmktec-evo-x2-ai-max-395": [],
-  "minisforum-ms-a2-9955hx": []
+  "aoostar-godz-7435hs": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/67mA-mR0fVo",
+      "kind": "youtube"
+    }
+  ],
+  "infplane-hilbert-ai-max-395": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/76CAYIC2E9A",
+      "kind": "youtube"
+    }
+  ],
+  "asus-nuc-14-pro-ultra-9-185h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/KVtOJe2u3Io",
+      "kind": "youtube"
+    }
+  ],
+  "gmktec-evo-x2-ai-max-395": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/ymYqWbs9osY",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/4xNr5tu"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/qjQmQ7",
+      "kind": "affiliate"
+    }
+  ],
+  "minisforum-ms-a2-9955hx": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/EPtxrcYBl4M",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/48TL27l"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/HbJaigF",
+      "kind": "affiliate"
+    }
+  ]
 }
