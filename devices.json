@@ -2704,7 +2704,7 @@
     "firestrike": 9729,
     "timespy": 3829,
     "steelnomad": 3693,
-    "storage": null,
+    "storage": 1535,
     "coding": 91.482,
     "photoshop": 9008,
     "premiere": 4061,
@@ -2715,7 +2715,7 @@
     "watts": 112,
     "power_idle_watts": 8,
     "cpu_temp": 88,
-    "ssd_temp": null,
+    "ssd_temp": 46,
     "volume": 1.17,
     "wireless_audio": 7
   },
