@@ -2,6 +2,7 @@ const DATA_URL = './devices.json';
 const LINKS_URL = './device-links.json';
 const DEVICE_QUERY_PARAM = 'device';
 const COLUMN_STORAGE_KEY = 'minipc-benchmarks.visible-columns';
+const THEME_STORAGE_KEY = 'minipc-benchmarks.theme';
 const META_SUFFIX = 'Cinebench R23 &nbsp;·&nbsp; Geekbench 6 &nbsp;·&nbsp; 3DMark &nbsp;·&nbsp; HandBrake &nbsp;·&nbsp; Power draw &nbsp;·&nbsp; Efficiency score';
 
 // Edit this list to define which optional columns are enabled for first-time visitors.
@@ -206,10 +207,36 @@ const deviceDetailCloseBtn = document.getElementById('device-detail-close');
 const deviceDetailTitle = document.getElementById('device-detail-title');
 const deviceDetailSummary = document.getElementById('device-detail-summary');
 const deviceDetailBody = document.getElementById('device-detail-body');
+const themeToggleBtn = document.getElementById('theme-toggle');
 
 const fmt = v => v == null ? '—' : v.toLocaleString();
 const fmtD = (v, d = 1) => v == null ? '—' : v.toFixed(d);
 const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+
+function getSavedTheme() {
+  try {
+    return localStorage.getItem(THEME_STORAGE_KEY) === 'dark' ? 'dark' : 'light';
+  } catch {
+    return 'light';
+  }
+}
+
+function applyTheme(theme) {
+  const isDark = theme === 'dark';
+  document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
+  themeToggleBtn.setAttribute('aria-pressed', String(isDark));
+  const label = `Switch to ${isDark ? 'light' : 'dark'} mode`;
+  themeToggleBtn.title = label;
+  themeToggleBtn.setAttribute('aria-label', label);
+}
+
+function saveTheme(theme) {
+  try {
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+  } catch {
+    // Ignore storage failures.
+  }
+}
 
 function normalizeDeviceLinks(rawLinks) {
   const links = [];
@@ -1109,11 +1136,18 @@ deviceDetailOverlay.addEventListener('click', event => {
   if (event.target === deviceDetailOverlay) closeDeviceDetail();
 });
 
+themeToggleBtn.addEventListener('click', () => {
+  const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  applyTheme(nextTheme);
+  saveTheme(nextTheme);
+});
+
 window.addEventListener('popstate', () => {
   if (!DEVICES.length) return;
   syncDeviceDetailFromUrl();
 });
 
+applyTheme(getSavedTheme());
 visibleColumns = loadVisibleColumns();
 renderColumnPicker();
 loadData();
