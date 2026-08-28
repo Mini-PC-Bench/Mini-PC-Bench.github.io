@@ -64,6 +64,10 @@ body.detail-open {
   overflow: hidden;
 }
 
+.error-page {
+  min-height: 100vh;
+}
+
 .container {
   max-width: 1400px;
   margin: 0 auto;
@@ -99,6 +103,11 @@ header {
 .site-title em {
   font-style: italic;
   color: var(--accent);
+}
+
+.error-site-title {
+  color: var(--text);
+  text-decoration: none;
 }
 
 .site-meta {
@@ -205,6 +214,67 @@ a.tab-btn:last-child {
 .page-link-current,
 .page-link-current:visited {
   color: var(--accent);
+}
+
+.error-main {
+  display: grid;
+  min-height: calc(100vh - 132px);
+  place-items: center;
+  padding-top: 3rem;
+  padding-bottom: 5rem;
+}
+
+.error-content {
+  max-width: 38rem;
+  border-left: 3px solid var(--accent);
+  padding: 1rem 0 1rem 1.5rem;
+}
+
+.error-code {
+  color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.error-content h1 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(2rem, 5vw, 3.75rem);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin: 0.45rem 0 1rem;
+}
+
+.error-content > p:not(.error-code) {
+  color: var(--muted);
+  font-size: 1rem;
+  max-width: 31rem;
+}
+
+.error-home-link,
+.error-home-link:visited,
+.error-home-link:hover,
+.error-home-link:visited:hover {
+  display: inline-flex;
+  align-items: center;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  color: #FFFFFF;
+  font-weight: 500;
+  margin-top: 1.75rem;
+  padding: 0.6rem 1rem;
+  text-decoration: none;
+}
+
+.error-home-link:hover {
+  filter: brightness(.92);
+}
+
+.error-home-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
 
 .tab-btn:hover {
