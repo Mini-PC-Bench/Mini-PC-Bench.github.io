@@ -1155,9 +1155,9 @@
     "id": "minisforum-um890-pro-8945hs",
     "name": "Minisforum UM890 Pro 8945HS",
     "noise": {
-      "idle": null,
-      "load_default": null,
-      "load_performance": null
+      "idle": 31,
+      "load_default": 34,
+      "load_performance": 40
     },
     "cb23s": 1816,
     "cb23m": 17013,
