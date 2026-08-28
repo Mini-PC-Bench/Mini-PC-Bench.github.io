@@ -187,7 +187,6 @@ function New-DeviceTemplate {
     photoshop = $null
     premiere = $null
     h264 = $null
-    handbrake = $null
     av1 = $null
     av1_hw = $null
     watts = $null
@@ -336,7 +335,6 @@ function Set-DeviceMetric {
     }
     'h264' {
       $Device | Add-Member -NotePropertyName h264 -NotePropertyValue $Value -Force
-      $Device | Add-Member -NotePropertyName handbrake -NotePropertyValue $Value -Force
       return
     }
     default {

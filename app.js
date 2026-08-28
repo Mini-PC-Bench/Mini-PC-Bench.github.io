@@ -2,7 +2,7 @@ const DATA_URL = './devices.json';
 const LINKS_URL = './device-links.json';
 const DEVICE_QUERY_PARAM = 'device';
 const COLUMN_STORAGE_KEY = 'minipc-benchmarks.visible-columns';
-const META_SUFFIX = 'Cinebench R23 &nbsp;·&nbsp; Geekbench 6 &nbsp;·&nbsp; 3DMark &nbsp;·&nbsp; HandBrake &nbsp;·&nbsp; Power draw &nbsp;·&nbsp; Efficiency score';
+const META_SUFFIX = 'Cinebench R23 &nbsp;·&nbsp; Geekbench 6 &nbsp;·&nbsp; 3DMark &nbsp;·&nbsp; H264 &nbsp;·&nbsp; Power draw &nbsp;·&nbsp; Efficiency score';
 
 // Edit this list to define which optional columns are enabled for first-time visitors.
 const DEFAULT_VISIBLE_COLUMNS = [
@@ -12,7 +12,7 @@ const DEFAULT_VISIBLE_COLUMNS = [
   'gb6m',
   'firestrike',
   'timespy',
-  'handbrake',
+  'h264',
   'watts',
   'power_idle_watts',
   'noise_idle',
@@ -39,7 +39,6 @@ const BENCH_HIGHER = [
   'wireless_audio'
 ];
 const BENCH_LOWER = [
-  'handbrake',
   'h264',
   'av1',
   'av1_hw',
@@ -68,7 +67,7 @@ const TABLE_COLUMNS = [
   { id: 'premiere', label: 'Premiere', pickerLabel: 'Premiere', title: 'Premiere benchmark score (higher is better)', sortDefaultDir: -1 },
   { id: 'storage', label: 'Storage', pickerLabel: 'Storage Benchmark', title: '3DMark Storage Benchmark score (higher is better)', sortDefaultDir: -1 },
   { id: 'wireless_audio', label: 'BT Audio', pickerLabel: 'Wireless BT Audio', title: 'Wireless Bluetooth audio benchmark score (higher is better)', sortDefaultDir: -1 },
-  { id: 'handbrake', label: 'HB (s) ↓', pickerLabel: 'HandBrake', title: 'HandBrake video encode time in seconds (lower is better)', lowerBetter: true, sortDefaultDir: 1 },
+  { id: 'h264', label: 'H264 (s) ↓', pickerLabel: 'H264', title: 'H264 video encode time in seconds (lower is better)', lowerBetter: true, sortDefaultDir: 1 },
   { id: 'av1', label: 'AV1 (s) ↓', pickerLabel: 'AV1 Encode', title: 'AV1 encode time in seconds (lower is better)', lowerBetter: true, sortDefaultDir: 1 },
   { id: 'av1_hw', label: 'AV1 HW (s) ↓', pickerLabel: 'AV1 HW Encode', title: 'AV1 hardware encode time in seconds (lower is better)', lowerBetter: true, sortDefaultDir: 1 },
   { id: 'watts', label: 'Watts ↓', pickerLabel: 'Max Power Draw', title: 'Maximum power draw from wall under load (lower is better)', lowerBetter: true, cellClass: 'watts-cell', sortDefaultDir: 1 },
@@ -98,7 +97,7 @@ const CHART_META = {
   premiere: { title: 'Premiere', desc: 'Higher is better', unit: '', lowerBetter: false },
   storage: { title: '3DMark Storage Benchmark', desc: 'Higher is better', unit: '', lowerBetter: false },
   wireless_audio: { title: 'Wireless Bluetooth Audio', desc: 'Higher is better', unit: '', lowerBetter: false },
-  handbrake: { title: 'HandBrake Video Encode', desc: 'Lower is better · seconds to encode sample video', unit: 's', lowerBetter: true },
+  h264: { title: 'H264 Video Encode', desc: 'Lower is better · seconds to encode sample video', unit: 's', lowerBetter: true },
   av1: { title: 'AV1 Encoding', desc: 'Lower is better · seconds to encode sample video', unit: 's', lowerBetter: true },
   av1_hw: { title: 'AV1 Encoding (Hardware)', desc: 'Lower is better · seconds to encode sample video', unit: 's', lowerBetter: true },
   watts: { title: 'Maximum Power Draw from the Wall', desc: 'Lower is better · watts under full CPU load', unit: 'W', lowerBetter: true },
@@ -144,7 +143,7 @@ const DETAIL_METRIC_GROUPS = [
   },
   {
     title: 'Media, Thermals & Acoustics',
-    items: ['handbrake', 'av1', 'av1_hw', 'noise_idle', 'noise_load', 'noise_perf', 'cpu_temp', 'ssd_temp', 'storage', 'wireless_audio']
+    items: ['h264', 'av1', 'av1_hw', 'noise_idle', 'noise_load', 'noise_perf', 'cpu_temp', 'ssd_temp', 'storage', 'wireless_audio']
   }
 ];
 
@@ -166,7 +165,7 @@ const DETAIL_METRICS = {
   coding: { label: 'Coding', decimals: 3 },
   photoshop: { label: 'Photoshop' },
   premiere: { label: 'Premiere' },
-  handbrake: { label: 'H264 encode', unit: 's' },
+  h264: { label: 'H264 encode', unit: 's' },
   av1: { label: 'AV1 encode', unit: 's' },
   av1_hw: { label: 'AV1 hardware encode', unit: 's' },
   noise_idle: { label: 'Idle noise', unit: 'dB' },
@@ -532,7 +531,6 @@ function normalizeDevices(data) {
       ...device,
       id,
       links: [],
-      handbrake: device.handbrake ?? device.h264 ?? null,
       h264: device.h264 ?? device.handbrake ?? null,
       av1: device.av1 ?? null,
       av1_hw: device.av1_hw ?? device.av1_hardware ?? null,
@@ -673,7 +671,7 @@ function renderBenchCell(column, value) {
   const pct = isLower
     ? (MIN_L[column.id] / value) * 100
     : MAX_H[column.id] ? (value / MAX_H[column.id]) * 100 : 0;
-  const suffix = column.id === 'handbrake'
+  const suffix = column.id === 'h264'
     ? 's'
     : column.id === 'av1' || column.id === 'av1_hw'
       ? 's'

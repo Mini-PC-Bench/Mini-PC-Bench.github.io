@@ -114,7 +114,7 @@ Every bug fix should include a regression test. See
     "gb6s": 2800,
     "gb6m": 14000,
     "watts": 80,
-    "handbrake": 90,
+    "h264": 90,
     "firestrike": 9000,
     "timespy": 3500,
     "noise": {
@@ -170,7 +170,6 @@ Use this workflow each time you review a new device.
   "gbai_cpu": null,
   "gbai_gpu": null,
   "watts": null,
-  "handbrake": null,
   "h264": null,
   "av1": null,
   "av1_hw": null,
@@ -211,7 +210,7 @@ Use this workflow each time you review a new device.
 - `gbai_cpu`: Geekbench AI CPU score. Higher is better.
 - `gbai_gpu`: Geekbench AI GPU score. Higher is better.
 - `watts`: Maximum power draw from the wall under load. Lower is better.
-- `handbrake`: H264 encode time in seconds. Lower is better.
+- `h264`: H264 encode time in seconds. Lower is better.
 - `av1`: AV1 software encode time in seconds. Lower is better.
 - `av1_hw`: AV1 hardware encode time in seconds. Lower is better.
 - `firestrike`: 3DMark Fire Strike score. Higher is better.

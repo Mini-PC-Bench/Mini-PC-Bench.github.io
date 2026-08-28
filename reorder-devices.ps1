@@ -28,7 +28,6 @@ $deviceOrder = @(
   'photoshop',
   'premiere',
   'h264',
-  'handbrake',
   'av1',
   'av1_hw',
   'watts',
