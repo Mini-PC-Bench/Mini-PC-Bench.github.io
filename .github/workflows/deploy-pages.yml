@@ -27,6 +27,12 @@ jobs:
         shell: pwsh
         run: ./build-changelog.ps1
 
+      - name: Verify devices.json is valid JSON
+        run: python3 -m json.tool devices.json > /dev/null
+
+      - name: Verify device-links.json is valid JSON
+        run: python3 -m json.tool device-links.json > /dev/null
+
       - name: Stage public site
         shell: bash
         run: |
