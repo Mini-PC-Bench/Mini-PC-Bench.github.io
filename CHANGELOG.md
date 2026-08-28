@@ -2,9 +2,16 @@
 
 All notable changes to this project are documented here.
 
+## 2026-08-28
+
+- Added new mini PC benchmark results, including missing Cinebench R23 and Geekbench 6 entries.
+
 ## 2026-08-27
 
 - Added this page to keep you up to date with site improvements.
+- Added automated end-to-end tests for the main views and theme behavior.
+- Added a sticky table header to keep column titles visible while scrolling.
+- Added Open Graph and SEO metadata to improve sharing and search visibility.
 
 ## 2026-08-26
 
