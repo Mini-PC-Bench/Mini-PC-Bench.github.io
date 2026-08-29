@@ -1209,9 +1209,64 @@
       "kind": "affiliate"
     }
   ],
-  "beelink-mini-s12-n95": [],
-  "dreamquest-pro-n150": [],
-  "gmktec-nucbox-g9-n150": [],
-  "morefine-m8s-plus-n150": [],
-  "wo-we-p5-3500u": []
+  "beelink-mini-s12-n95": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/g7HWTwAyGNY",
+      "kind": "youtube"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/MKt5Fr",
+      "kind": "affiliate"
+    }
+  ],
+  "dreamquest-pro-n150": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/BmSMFqP-EDs",
+      "kind": "youtube"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/KL9eG",
+      "kind": "affiliate"
+    }
+  ],
+  "gmktec-nucbox-g9-n150": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/6VOkM7pD1xw",
+      "kind": "youtube"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/3EIMrY",
+      "kind": "affiliate"
+    }
+  ],
+  "morefine-m8s-plus-n150": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/ZQ_c9qPwpKo",
+      "kind": "youtube"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/uckAKL",
+      "kind": "affiliate"
+    }
+  ],
+  "wo-we-p5-3500u": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/Jmk4C6asSDo",
+      "kind": "youtube"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/09U6pB",
+      "kind": "affiliate"
+    }
+  ]
 }
