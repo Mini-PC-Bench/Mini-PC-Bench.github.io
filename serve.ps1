@@ -19,7 +19,12 @@ $mimeTypes = @{
 
 try {
     while ($listener.IsListening) {
-        $ctx = $listener.GetContext()
+        $contextTask = $listener.GetContextAsync()
+        while (-not $contextTask.IsCompleted) {
+            # Start-Sleep is interruptible, unlike HttpListener.GetContext().
+            Start-Sleep -Milliseconds 100
+        }
+        $ctx = $contextTask.GetAwaiter().GetResult()
         $req = $ctx.Request
         $res = $ctx.Response
 

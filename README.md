@@ -51,6 +51,8 @@ No Python or Node required. Run the included PowerShell script (as Administrator
 .\serve.ps1
 ```
 
+Press `Ctrl+C` to stop the server.
+
 Then open:
 
 ```text
