@@ -2418,37 +2418,6 @@
     "wireless_audio": null
   },
   {
-    "id": "morefine-m8s-n150",
-    "name": "Morefine M8S - N150",
-    "noise": {
-      "idle": 29,
-      "load_default": 30,
-      "load_performance": null
-    },
-    "cb23s": null,
-    "cb23m": null,
-    "gb6s": null,
-    "gb6m": 3275,
-    "gbai_cpu": null,
-    "gbai_gpu": null,
-    "firestrike": 1546,
-    "timespy": 431,
-    "steelnomad": 326,
-    "storage": null,
-    "coding": null,
-    "photoshop": null,
-    "premiere": null,
-    "h264": 535,
-    "av1": null,
-    "av1_hw": null,
-    "watts": 34,
-    "power_idle_watts": 10,
-    "cpu_temp": 87,
-    "ssd_temp": null,
-    "volume": 0.28,
-    "wireless_audio": null
-  },
-  {
     "id": "neosmay-ac8-n-n200",
     "name": "Neosmay AC8-N - N200",
     "noise": {
@@ -2986,7 +2955,7 @@
     "cb23s": 979,
     "cb23m": 2680,
     "gb6s": 1280,
-    "gb6m": null,
+    "gb6m": 3275,
     "gbai_cpu": null,
     "gbai_gpu": null,
     "firestrike": 1546,
