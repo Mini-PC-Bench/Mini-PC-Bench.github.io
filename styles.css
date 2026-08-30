@@ -853,8 +853,12 @@ a:focus-visible {
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
-  background: rgba(15, 23, 42, .48);
+  background: color-mix(in srgb, var(--text) 18%, transparent);
   backdrop-filter: blur(6px);
+}
+
+:root[data-theme="dark"] .device-detail-overlay {
+  background: color-mix(in srgb, var(--bg) 64%, transparent);
 }
 
 .device-detail-overlay[hidden] {
@@ -865,11 +869,32 @@ a:focus-visible {
   width: min(920px, 100%);
   max-height: min(86vh, 900px);
   overflow: auto;
-  background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
-  border: 1px solid rgba(226, 232, 240, .9);
+  scrollbar-color: var(--accent) var(--bg);
+  scrollbar-width: thin;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 16px;
-  box-shadow: 0 32px 80px rgba(15, 23, 42, .28);
+  box-shadow: 0 32px 80px color-mix(in srgb, var(--bg) 32%, transparent);
   padding: 1.5rem;
+}
+
+.device-detail-dialog::-webkit-scrollbar {
+  width: 0.7rem;
+}
+
+.device-detail-dialog::-webkit-scrollbar-track {
+  background: var(--bg);
+  border-radius: 999px;
+}
+
+.device-detail-dialog::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border: 2px solid var(--bg);
+  border-radius: 999px;
+}
+
+.device-detail-dialog::-webkit-scrollbar-thumb:hover {
+  background: var(--green);
 }
 
 .device-detail-close {
@@ -885,8 +910,8 @@ a:focus-visible {
 }
 
 .device-detail-close:hover {
-  color: var(--text);
-  border-color: #CBD5E1;
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 .device-detail-head {
@@ -902,11 +927,11 @@ a:focus-visible {
 }
 
 .device-detail-title {
-  font-family: 'Fraunces', serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: clamp(1.5rem, 3vw, 2.3rem);
-  font-weight: 300;
+  font-weight: 800;
   line-height: 1.05;
-  letter-spacing: -.02em;
+  letter-spacing: .01em;
   margin-top: 0.25rem;
 }
 
@@ -928,7 +953,7 @@ a:focus-visible {
 }
 
 .detail-section {
-  background: rgba(255, 255, 255, .85);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 1rem;
@@ -951,7 +976,7 @@ a:focus-visible {
 .detail-stat {
   padding: 0.7rem 0.8rem;
   border-radius: 10px;
-  background: #F8FAFC;
+  background: var(--bg);
 }
 
 .detail-stat dt {
@@ -978,15 +1003,15 @@ a:focus-visible {
   gap: 0.4rem;
   min-height: 84px;
   padding: 0.9rem;
-  border: 1px solid #BFDBFE;
+  border: 1px solid var(--accent);
   border-radius: 12px;
-  background: linear-gradient(180deg, #EFF6FF 0%, #DBEAFE 100%);
-  color: #1E3A8A;
+  background: var(--accent-dim);
+  color: var(--text);
   text-decoration: none;
 }
 
 .detail-link-card:hover {
-  color: #1D4ED8;
+  color: var(--accent);
   text-decoration: none;
 }
 
@@ -1003,8 +1028,8 @@ a:focus-visible {
   width: 1.35rem;
   height: 1.35rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, .72);
-  color: #1D4ED8;
+  background: var(--surface);
+  color: var(--accent);
   font-size: 0.78rem;
   font-weight: 700;
   flex: 0 0 auto;
@@ -1015,7 +1040,7 @@ a:focus-visible {
   height: 1.35rem;
   border-radius: 999px;
   object-fit: contain;
-  background: rgba(255, 255, 255, .72);
+  background: var(--surface);
   flex: 0 0 auto;
 }
 
@@ -1028,7 +1053,7 @@ a:focus-visible {
   width: fit-content;
   padding: 0.15rem 0.45rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, .7);
+  background: var(--surface);
   color: var(--muted);
   font-size: 0.68rem;
   text-transform: capitalize;
@@ -1464,40 +1489,6 @@ a:focus-visible {
 :root[data-theme="dark"] a:visited,
 :root[data-theme="dark"] a:visited:hover {
   color: #C4B5FD;
-}
-
-:root[data-theme="dark"] .device-detail-overlay {
-  background: rgba(2, 6, 23, .7);
-}
-
-:root[data-theme="dark"] .device-detail-dialog {
-  background: linear-gradient(180deg, #1F2937 0%, #172033 100%);
-  border-color: #475569;
-  box-shadow: 0 32px 80px rgba(0, 0, 0, .45);
-}
-
-:root[data-theme="dark"] .detail-section {
-  background: rgba(31, 41, 55, .9);
-}
-
-:root[data-theme="dark"] .detail-link-card {
-  border-color: #1E40AF;
-  background: linear-gradient(180deg, #172554 0%, #1E3A8A 100%);
-  color: #DBEAFE;
-}
-
-:root[data-theme="dark"] .detail-link-card:hover,
-:root[data-theme="dark"] .detail-link-icon {
-  color: #93C5FD;
-}
-
-:root[data-theme="dark"] .detail-link-icon,
-:root[data-theme="dark"] .detail-link-kind {
-  background: rgba(15, 23, 42, .7);
-}
-
-:root[data-theme="dark"] .detail-link-logo {
-  background: rgba(15, 23, 42, .7);
 }
 
 @media (max-width: 600px) {
