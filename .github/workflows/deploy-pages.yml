@@ -38,6 +38,8 @@ jobs:
         run: |
           mkdir _site
           while IFS= read -r path; do
+            path="${path%$'\r'}"
+            test -e "$path"
             /usr/bin/cp -R --parents "$path" _site
           done < publish-files.txt
 

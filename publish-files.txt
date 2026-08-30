@@ -8,3 +8,4 @@ devices.json
 device-links.json
 favicon.ico
 favicon.svg
+assets/mini-bench-logo.webp

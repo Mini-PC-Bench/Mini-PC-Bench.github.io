@@ -14,9 +14,20 @@ test('the benchmark dashboard loads without local errors', async ({ page, baseUR
   await page.goto('/');
 
   await expect(page).toHaveTitle('Mini PC Benchmark Comparison');
+  await expect(page.locator('.site-logo')).toHaveAttribute('src', './assets/mini-bench-logo.webp');
+  await expect(page.locator('.site-logo-link')).toHaveAttribute('href', './');
+  await expect(page.locator('.site-title')).toHaveText('MINIBENCH');
+  await expect(page.locator('.site-tagline')).toHaveText('MINI PC BENCHMARKS. REAL RESULTS.');
   await expect(page.locator('#site-meta')).toContainText(/\d+ devices/);
   await expect(page.locator('#benchmark-table tbody .device-name-trigger').first()).toBeVisible();
   await expect(page.locator('#changelog-link')).toHaveAttribute('href', './changelog.html');
   expect(localConsoleErrors).toEqual([]);
   expect(localRequestFailures).toEqual([]);
+});
+
+test('the logo links home on every site page', async ({ page }) => {
+  for (const path of ['/', '/changelog.html', '/404.html']) {
+    await page.goto(path);
+    await expect(page.locator('.site-logo-link')).toHaveAttribute('href', './');
+  }
 });

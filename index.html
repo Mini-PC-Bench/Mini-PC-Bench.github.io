@@ -13,8 +13,8 @@
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&family=Outfit:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css?v=sticky-header">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Montserrat:wght@500;600;800;900&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css?v=mini-bench-brand">
 </head>
 
 <body>
@@ -22,9 +22,15 @@
   <header>
     <div class="container">
       <div class="header-inner">
-        <div>
-          <h1 class="site-title">Mini PC <em>Benchmark</em> Comparison</h1>
-          <p id="site-meta" class="site-meta">Loading benchmark data…</p>
+        <div class="site-brand">
+          <a class="site-logo-link" href="./" aria-label="Mini Bench home">
+            <img class="site-logo" src="./assets/mini-bench-logo.webp" alt="">
+          </a>
+          <div>
+            <h1 class="site-title"><span>MINI</span><span class="site-title-accent">BENCH</span></h1>
+            <p class="site-tagline">MINI PC BENCHMARKS. REAL RESULTS.</p>
+            <p id="site-meta" class="site-meta">Loading benchmark data…</p>
+          </div>
         </div>
         <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false" title="Switch to dark mode">
           <svg class="theme-toggle-icon theme-toggle-sun" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
