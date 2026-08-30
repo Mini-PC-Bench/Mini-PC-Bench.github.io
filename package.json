@@ -1,7 +1,9 @@
 {
   "private": true,
   "scripts": {
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "compare:capture": "node scripts/compare-builds/capture.js",
+    "compare:diff": "node scripts/compare-builds/compare.js"
   },
   "devDependencies": {
     "esbuild": "0.24.0",

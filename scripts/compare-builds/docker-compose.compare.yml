@@ -1,0 +1,30 @@
+services:
+  web-before:
+    image: nginx:1.27-alpine
+    volumes:
+      - ${BEFORE_DIR:?BEFORE_DIR is required}:/usr/share/nginx/html:ro
+    ports:
+      - "${BEFORE_PORT:-8081}:80"
+
+  web-after:
+    image: nginx:1.27-alpine
+    volumes:
+      - ${AFTER_DIR:?AFTER_DIR is required}:/usr/share/nginx/html:ro
+    ports:
+      - "${AFTER_PORT:-8082}:80"
+
+  compare:
+    build:
+      context: ../..
+      dockerfile: scripts/compare-builds/Dockerfile.compare
+    environment:
+      BEFORE_LABEL: ${BEFORE_LABEL:-before}
+      AFTER_LABEL: ${AFTER_LABEL:-after}
+      OUT_DIR: /compare/out
+      FAIL_ON_SCREENSHOT_DIFF: ${FAIL_ON_SCREENSHOT_DIFF:-0}
+    depends_on:
+      - web-before
+      - web-after
+    volumes:
+      - ./:/compare/scripts/compare-builds:ro
+      - ${OUTPUT_DIR:-./compare-out}:/compare/out

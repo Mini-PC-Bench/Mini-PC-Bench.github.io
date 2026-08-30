@@ -122,6 +122,19 @@ docker compose run --rm e2e npx playwright test -g "toggles and persists"
 Every bug fix should include a regression test. See
 `.github/copilot-instructions.md` for the project testing and regression rules.
 
+## Branch Output Comparison (Refactoring Safety Net)
+
+To verify a refactor or reorganisation didn't change what the site renders,
+use `scripts/compare-builds/`. It builds two git refs, serves both side by
+side in containers, and diffs the rendered output scenario by scenario:
+
+```powershell
+pwsh ./scripts/compare-builds/compare-builds.ps1 -Before master -After feature/abc
+```
+
+See [scripts/compare-builds/README.md](./scripts/compare-builds/README.md) for
+details, options, and scenario list.
+
 ## Data Format
 
 `devices.json` must contain an array of device objects. Example:

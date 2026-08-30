@@ -1,0 +1,9 @@
+FROM mcr.microsoft.com/playwright:v1.55.0-noble
+
+WORKDIR /compare
+COPY package.json ./
+RUN npm install --no-package-lock
+
+COPY scripts/compare-builds ./scripts/compare-builds
+
+CMD ["node", "scripts/compare-builds/run.js"]

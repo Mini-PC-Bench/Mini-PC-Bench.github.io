@@ -2,5 +2,6 @@ source/**/*.csv
 changelog.html
 playwright-report/
 test-results/
+compare-out/
 temp/
 _site/
