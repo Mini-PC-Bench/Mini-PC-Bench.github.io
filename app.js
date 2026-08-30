@@ -387,7 +387,12 @@ function renderDetailLinks(device) {
 function renderDetailPhoto(device) {
   const hasPhoto = typeof device.photo === 'string' && device.photo.trim();
   const photo = hasPhoto ? `
-    <img class="detail-photo-image" src="${escapeHtml(device.photo)}" alt="${escapeHtml(device.name)}" loading="lazy">
+    <div class="detail-photo-frame is-loading" data-testid="detail-photo-frame">
+      <div class="detail-photo-loader" data-testid="detail-photo-loader" aria-hidden="true">
+        <span class="detail-photo-spinner"></span>
+      </div>
+      <img class="detail-photo-image" src="${escapeHtml(device.photo)}" alt="${escapeHtml(device.name)}" loading="lazy" decoding="async">
+    </div>
   ` : `
     <div class="detail-photo-placeholder" data-testid="detail-photo-placeholder">
       <svg class="detail-photo-placeholder-mark" viewBox="0 0 48 48" aria-hidden="true">
@@ -424,6 +429,24 @@ function renderDeviceDetail(device) {
     return renderDetailMetrics(group, device);
   }).filter(Boolean).join('');
   deviceDetailBody.innerHTML = `<div class="detail-feature-grid">${photo}${links}</div>${metrics}`;
+  initDetailPhotoLoading();
+}
+
+function initDetailPhotoLoading() {
+  deviceDetailBody.querySelectorAll('.detail-photo-frame').forEach(frame => {
+    const image = frame.querySelector('.detail-photo-image');
+    if (!image) return;
+    const settle = state => {
+      frame.classList.remove('is-loading');
+      frame.classList.add(state);
+    };
+    if (image.complete && image.naturalWidth > 0) {
+      settle('is-loaded');
+      return;
+    }
+    image.addEventListener('load', () => settle('is-loaded'), { once: true });
+    image.addEventListener('error', () => settle('is-failed'), { once: true });
+  });
 }
 
 function openDeviceDetail(deviceId, { syncUrl = true, replaceHistory = false } = {}) {
