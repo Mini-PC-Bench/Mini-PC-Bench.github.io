@@ -43,6 +43,18 @@ jobs:
             /usr/bin/cp -R --parents "$path" _site
           done < publish-files.txt
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Minify assets and generate cache-bust hashes
+        shell: pwsh
+        run: ./minify-assets.ps1 -SiteDir _site
+
       - name: Upload site artifact
         uses: actions/upload-artifact@v4
         with:
