@@ -162,11 +162,18 @@ Every bug fix should include a regression test. See
     {
       "label": "YouTube review",
       "url": "https://youtube.com/watch?v=example",
-      "kind": "youtube"
+      "kind": "youtube",
+      "logo": "./images/youtube.svg"
     }
   ]
 }
 ```
+
+The details view shows a device photo on the right of the Links section. Add a
+relative image path as `"photo"` in the matching `devices.json` entry. Link
+logos are optional; add a relative image path as `"logo"` to a link when a
+brand mark is useful. Without either field, the view uses an accessible
+placeholder or the built-in link-type icon.
 
 ## Add a New Mini PC Entry
 
@@ -185,6 +192,7 @@ Use this workflow each time you review a new device.
 {
   "id": "brand-model-cpu",
   "name": "Brand Model CPU",
+  "photo": "./images/brand-model-cpu.webp",
   "cb23s": null,
   "cb23m": null,
   "gb6s": null,

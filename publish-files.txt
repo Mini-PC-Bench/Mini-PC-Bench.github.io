@@ -6,6 +6,7 @@ app.js
 theme.js
 devices.json
 device-links.json
+images
 favicon.ico
 favicon.svg
 assets/mini-bench-logo.webp

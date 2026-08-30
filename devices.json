@@ -2,6 +2,7 @@
   {
     "id": "minisforum-ai-x1-pro-hx-470",
     "name": "Minisforum AI X1 Pro HX 470",
+    "photo": "./images/devices/minisforum-ai-x1-pro-hx-470.webp",
     "noise": {
       "idle": 29,
       "load_default": 40,
@@ -33,6 +34,7 @@
   {
     "id": "geekom-it15-ultra-9-285h",
     "name": "GEEKOM IT15 Ultra 9 285H",
+    "photo": "./images/devices/geekom-it15-ultra-9-285h.webp",
     "noise": {
       "idle": 29,
       "load_default": 44,
@@ -64,6 +66,7 @@
   {
     "id": "asus-nuc-15-pro-ultra-9-285h",
     "name": "ASUS NUC 15 Pro+ Ultra 9 285H",
+    "photo": "./images/devices/asus-nuc-15-pro-ultra-9-285h.webp",
     "noise": {
       "idle": 29,
       "load_default": 46,
@@ -95,6 +98,7 @@
   {
     "id": "beelink-ser10-max-hx-470",
     "name": "Beelink SER10 MAX HX 470",
+    "photo": "./images/devices/beelink-ser10-max-hx-470.webp",
     "noise": {
       "idle": 29,
       "load_default": 33,
@@ -126,6 +130,7 @@
   {
     "id": "beelink-gti15-ultra-9-285h",
     "name": "Beelink GTi15 Ultra 9 285H",
+    "photo": "./images/devices/beelink-gti15-ultra-9-285h.webp",
     "noise": {
       "idle": 30,
       "load_default": 32,
@@ -157,6 +162,7 @@
   {
     "id": "beelink-ser9-hx-370",
     "name": "Beelink SER9 HX 370",
+    "photo": "./images/devices/beelink-ser9-hx-370.webp",
     "noise": {
       "idle": 29,
       "load_default": 35,
@@ -188,6 +194,7 @@
   {
     "id": "acemagic-f5a-hx-370",
     "name": "ACEMAGIC F5A HX 370",
+    "photo": "./images/devices/acemagic-f5a-hx-370.webp",
     "noise": {
       "idle": 32,
       "load_default": 36,
@@ -219,6 +226,7 @@
   {
     "id": "asus-nuc-14-pro-ai-ultra-9-288v",
     "name": "ASUS NUC 14 Pro AI Ultra 9 288V",
+    "photo": "./images/devices/asus-nuc-14-pro-ai-ultra-9-288v.webp",
     "noise": {
       "idle": 29,
       "load_default": 36,
@@ -250,6 +258,7 @@
   {
     "id": "peladn-ho5-hx-370",
     "name": "PELADN HO5 HX 370",
+    "photo": "./images/devices/peladn-ho5-hx-370.webp",
     "noise": {
       "idle": 29,
       "load_default": 42,
@@ -281,6 +290,7 @@
   {
     "id": "geekom-gt1-mega-ultra-9-185h",
     "name": "GEEKOM GT1 Mega Ultra 9 185H",
+    "photo": "./images/devices/geekom-gt1-mega-ultra-9-185h.webp",
     "noise": {
       "idle": 29,
       "load_default": 47,
@@ -312,6 +322,7 @@
   {
     "id": "msi-cubi-nuc-1m-core-7-150u",
     "name": "MSI Cubi NUC 1M Core 7 150U",
+    "photo": "./images/devices/msi-cubi-nuc-1m-core-7-150u.webp",
     "noise": {
       "idle": 30,
       "load_default": 36,
@@ -343,6 +354,7 @@
   {
     "id": "geekom-a7-max-7940hs",
     "name": "GEEKOM A7 MAX 7940HS",
+    "photo": "./images/devices/geekom-a7-max-7940hs.webp",
     "noise": {
       "idle": 29,
       "load_default": 42,
@@ -374,6 +386,7 @@
   {
     "id": "beelink-gti14-ultra-7-155h",
     "name": "Beelink GTi14 Ultra 7 155H",
+    "photo": "./images/devices/beelink-gti14-ultra-7-155h.webp",
     "noise": {
       "idle": 29,
       "load_default": 32,
@@ -405,6 +418,7 @@
   {
     "id": "msi-cubi-z-ai-8m-8845hs",
     "name": "MSI CUBI Z AI 8M 8845HS",
+    "photo": "./images/devices/msi-cubi-z-ai-8m-8845hs.webp",
     "noise": {
       "idle": 29,
       "load_default": 44,
@@ -436,6 +450,7 @@
   {
     "id": "bosgame-p3-plus-7840hs",
     "name": "BOSGAME P3 Plus 7840HS",
+    "photo": "./images/devices/bosgame-p3-plus-7840hs.webp",
     "noise": {
       "idle": 32,
       "load_default": 36,
@@ -467,6 +482,7 @@
   {
     "id": "beelink-ser9-h-255",
     "name": "Beelink SER9 H 255",
+    "photo": "./images/devices/beelink-ser9-h-255.webp",
     "noise": {
       "idle": 29,
       "load_default": 35,
@@ -498,6 +514,7 @@
   {
     "id": "reatan-silver-9-i9-12900hk",
     "name": "Reatan Silver 9 i9-12900HK",
+    "photo": "./images/devices/reatan-silver-9-i9-12900hk.webp",
     "noise": {
       "idle": 30,
       "load_default": 43,
@@ -529,6 +546,7 @@
   {
     "id": "minisforum-um750l-7545u",
     "name": "Minisforum UM750L 7545U",
+    "photo": "./images/devices/minisforum-um750l-7545u.webp",
     "noise": {
       "idle": 29,
       "load_default": 38,
@@ -560,6 +578,7 @@
   {
     "id": "chuwi-aubox-i9-13900hk",
     "name": "Chuwi AuBox i9-13900HK",
+    "photo": "./images/devices/chuwi-aubox-i9-13900hk.webp",
     "noise": {
       "idle": 29,
       "load_default": 44,
@@ -591,6 +610,7 @@
   {
     "id": "msi-cubi-nuc-ai-1umg-ultra-7-155h",
     "name": "MSI CUBI NUC AI 1UMG Ultra 7 155H",
+    "photo": "./images/devices/msi-cubi-nuc-ai-1umg-ultra-7-155h.webp",
     "noise": {
       "idle": 33,
       "load_default": 36,
@@ -622,6 +642,7 @@
   {
     "id": "trigkey-r8-8745hs",
     "name": "TRIGKEY R8 8745HS",
+    "photo": "./images/devices/trigkey-r8-8745hs.webp",
     "noise": {
       "idle": 29,
       "load_default": 34,
@@ -653,6 +674,7 @@
   {
     "id": "minix-n713-i7-13620h",
     "name": "MINIX N713 i7-13620H",
+    "photo": "./images/devices/minix-n713-i7-13620h.webp",
     "noise": {
       "idle": 29,
       "load_default": 47,
@@ -684,6 +706,7 @@
   {
     "id": "geekom-a8-8745hs",
     "name": "GEEKOM A8 8745HS",
+    "photo": "./images/devices/geekom-a8-8745hs.webp",
     "noise": {
       "idle": 29,
       "load_default": 43,
@@ -715,6 +738,7 @@
   {
     "id": "gmktek-m6-ultra-7640hs",
     "name": "GMKtek M6 Ultra 7640HS",
+    "photo": "./images/devices/gmktek-m6-ultra-7640hs.webp",
     "noise": {
       "idle": 32,
       "load_default": 40,
@@ -746,6 +770,7 @@
   {
     "id": "minix-eu512-ai-ultra-5-125h",
     "name": "Minix EU512-AI Ultra 5 125H",
+    "photo": "./images/devices/minix-eu512-ai-ultra-5-125h.webp",
     "noise": {
       "idle": 29,
       "load_default": 40,
@@ -777,6 +802,7 @@
   {
     "id": "minix-ngc-n512-i5-12600h",
     "name": "Minix NGC N512 i5-12600H",
+    "photo": "./images/devices/minix-ngc-n512-i5-12600h.webp",
     "noise": {
       "idle": 29,
       "load_default": 44,
@@ -808,6 +834,7 @@
   {
     "id": "reatan-s8-i9-12900h",
     "name": "Reatan S8 i9-12900H",
+    "photo": "./images/devices/reatan-s8-i9-12900h.webp",
     "noise": {
       "idle": 33,
       "load_default": 36,
@@ -839,6 +866,7 @@
   {
     "id": "minisforum-m1-pro-125h",
     "name": "Minisforum M1 Pro-125H",
+    "photo": "./images/devices/minisforum-m1-pro-125h.webp",
     "noise": {
       "idle": 30,
       "load_default": 36,
@@ -870,6 +898,7 @@
   {
     "id": "chuwi-larkbox-s-i3-1220p",
     "name": "Chuwi Larkbox S i3-1220P",
+    "photo": "./images/devices/chuwi-larkbox-s-i3-1220p.webp",
     "noise": {
       "idle": 29,
       "load_default": 41,
@@ -901,6 +930,7 @@
   {
     "id": "kamrui-am08-pro-7735hs",
     "name": "Kamrui AM08 Pro 7735HS",
+    "photo": "./images/devices/kamrui-am08-pro-7735hs.webp",
     "noise": {
       "idle": 29,
       "load_default": 36,
@@ -932,6 +962,7 @@
   {
     "id": "genmachine-li6000-pro-6800h",
     "name": "GenMachine Li6000 Pro 6800H",
+    "photo": "./images/devices/genmachine-li6000-pro-6800h.webp",
     "noise": {
       "idle": 29,
       "load_default": 48,
@@ -963,6 +994,7 @@
   {
     "id": "chuwi-ubox-6600h",
     "name": "Chuwi Ubox 6600H",
+    "photo": "./images/devices/chuwi-ubox-6600h.webp",
     "noise": {
       "idle": 29,
       "load_default": 39,
@@ -994,6 +1026,7 @@
   {
     "id": "geekom-a5-pro-7530u",
     "name": "GEEKOM A5 Pro 7530U",
+    "photo": "./images/devices/geekom-a5-pro-7530u.webp",
     "noise": {
       "idle": 29,
       "load_default": 35,
@@ -1025,6 +1058,7 @@
   {
     "id": "geekom-a5-7430u",
     "name": "GEEKOM A5 7430U",
+    "photo": "./images/devices/geekom-a5-7430u.webp",
     "noise": {
       "idle": 29,
       "load_default": 33,
@@ -1056,6 +1090,7 @@
   {
     "id": "geekom-it13-i7-13700h",
     "name": "GEEKOM IT13 i7-13700H",
+    "photo": "./images/devices/geekom-it13-i7-13700h.webp",
     "noise": {
       "idle": 36,
       "load_default": 40,
@@ -1087,6 +1122,7 @@
   {
     "id": "asus-nuc-16-pro-x7-358h",
     "name": "ASUS NUC 16 Pro X7-358H",
+    "photo": "./images/devices/asus-nuc-16-pro-x7-358h.webp",
     "noise": {
       "idle": 29,
       "load_default": 46,
@@ -1118,6 +1154,7 @@
   {
     "id": "minisforum-um890-pro-8945hs",
     "name": "Minisforum UM890 Pro 8945HS",
+    "photo": "./images/devices/minisforum-um890-pro-8945hs.webp",
     "noise": {
       "idle": 31,
       "load_default": 34,
@@ -1149,6 +1186,7 @@
   {
     "id": "minix-ngc-nr660-6600h",
     "name": "Minix NGC NR660 6600H",
+    "photo": "./images/devices/minix-ngc-nr660-6600h.webp",
     "noise": {
       "idle": null,
       "load_default": null,
@@ -1180,6 +1218,7 @@
   {
     "id": "aoostar-godz-7435hs",
     "name": "AOOSTAR GODZ 7435HS",
+    "photo": "./images/devices/aoostar-godz-7435hs.webp",
     "noise": {
       "idle": 33,
       "load_default": 47,
@@ -1211,6 +1250,7 @@
   {
     "id": "asus-rog-gr70-9955hx3d",
     "name": "ASUS ROG GR70 9955HX3D",
+    "photo": "./images/devices/asus-rog-gr70-9955hx3d.webp",
     "noise": {
       "idle": 30,
       "load_default": 46,
@@ -1242,6 +1282,7 @@
   {
     "id": "asus-rog-nuc-15-ultra-9-275hx",
     "name": "ASUS ROG NUC 15 Ultra 9 275HX",
+    "photo": "./images/devices/asus-rog-nuc-15-ultra-9-275hx.webp",
     "noise": {
       "idle": 30,
       "load_default": 52,
@@ -1273,6 +1314,7 @@
   {
     "id": "asus-rog-nuc-970-ultra-9-185h",
     "name": "ASUS ROG NUC 970 Ultra 9 185H",
+    "photo": "./images/devices/asus-rog-nuc-970-ultra-9-185h.webp",
     "noise": {
       "idle": 29,
       "load_default": 46,
@@ -1304,6 +1346,7 @@
   {
     "id": "infplane-hilbert-ai-max-395",
     "name": "Infplane Hilbert AI MAX+ 395",
+    "photo": "./images/devices/infplane-hilbert-ai-max-395.webp",
     "noise": {
       "idle": 34,
       "load_default": 42,
@@ -1335,6 +1378,7 @@
   {
     "id": "intel-nuc-11-e-i7-1165g7",
     "name": "Intel NUC 11 E i7-1165G7",
+    "photo": "./images/devices/intel-nuc-11-e-i7-1165g7.webp",
     "noise": {
       "idle": null,
       "load_default": null,
@@ -1366,6 +1410,7 @@
   {
     "id": "intel-nuc-12-e-i7-12700h",
     "name": "Intel NUC 12 E i7-12700H",
+    "photo": "./images/devices/intel-nuc-12-e-i7-12700h.webp",
     "noise": {
       "idle": 32,
       "load_default": 45,
@@ -1397,6 +1442,7 @@
   {
     "id": "minisforum-atomman-g1-pro-8945hx",
     "name": "Minisforum AtomMan G1 Pro 8945HX",
+    "photo": "./images/devices/minisforum-atomman-g1-pro-8945hx.webp",
     "noise": {
       "idle": 32,
       "load_default": 47,
@@ -1428,6 +1474,7 @@
   {
     "id": "minisforum-atomman-g7-pt-7945hx",
     "name": "Minisforum AtomMan G7 PT 7945HX",
+    "photo": "./images/devices/minisforum-atomman-g7-pt-7945hx.webp",
     "noise": {
       "idle": 37,
       "load_default": 42,
@@ -1459,6 +1506,7 @@
   {
     "id": "minisforum-hx90g-5900hx",
     "name": "Minisforum HX90G 5900HX",
+    "photo": "./images/devices/minisforum-hx90g-5900hx.webp",
     "noise": {
       "idle": 33,
       "load_default": 43,
@@ -1490,6 +1538,7 @@
   {
     "id": "minisforum-hx99g-6900hx",
     "name": "Minisforum HX99G 6900HX",
+    "photo": "./images/devices/minisforum-hx99g-6900hx.webp",
     "noise": {
       "idle": 31,
       "load_default": 42,
@@ -1521,6 +1570,7 @@
   {
     "id": "minisforum-nucxi7-i7-11800h",
     "name": "Minisforum NUCXi7 i7-11800H",
+    "photo": "./images/devices/minisforum-nucxi7-i7-11800h.webp",
     "noise": {
       "idle": null,
       "load_default": null,
@@ -1552,6 +1602,7 @@
   {
     "id": "acemagic-s1-n95",
     "name": "ACEMAGIC S1 - N95",
+    "photo": "./images/devices/acemagic-s1-n95.webp",
     "noise": {
       "idle": 29,
       "load_default": 32,
@@ -1583,6 +1634,7 @@
   {
     "id": "acemagic-t8-plus-n100",
     "name": "ACEMAGIC T8 Plus - N100",
+    "photo": "./images/devices/acemagic-t8-plus-n100.webp",
     "noise": {
       "idle": 30,
       "load_default": 35,
@@ -1614,6 +1666,7 @@
   {
     "id": "acemagic-vista-v1-n150",
     "name": "ACEMAGIC Vista V1 - N150",
+    "photo": "./images/devices/acemagic-vista-v1-n150.webp",
     "noise": {
       "idle": 29,
       "load_default": 30,
@@ -1645,6 +1698,7 @@
   {
     "id": "aiffro-k100-n100",
     "name": "AIFFRO K100 - N100",
+    "photo": "./images/devices/aiffro-k100-n100.webp",
     "noise": {
       "idle": 29,
       "load_default": 38,
@@ -1676,6 +1730,7 @@
   {
     "id": "aoostar-n1-pro-n150",
     "name": "AOOSTAR N1 Pro - N150",
+    "photo": "./images/devices/aoostar-n1-pro-n150.webp",
     "noise": {
       "idle": 29,
       "load_default": 36,
@@ -1707,6 +1762,7 @@
   {
     "id": "beelink-eq12-n100",
     "name": "Beelink EQ12 - N100",
+    "photo": "./images/devices/beelink-eq12-n100.webp",
     "noise": {
       "idle": null,
       "load_default": null,
@@ -1738,6 +1794,7 @@
   {
     "id": "beelink-eq12-pro-n305",
     "name": "Beelink EQ12 Pro - N305",
+    "photo": "./images/devices/beelink-eq12-pro-n305.webp",
     "noise": {
       "idle": 30,
       "load_default": 35,
@@ -1769,6 +1826,7 @@
   {
     "id": "beelink-eq13-n200",
     "name": "Beelink EQ13 - N200",
+    "photo": "./images/devices/beelink-eq13-n200.webp",
     "noise": {
       "idle": 29,
       "load_default": 29,
@@ -1800,6 +1858,7 @@
   {
     "id": "beelink-eq14-n150",
     "name": "Beelink EQ14 - N150",
+    "photo": "./images/devices/beelink-eq14-n150.webp",
     "noise": {
       "idle": 29,
       "load_default": 29,
@@ -1831,6 +1890,7 @@
   {
     "id": "beelink-s12-pro-n100",
     "name": "Beelink S12 Pro - N100",
+    "photo": "./images/devices/beelink-s12-pro-n100.webp",
     "noise": {
       "idle": 29,
       "load_default": 32,
@@ -1862,6 +1922,7 @@
   {
     "id": "blackview-mp60-n150",
     "name": "Blackview MP60 - N150",
+    "photo": "./images/devices/blackview-mp60-n150.webp",
     "noise": {
       "idle": 29,
       "load_default": 33,
@@ -1893,6 +1954,7 @@
   {
     "id": "blackview-mp80-n97",
     "name": "Blackview MP80 - N97",
+    "photo": "./images/devices/blackview-mp80-n97.webp",
     "noise": {
       "idle": 30,
       "load_default": 35,
@@ -1924,6 +1986,7 @@
   {
     "id": "dreamquest-pro-n95",
     "name": "DreamQuest Pro - N95",
+    "photo": "./images/devices/dreamquest-pro-n95.webp",
     "noise": {
       "idle": 30,
       "load_default": 38,
@@ -1955,6 +2018,7 @@
   {
     "id": "geekom-mini-air12-lite-n100",
     "name": "GEEKOM Mini Air12 Lite - N100",
+    "photo": "./images/devices/geekom-mini-air12-lite-n100.webp",
     "noise": {
       "idle": 30,
       "load_default": 37,
@@ -1986,6 +2050,7 @@
   {
     "id": "geekom-miniair12-n100",
     "name": "GEEKOM MiniAir12 - N100",
+    "photo": "./images/devices/geekom-miniair12-n100.webp",
     "noise": {
       "idle": 29,
       "load_default": 29,
@@ -2017,6 +2082,7 @@
   {
     "id": "gmktec-g10-3500u",
     "name": "GMKtec G10 3500U",
+    "photo": "./images/devices/gmktec-g10-3500u.webp",
     "noise": {
       "idle": 29,
       "load_default": 33,
@@ -2048,6 +2114,7 @@
   {
     "id": "gmktec-g2-plus-n150",
     "name": "GMKtec G2 Plus - N150",
+    "photo": "./images/devices/gmktec-g2-plus-n150.webp",
     "noise": {
       "idle": 29,
       "load_default": 35,
@@ -2079,6 +2146,7 @@
   {
     "id": "gmktec-g3-n100",
     "name": "GMKtec G3 - N100",
+    "photo": "./images/devices/gmktec-g3-n100.webp",
     "noise": {
       "idle": 29,
       "load_default": 37,
@@ -2110,6 +2178,7 @@
   {
     "id": "gmktec-nucbox-g5-n97",
     "name": "GMKtec NucBox G5 - N97",
+    "photo": "./images/devices/gmktec-nucbox-g5-n97.webp",
     "noise": {
       "idle": 30,
       "load_default": 36,
@@ -2141,6 +2210,7 @@
   {
     "id": "kamrui-ak2-plus-n100",
     "name": "Kamrui AK2 Plus - N100",
+    "photo": "./images/devices/kamrui-ak2-plus-n100.webp",
     "noise": {
       "idle": 32,
       "load_default": 38,
@@ -2172,6 +2242,7 @@
   {
     "id": "mele-overclock-4c-n95",
     "name": "MeLe Overclock 4C - N95",
+    "photo": "./images/devices/mele-overclock-4c-n95.webp",
     "noise": {
       "idle": 29,
       "load_default": 30,
@@ -2203,6 +2274,7 @@
   {
     "id": "mele-quieter-4c-n100",
     "name": "MeLe Quieter 4C - N100",
+    "photo": "./images/devices/mele-quieter-4c-n100.webp",
     "noise": {
       "idle": 29,
       "load_default": 29,
@@ -2234,6 +2306,7 @@
   {
     "id": "minix-neo-z150-aero-n150",
     "name": "Minix Neo Z150-Aero - N150",
+    "photo": "./images/devices/minix-neo-z150-aero-n150.webp",
     "noise": {
       "idle": 29,
       "load_default": 30,
@@ -2265,6 +2338,7 @@
   {
     "id": "minix-neo-z97-n97",
     "name": "Minix Neo Z97 - N97",
+    "photo": "./images/devices/minix-neo-z97-n97.webp",
     "noise": {
       "idle": 29,
       "load_default": 36,
@@ -2296,6 +2370,7 @@
   {
     "id": "minix-z100-0db-n100",
     "name": "Minix Z100-0dB - N100",
+    "photo": "./images/devices/minix-z100-0db-n100.webp",
     "noise": {
       "idle": 29,
       "load_default": 29,
@@ -2327,6 +2402,7 @@
   {
     "id": "minix-z150-0db-n150",
     "name": "Minix Z150-0dB - N150",
+    "photo": "./images/devices/minix-z150-0db-n150.webp",
     "noise": {
       "idle": 29,
       "load_default": 29,
@@ -2358,6 +2434,7 @@
   {
     "id": "minix-z300-0db-i3-n300",
     "name": "Minix Z300-0dB i3-N300",
+    "photo": "./images/devices/minix-z300-0db-i3-n300.webp",
     "noise": {
       "idle": 29,
       "load_default": 29,
@@ -2389,6 +2466,7 @@
   {
     "id": "morefine-m6-n200",
     "name": "Morefine M6 - N200",
+    "photo": "./images/devices/morefine-m6-n200.webp",
     "noise": {
       "idle": 30,
       "load_default": 30,
@@ -2420,6 +2498,7 @@
   {
     "id": "neosmay-ac8-n-n200",
     "name": "Neosmay AC8-N - N200",
+    "photo": "./images/devices/neosmay-ac8-n-n200.webp",
     "noise": {
       "idle": 29,
       "load_default": 29,
@@ -2451,6 +2530,7 @@
   {
     "id": "neosmay-ac8-v2-n100",
     "name": "Neosmay AC8-V2 - N100",
+    "photo": "./images/devices/neosmay-ac8-v2-n100.webp",
     "noise": {
       "idle": 29,
       "load_default": 29,
@@ -2482,6 +2562,7 @@
   {
     "id": "peladn-wi6-n150",
     "name": "PELADN WI6 - N150",
+    "photo": "./images/devices/peladn-wi6-n150.webp",
     "noise": {
       "idle": 29,
       "load_default": 35,
@@ -2513,6 +2594,7 @@
   {
     "id": "peladn-wo4-5600h",
     "name": "PELADN WO4 5600H",
+    "photo": "./images/devices/peladn-wo4-5600h.webp",
     "noise": {
       "idle": 29,
       "load_default": 37,
@@ -2544,6 +2626,7 @@
   {
     "id": "peladn-wo4-r5-5500u",
     "name": "PELADN WO4 R5 5500U",
+    "photo": "./images/devices/peladn-wo4-r5-5500u.webp",
     "noise": {
       "idle": 29,
       "load_default": 37,
@@ -2575,6 +2658,7 @@
   {
     "id": "bosgame-vta-439-hx-470",
     "name": "BOSGAME VTA-439 HX 470",
+    "photo": "./images/devices/bosgame-vta-439-hx-470.webp",
     "noise": {
       "idle": 29,
       "load_default": 38,
@@ -2606,6 +2690,7 @@
   {
     "id": "minisforum-uh125-pro-ultra-5-125h",
     "name": "Minisforum UH125 Pro Ultra 5 125H",
+    "photo": "./images/devices/minisforum-uh125-pro-ultra-5-125h.webp",
     "noise": {
       "idle": null,
       "load_default": null,
@@ -2637,6 +2722,7 @@
   {
     "id": "acemagic-f5a-hx-470",
     "name": "ACEMAGIC F5A HX 470",
+    "photo": "./images/devices/acemagic-f5a-hx-470.webp",
     "noise": {
       "idle": 29,
       "load_default": 36,
@@ -2668,6 +2754,7 @@
   {
     "id": "bosgame-vti-490-x7-358h",
     "name": "BOSGAME VTI-490 X7 358H",
+    "photo": "./images/devices/bosgame-vti-490-x7-358h.webp",
     "noise": {
       "idle": 29,
       "load_default": 39,
@@ -2699,6 +2786,7 @@
   {
     "id": "geekom-it13-max-ultra-9-185h",
     "name": "GEEKOM IT13 MAX Ultra 9 185H",
+    "photo": "./images/devices/geekom-it13-max-ultra-9-185h.webp",
     "noise": {
       "idle": 29,
       "load_default": 48,
@@ -2730,6 +2818,7 @@
   {
     "id": "getorli-gt103-6600h",
     "name": "Getorli GT103 6600H",
+    "photo": "./images/devices/getorli-gt103-6600h.webp",
     "noise": {
       "idle": 29,
       "load_default": 42,
@@ -2761,6 +2850,7 @@
   {
     "id": "asus-nuc-14-pro-ultra-9-185h",
     "name": "ASUS NUC 14 Pro+ Ultra 9 185H",
+    "photo": "./images/devices/asus-nuc-14-pro-ultra-9-185h.webp",
     "noise": {
       "idle": null,
       "load_default": null,
@@ -2792,6 +2882,7 @@
   {
     "id": "gmktec-evo-x2-ai-max-395",
     "name": "GMKtec EVO-X2 AI MAX+ 395",
+    "photo": "./images/devices/gmktec-evo-x2-ai-max-395.webp",
     "noise": {
       "idle": 29,
       "load_default": 48,
@@ -2823,6 +2914,7 @@
   {
     "id": "minisforum-ms-a2-9955hx",
     "name": "Minisforum MS-A2 9955HX",
+    "photo": "./images/devices/minisforum-ms-a2-9955hx.webp",
     "noise": {
       "idle": 35,
       "load_default": 44,
@@ -2854,6 +2946,7 @@
   {
     "id": "beelink-mini-s12-n95",
     "name": "Beelink Mini S12 - N95",
+    "photo": "./images/devices/beelink-mini-s12-n95.webp",
     "noise": {
       "idle": 29,
       "load_default": 30,
@@ -2885,6 +2978,7 @@
   {
     "id": "dreamquest-pro-n150",
     "name": "DreamQuest Pro - N150",
+    "photo": "./images/devices/dreamquest-pro-n150.webp",
     "noise": {
       "idle": 29,
       "load_default": 33,
@@ -2916,6 +3010,7 @@
   {
     "id": "gmktec-nucbox-g9-n150",
     "name": "GMKtec NucBox G9 - N150",
+    "photo": "./images/devices/gmktec-nucbox-g9-n150.webp",
     "noise": {
       "idle": null,
       "load_default": null,
@@ -2947,6 +3042,7 @@
   {
     "id": "morefine-m8s-plus-n150",
     "name": "Morefine M8S Plus - N150",
+    "photo": "./images/devices/morefine-m8s-plus-n150.webp",
     "noise": {
       "idle": 29,
       "load_default": 30,
@@ -2978,6 +3074,7 @@
   {
     "id": "wo-we-p5-3500u",
     "name": "Wo-We P5 3500U",
+    "photo": "./images/devices/wo-we-p5-3500u.webp",
     "noise": {
       "idle": 29,
       "load_default": 40,

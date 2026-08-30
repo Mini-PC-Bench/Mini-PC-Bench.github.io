@@ -267,7 +267,8 @@ function normalizeDeviceLinks(rawLinks) {
       links.push({
         label: typeof link.label === 'string' && link.label.trim() ? link.label.trim() : 'Open link',
         url,
-        kind: typeof link.kind === 'string' ? link.kind.trim().toLowerCase() : ''
+        kind: typeof link.kind === 'string' ? link.kind.trim().toLowerCase() : '',
+        logo: typeof link.logo === 'string' && link.logo.trim() ? link.logo.trim() : ''
       });
     });
   }
@@ -356,7 +357,9 @@ function renderDetailLinks(device) {
   }
 
   const items = device.links.map(link => {
-    const kindIcon = link.kind === 'affiliate'
+    const kindIcon = link.logo
+      ? `<img class="detail-link-logo" src="${escapeHtml(link.logo)}" alt="" loading="lazy">`
+      : link.kind === 'affiliate'
       ? '<span class="detail-link-icon" aria-hidden="true">$</span>'
       : link.kind === 'youtube'
         ? '<span class="detail-link-icon" aria-hidden="true">▶</span>'
@@ -381,6 +384,28 @@ function renderDetailLinks(device) {
   </section>`;
 }
 
+function renderDetailPhoto(device) {
+  const hasPhoto = typeof device.photo === 'string' && device.photo.trim();
+  const photo = hasPhoto ? `
+    <img class="detail-photo-image" src="${escapeHtml(device.photo)}" alt="${escapeHtml(device.name)}" loading="lazy">
+  ` : `
+    <div class="detail-photo-placeholder" data-testid="detail-photo-placeholder">
+      <svg class="detail-photo-placeholder-mark" viewBox="0 0 48 48" aria-hidden="true">
+        <rect x="4" y="10" width="40" height="30" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+        <circle cx="16" cy="20" r="3.5" fill="currentColor"/>
+        <path d="M8 34l10-9 8 7 6-6 10 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>No photo available yet</span>
+    </div>
+  `;
+  const stateClass = hasPhoto ? 'has-photo' : 'no-photo';
+
+  return `<section class="detail-section detail-photo-section ${stateClass}" data-testid="detail-photo-section">
+    <h3>Photo</h3>
+    <div class="detail-photo">${photo}</div>
+  </section>`;
+}
+
 function renderDeviceSummary(device) {
   const parts = [];
   if (device.composite) parts.push(`score ${fmtD(device.composite)}`);
@@ -393,10 +418,12 @@ function renderDeviceSummary(device) {
 function renderDeviceDetail(device) {
   deviceDetailTitle.textContent = device.name;
   deviceDetailSummary.textContent = renderDeviceSummary(device);
-  deviceDetailBody.innerHTML = DETAIL_METRIC_GROUPS.map(group => {
-    if (group.type === 'links') return renderDetailLinks(device);
+  const photo = renderDetailPhoto(device);
+  const links = renderDetailLinks(device);
+  const metrics = DETAIL_METRIC_GROUPS.filter(group => group.type !== 'links').map(group => {
     return renderDetailMetrics(group, device);
   }).filter(Boolean).join('');
+  deviceDetailBody.innerHTML = `<div class="detail-feature-grid">${photo}${links}</div>${metrics}`;
 }
 
 function openDeviceDetail(deviceId, { syncUrl = true, replaceHistory = false } = {}) {
@@ -531,6 +558,7 @@ function normalizeDevices(data) {
       ...device,
       id,
       links: [],
+      photo: typeof device.photo === 'string' ? device.photo.trim() : (typeof device.image === 'string' ? device.image.trim() : ''),
       h264: device.h264 ?? device.handbrake ?? null,
       av1: device.av1 ?? null,
       av1_hw: device.av1_hw ?? device.av1_hardware ?? null,

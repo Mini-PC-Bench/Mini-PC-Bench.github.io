@@ -21,6 +21,8 @@
   --noise1: #10B981;
   --noise2: #F59E0B;
   --noise3: #EF4444;
+  /* Product photo background */
+  --photo-bg: #FFFFFF;
 }
 
 :root[data-theme="dark"] {
@@ -42,6 +44,8 @@
   --pow2: #10B981;
   --pow3: #059669;
   --pow-dim: #475569;
+  /* Product photo background */
+  --photo-bg: #263449;
 }
 
 *,
@@ -914,7 +918,12 @@ a:focus-visible {
 
 .device-detail-body {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.detail-feature-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(0, 1fr);
   gap: 1rem;
 }
 
@@ -1001,6 +1010,15 @@ a:focus-visible {
   flex: 0 0 auto;
 }
 
+.detail-link-logo {
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 999px;
+  object-fit: contain;
+  background: rgba(255, 255, 255, .72);
+  flex: 0 0 auto;
+}
+
 .detail-link-label {
   font-weight: 600;
 }
@@ -1020,6 +1038,55 @@ a:focus-visible {
   color: var(--muted);
   font-size: 0.8rem;
   line-height: 1.6;
+}
+
+.detail-photo-section {
+  min-width: 0;
+}
+
+.detail-photo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--photo-bg);
+  padding: 0.25rem;
+}
+
+.detail-photo-image {
+  display: block;
+  width: 100%;
+  height: 220px;
+  object-fit: contain;
+  object-position: center center;
+  transform: scale(1.02);
+}
+
+.detail-photo-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .6rem;
+  width: 100%;
+  height: 220px;
+  padding: 2rem;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: .75rem;
+  text-align: center;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 6%, transparent), transparent);
+}
+
+.detail-photo-placeholder-mark {
+  width: 3rem;
+  height: 3rem;
+  color: var(--accent);
+  opacity: .7;
 }
 
 .footnote {
@@ -1429,6 +1496,10 @@ a:focus-visible {
   background: rgba(15, 23, 42, .7);
 }
 
+:root[data-theme="dark"] .detail-link-logo {
+  background: rgba(15, 23, 42, .7);
+}
+
 @media (max-width: 600px) {
   header .container {
     position: relative;
@@ -1533,8 +1604,12 @@ a:focus-visible {
     border-radius: 14px;
   }
 
-  .device-detail-body,
+  .detail-feature-grid,
   .detail-stats-grid {
     grid-template-columns: 1fr;
+  }
+
+  .detail-photo-image {
+    height: 190px;
   }
 }
