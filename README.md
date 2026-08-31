@@ -16,7 +16,7 @@ Static benchmark comparison page for mini PCs, designed to be hosted on GitHub P
 - `scripts/validate-device-links.ps1` - resolves and sanity-checks YouTube and Amazon device links
 - `CHANGELOG.md` - project changelog (source of truth); edit this file
 - `changelog.template.html` - HTML layout for the generated changelog page
-- `build-changelog.ps1` - regenerates `changelog.html` from `CHANGELOG.md` and its template (`pwsh ./build-changelog.ps1`)
+- `scripts/ci/build-changelog.ps1` - regenerates `changelog.html` from `CHANGELOG.md` and its template (`pwsh ./scripts/ci/build-changelog.ps1`)
 - `changelog.html` - generated static changelog page, linked from the site header
 - `publish-files.txt` - allowlist of files and directories included in the GitHub Pages deployment
 

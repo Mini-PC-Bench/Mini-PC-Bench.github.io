@@ -25,7 +25,7 @@ jobs:
 
       - name: Build changelog
         shell: pwsh
-        run: ./build-changelog.ps1
+        run: ./scripts/ci/build-changelog.ps1
 
       - name: Verify devices.json is valid JSON
         run: python3 -m json.tool devices.json > /dev/null
@@ -53,7 +53,7 @@ jobs:
 
       - name: Minify assets and generate cache-bust hashes
         shell: pwsh
-        run: ./minify-assets.ps1 -SiteDir _site
+        run: ./scripts/ci/minify-assets.ps1 -SiteDir _site
 
       - name: Upload site artifact
         uses: actions/upload-artifact@v4

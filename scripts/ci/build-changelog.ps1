@@ -1,6 +1,6 @@
 <#
   Converts CHANGELOG.md into a static changelog.html page styled like the rest of the site.
-  Run this after editing CHANGELOG.md:  pwsh ./build-changelog.ps1
+  Run this after editing CHANGELOG.md:  pwsh ./scripts/ci/build-changelog.ps1
 #>
 param(
   [string]$SourcePath = "./CHANGELOG.md",

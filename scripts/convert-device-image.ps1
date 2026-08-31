@@ -74,13 +74,22 @@ function Update-DevicePhoto {
     }
 
     $deviceBlock = $match.Groups[1].Value
-    $deviceBlock = [regex]::Replace($deviceBlock, '(?m)^    "photo": "[^"]*",\r?\n', '')
-    $deviceBlock = [regex]::Replace(
-        $deviceBlock,
-        '(?m)^(    "name": "[^"]+",\r?\n)',
-        "`$1    `"photo`": `"$PhotoPath`",`r`n",
-        1
-    )
+    $photoPattern = '(?m)^(    "photo": )(?:null|"[^"]*")'
+    if ([regex]::IsMatch($deviceBlock, $photoPattern)) {
+        $deviceBlock = [regex]::Replace(
+            $deviceBlock,
+            $photoPattern,
+            "`$1`"$PhotoPath`"",
+            1
+        )
+    } else {
+        $deviceBlock = [regex]::Replace(
+            $deviceBlock,
+            '(?m)^(    "name": "[^"]+",\r?\n)',
+            "`$1    `"photo`": `"$PhotoPath`",`r`n",
+            1
+        )
+    }
 
     $newBlock = $deviceBlock + $match.Groups[2].Value
     $content = $content.Substring(0, $match.Index) + $newBlock + $content.Substring($match.Index + $match.Length)
