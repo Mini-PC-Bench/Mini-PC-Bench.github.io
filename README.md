@@ -319,9 +319,18 @@ Keep `AutoAddDevices` disabled until component resolutions and unresolved names 
 
 1. `mapping`: exact source label exists in `source-device-map.json` and points to a valid device id.
 2. `exact`: source label exactly matches a device name in `devices.json`.
-3. `unresolved`: no explicit or exact match exists.
+3. `derived`: the source label's configuration suffix is stripped and the remaining base name matches exactly one device by slug.
+4. `unresolved`: none of the above matched.
 
-The importer does not use fuzzy matching or component-name stripping to decide device identity. Unresolved labels from GPU and storage benchmark scopes are listed as potential component orphans until they receive an explicit mapping.
+The `derived` tier handles the consistent disk-naming convention used by the source data. It repeatedly removes trailing configuration tokens from the label:
+
+- capacity tokens such as ` 512GB`, ` 1TB`, ` 2TB`
+- generation tokens such as ` Gen3`, ` Gen4`, ` Gen5`
+- parenthesised tokens such as ` (DC)`, ` (Gen4)`
+
+The remaining base name is slugified (lowercased, non-alphanumeric runs collapsed to `-`) and compared to slugified device names, so punctuation differences such as `ASUS NUC 16 Pro X7 358H` versus `ASUS NUC 16 Pro X7-358H` still resolve. Slugs shared by more than one device name are treated as ambiguous and are never resolved automatically; they must be mapped explicitly.
+
+The importer still does not use fuzzy or similarity matching to decide device identity. Unresolved labels from GPU and storage benchmark scopes are listed as potential component orphans until they receive an explicit mapping or a new device entry.
 
 ### Source Mapping File
 
@@ -335,6 +344,7 @@ When `AutoAddDevices` creates a new device, it assigns a stable slug derived fro
 
 - `Updated metric entries`: number of metrics written into `devices.json`
 - `Explicit source mappings used`: reviewed source labels resolved through `source-device-map.json`
+- `Derived source mappings used`: labels resolved by stripping the capacity/generation configuration suffix
 - `Unresolved source names`: labels that still need either a mapping or a new device entry
 - `Potential component orphans`: unresolved labels from GPU or storage benchmark scopes that need explicit ownership
 
@@ -345,6 +355,9 @@ Updated metric entries: 746
 
 Explicit source mappings used:
   'Minisforum M1 Pro 1TB Kingston (Gen4)' -> 'Minisforum M1 Pro-125H'
+
+Derived source mappings used (configuration suffix stripped):
+  'GEEKOM IT15 Ultra 9 285H 2TB Gen4' -> 'GEEKOM IT15 Ultra 9 285H'
 ```
 
 ### Export Raw Source Labels

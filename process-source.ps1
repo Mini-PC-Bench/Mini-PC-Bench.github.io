@@ -103,12 +103,41 @@ function Get-RowValues {
   return $result
 }
 
+function Get-DeviceSlug {
+  param([string]$Name)
+
+  $slug = $Name.ToLowerInvariant()
+  $slug = [regex]::Replace($slug, '[^a-z0-9]+', '-')
+  return $slug.Trim('-')
+}
+
+# Source labels use a consistent suffix convention for the tested configuration,
+# for example "GEEKOM IT15 Ultra 9 285H 2TB Gen4" or "GEEKOM A7 MAX 7940HS (DC)".
+# The suffix describes the drive/run configuration, not a separate device.
+function Get-SourceLabelBase {
+  param([string]$RawName)
+
+  $base = $RawName.Trim()
+  $previous = $null
+
+  while ($base -ne $previous) {
+    $previous = $base
+    $base = [regex]::Replace($base, '\s*\((?:DC|Gen\s*\d+)\)$', '', 'IgnoreCase')
+    $base = [regex]::Replace($base, '\s+\d+(?:GB|TB)$', '', 'IgnoreCase')
+    $base = [regex]::Replace($base, '\s+Gen\s*\d+$', '', 'IgnoreCase')
+    $base = $base.Trim()
+  }
+
+  return $base
+}
+
 function Resolve-DeviceName {
   param(
     [string]$RawName,
     [object[]]$KnownDevices,
     [hashtable]$CanonicalLookup,
-    [hashtable]$Aliases
+    [hashtable]$Aliases,
+    [hashtable]$SlugLookup
   )
 
   if ($Aliases.ContainsKey($RawName)) {
@@ -129,15 +158,40 @@ function Resolve-DeviceName {
     return @{ name = $CanonicalLookup[$exactName]; method = 'exact' }
   }
 
+  if ($null -ne $SlugLookup) {
+    $baseName = Get-SourceLabelBase -RawName $exactName
+    if (-not [string]::IsNullOrWhiteSpace($baseName)) {
+      $slug = Get-DeviceSlug -Name $baseName
+      if ($SlugLookup.ContainsKey($slug)) {
+        $canonical = [string]$SlugLookup[$slug]
+        # Ambiguous slugs are recorded as empty and must be mapped explicitly.
+        if (-not [string]::IsNullOrWhiteSpace($canonical)) {
+          return @{ name = $canonical; method = 'derived'; base = $baseName }
+        }
+      }
+    }
+  }
+
   return $null
 }
 
-function Get-DeviceSlug {
-  param([string]$Name)
+function Register-DeviceSlug {
+  param(
+    [hashtable]$SlugLookup,
+    [string]$Name
+  )
 
-  $slug = $Name.ToLowerInvariant()
-  $slug = [regex]::Replace($slug, '[^a-z0-9]+', '-')
-  return $slug.Trim('-')
+  $slug = Get-DeviceSlug -Name $Name
+  if ([string]::IsNullOrWhiteSpace($slug)) {
+    return
+  }
+
+  if ($SlugLookup.ContainsKey($slug) -and [string]$SlugLookup[$slug] -ne $Name) {
+    $SlugLookup[$slug] = ''
+    return
+  }
+
+  $SlugLookup[$slug] = $Name
 }
 
 function New-UniqueDeviceId {
@@ -366,8 +420,10 @@ foreach ($mappingProperty in $mappingObject.PSObject.Properties) {
 }
 
 $canonicalLookup = @{}
+$slugLookup = @{}
 foreach ($device in $devices) {
   $canonicalLookup[$device.name] = $device.name
+  Register-DeviceSlug -SlugLookup $slugLookup -Name $device.name
 }
 
 $specs = @(
@@ -410,6 +466,7 @@ foreach ($device in $devices) {
 $updatedCount = 0
 $autoAdded = [System.Collections.Generic.HashSet[string]]::new()
 $mappingMatches = @()
+$derivedMatches = @()
 $unresolved = [System.Collections.Generic.HashSet[string]]::new()
 $orphans = [System.Collections.Generic.HashSet[string]]::new()
 
@@ -420,45 +477,68 @@ foreach ($mappingProperty in $mappingObject.PSObject.Properties) {
   }
 }
 
-# Pre-pass: collect source labels before importing metrics so unresolved labels
-# can be reported and ordinary new devices can receive IDs consistently.
+# Pre-pass: collect source labels before importing metrics so ordinary new
+# devices can be auto-added and receive IDs consistently before metrics import.
+# Whether a label is a full device (vs. a config/SSD variant of one) is
+# determined by the configuration suffix convention (see Get-SourceLabelBase),
+# not by which CSV it happens to appear in - a device can legitimately have
+# its only benchmarks be a GPU test.
 if ($AutoAddDevices) {
-  $sourceKindsByLabel = @{}
+  $sourceLabels = [System.Collections.Generic.HashSet[string]]::new()
 
   foreach ($spec in $specs) {
     $path = Join-Path $SourceDir $spec.File
-    $kind = if ($spec.ContainsKey('Kind')) { $spec.Kind } else { '' }
     foreach ($label in (Get-SourceLabels -FilePath $path)) {
-      if (-not $sourceKindsByLabel.ContainsKey($label) -or -not [string]::IsNullOrWhiteSpace($kind)) {
-        $sourceKindsByLabel[$label] = $kind
-      }
+      [void]$sourceLabels.Add($label)
     }
   }
 
   $fanNoisePathPre = Join-Path $SourceDir 'Fan Noise.csv'
   foreach ($label in (Get-SourceLabels -FilePath $fanNoisePathPre)) {
-    if (-not $sourceKindsByLabel.ContainsKey($label)) {
-      $sourceKindsByLabel[$label] = ''
+    [void]$sourceLabels.Add($label)
+  }
+
+  $baseLabels = @()
+  $suffixedLabels = @()
+  foreach ($rawName in $sourceLabels) {
+    if ((Get-SourceLabelBase -RawName $rawName) -eq $rawName) {
+      $baseLabels += $rawName
+    } else {
+      $suffixedLabels += $rawName
     }
   }
 
-  foreach ($rawName in ($sourceKindsByLabel.Keys | Sort-Object)) {
-    $kind = $sourceKindsByLabel[$rawName]
-    $result = Resolve-DeviceName -RawName $rawName -KnownDevices $devices -CanonicalLookup $canonicalLookup -Aliases $aliases
+  # Phase 1: auto-add devices for labels with no configuration suffix, so
+  # phase 2 can resolve suffixed variants against them regardless of order.
+  foreach ($rawName in ($baseLabels | Sort-Object)) {
+    $result = Resolve-DeviceName -RawName $rawName -KnownDevices $devices -CanonicalLookup $canonicalLookup -Aliases $aliases -SlugLookup $slugLookup
     if (-not $result) {
-      [void]$unresolved.Add($rawName)
-      if ($kind -eq 'gpu' -or $kind -eq 'storage') {
-        [void]$orphans.Add($rawName)
-        continue
-      }
-
       $newDevice = New-DeviceTemplate -DeviceName $rawName
       $newDevice.id = New-UniqueDeviceId -Name $rawName -UsedIds $usedIds
       $devices += $newDevice
       $devicesByName[$rawName] = $newDevice
       $canonicalLookup[$rawName] = $rawName
+      Register-DeviceSlug -SlugLookup $slugLookup -Name $rawName
       [void]$autoAdded.Add($rawName)
-      [void]$unresolved.Remove($rawName)
+    }
+  }
+
+  # Phase 2: labels with a configuration suffix should never become devices
+  # themselves - if their base device still doesn't exist, create it under
+  # the derived base name instead of the raw (suffixed) label.
+  foreach ($rawName in ($suffixedLabels | Sort-Object)) {
+    $result = Resolve-DeviceName -RawName $rawName -KnownDevices $devices -CanonicalLookup $canonicalLookup -Aliases $aliases -SlugLookup $slugLookup
+    if (-not $result) {
+      $baseName = Get-SourceLabelBase -RawName $rawName
+      if (-not [string]::IsNullOrWhiteSpace($baseName) -and -not $devicesByName.ContainsKey($baseName)) {
+        $newDevice = New-DeviceTemplate -DeviceName $baseName
+        $newDevice.id = New-UniqueDeviceId -Name $baseName -UsedIds $usedIds
+        $devices += $newDevice
+        $devicesByName[$baseName] = $newDevice
+        $canonicalLookup[$baseName] = $baseName
+        Register-DeviceSlug -SlugLookup $slugLookup -Name $baseName
+        [void]$autoAdded.Add($baseName)
+      }
     }
   }
 }
@@ -470,7 +550,7 @@ foreach ($spec in $specs) {
 
   foreach ($rawName in $metricValues.Keys) {
     $kind = if ($spec.ContainsKey('Kind')) { $spec.Kind } else { '' }
-    $result = Resolve-DeviceName -RawName $rawName -KnownDevices $devices -CanonicalLookup $canonicalLookup -Aliases $aliases
+    $result = Resolve-DeviceName -RawName $rawName -KnownDevices $devices -CanonicalLookup $canonicalLookup -Aliases $aliases -SlugLookup $slugLookup
     if (-not $result) {
       [void]$unresolved.Add($rawName)
       if ($kind -eq 'gpu' -or $kind -eq 'storage') {
@@ -492,6 +572,8 @@ foreach ($spec in $specs) {
     # Track explicit mapping decisions for the import audit.
     if ($result.method -eq 'mapping') {
       $mappingMatches += @{ raw = $rawName; resolved = $resolvedName }
+    } elseif ($result.method -eq 'derived') {
+      $derivedMatches += @{ raw = $rawName; resolved = $resolvedName }
     }
 
     Set-DeviceMetric -Device $device -Key $spec.Key -Value $metricValues[$rawName]
@@ -505,7 +587,7 @@ $noiseLoad = Get-RowValues -FilePath $fanNoisePath -PreferredRows @('Load Defaul
 $noisePerf = Get-RowValues -FilePath $fanNoisePath -PreferredRows @('Load Performance', 'Performance')
 
 foreach ($rawName in $noiseIdle.Keys) {
-  $result = Resolve-DeviceName -RawName $rawName -KnownDevices $devices -CanonicalLookup $canonicalLookup -Aliases $aliases
+  $result = Resolve-DeviceName -RawName $rawName -KnownDevices $devices -CanonicalLookup $canonicalLookup -Aliases $aliases -SlugLookup $slugLookup
   if (-not $result) {
     [void]$unresolved.Add($rawName)
     continue
@@ -514,6 +596,8 @@ foreach ($rawName in $noiseIdle.Keys) {
   $resolvedName = $result.name
   if ($result.method -eq 'mapping') {
     $mappingMatches += @{ raw = $rawName; resolved = $resolvedName }
+  } elseif ($result.method -eq 'derived') {
+    $derivedMatches += @{ raw = $rawName; resolved = $resolvedName }
   }
 
   Set-DeviceMetric -Device $devicesByName[$resolvedName] -Key 'noise_idle' -Value $noiseIdle[$rawName]
@@ -521,7 +605,7 @@ foreach ($rawName in $noiseIdle.Keys) {
 }
 
 foreach ($rawName in $noiseLoad.Keys) {
-  $result = Resolve-DeviceName -RawName $rawName -KnownDevices $devices -CanonicalLookup $canonicalLookup -Aliases $aliases
+  $result = Resolve-DeviceName -RawName $rawName -KnownDevices $devices -CanonicalLookup $canonicalLookup -Aliases $aliases -SlugLookup $slugLookup
   if (-not $result) {
     [void]$unresolved.Add($rawName)
     continue
@@ -530,6 +614,8 @@ foreach ($rawName in $noiseLoad.Keys) {
   $resolvedName = $result.name
   if ($result.method -eq 'mapping') {
     $mappingMatches += @{ raw = $rawName; resolved = $resolvedName }
+  } elseif ($result.method -eq 'derived') {
+    $derivedMatches += @{ raw = $rawName; resolved = $resolvedName }
   }
 
   Set-DeviceMetric -Device $devicesByName[$resolvedName] -Key 'noise_load' -Value $noiseLoad[$rawName]
@@ -537,7 +623,7 @@ foreach ($rawName in $noiseLoad.Keys) {
 }
 
 foreach ($rawName in $noisePerf.Keys) {
-  $result = Resolve-DeviceName -RawName $rawName -KnownDevices $devices -CanonicalLookup $canonicalLookup -Aliases $aliases
+  $result = Resolve-DeviceName -RawName $rawName -KnownDevices $devices -CanonicalLookup $canonicalLookup -Aliases $aliases -SlugLookup $slugLookup
   if (-not $result) {
     [void]$unresolved.Add($rawName)
     continue
@@ -546,6 +632,8 @@ foreach ($rawName in $noisePerf.Keys) {
   $resolvedName = $result.name
   if ($result.method -eq 'mapping') {
     $mappingMatches += @{ raw = $rawName; resolved = $resolvedName }
+  } elseif ($result.method -eq 'derived') {
+    $derivedMatches += @{ raw = $rawName; resolved = $resolvedName }
   }
 
   Set-DeviceMetric -Device $devicesByName[$resolvedName] -Key 'noise_perf' -Value $noisePerf[$rawName]
@@ -561,6 +649,14 @@ if ($mappingMatches.Count -gt 0) {
   Write-Host ""
   Write-Host "Explicit source mappings used:"
   $mappingMatches | Sort-Object -Property raw -Unique | ForEach-Object {
+    Write-Host "  '$($_.raw)' -> '$($_.resolved)'"
+  }
+}
+
+if ($derivedMatches.Count -gt 0) {
+  Write-Host ""
+  Write-Host "Derived source mappings used (configuration suffix stripped):"
+  $derivedMatches | Sort-Object -Property raw -Unique | ForEach-Object {
     Write-Host "  '$($_.raw)' -> '$($_.resolved)'"
   }
 }
