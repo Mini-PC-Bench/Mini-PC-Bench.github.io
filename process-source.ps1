@@ -168,6 +168,7 @@ function New-DeviceTemplate {
   return [pscustomobject]@{
     id = $null
     name = $DeviceName
+    photo = $null
     noise = [pscustomobject]@{
       idle = $null
       load_default = $null
