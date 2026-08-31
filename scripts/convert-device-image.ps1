@@ -5,7 +5,7 @@
     for the Mini-PC Bench UI.
 
 .DESCRIPTION
-    Takes a source image from images/devices-source/<device-id>.<ext> and
+    Takes a source image from temp/devices-source/<device-id>.<ext> and
     produces a processed WebP tile in images/devices/<device-id>.webp using the
     cardglow Docker image.
 
@@ -29,10 +29,10 @@
     Edge feather radius in px (default: 3).
 
 .EXAMPLE
-    .\convert-device-image.ps1 -DeviceId asus-rog-nuc-15-ultra-9-275hx
+    .\scripts\convert-device-image.ps1 -DeviceId asus-rog-nuc-15-ultra-9-275hx
 
 .EXAMPLE
-    .\convert-device-image.ps1 -DeviceId asus-rog-nuc-15-ultra-9-275hx -BgTolerance 40
+    .\scripts\convert-device-image.ps1 -DeviceId asus-rog-nuc-15-ultra-9-275hx -BgTolerance 40
 #>
 
 param(
@@ -48,9 +48,10 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-$sourceDir = Join-Path $PSScriptRoot "images/devices-source"
-$outputDir = Join-Path $PSScriptRoot "images/devices"
-$devicesFile = Join-Path $PSScriptRoot "devices.json"
+$repoRoot = Split-Path -Parent $PSScriptRoot
+$sourceDir = Join-Path $repoRoot "temp/devices-source"
+$outputDir = Join-Path $repoRoot "images/devices"
+$devicesFile = Join-Path $repoRoot "devices.json"
 $extensions = @('avif', 'webp', 'png', 'jpg', 'jpeg', 'gif', 'svg')
 
 if ($All -and $DeviceId) {
@@ -135,9 +136,9 @@ foreach ($id in $deviceIdsToConvert) {
     docker pull ghcr.io/alan-null/cardglow:latest | Out-Null
 
     docker run --rm `
-        -v "${PSScriptRoot}/images:/data" `
+        -v "${repoRoot}:/data" `
         ghcr.io/alan-null/cardglow:latest `
-        "devices-source/$sourceFileName" `
+        "temp/devices-source/$sourceFileName" `
         --remove-bg `
         --bg-tolerance $BgTolerance `
         --bg-feather $BgFeather `
@@ -146,7 +147,7 @@ foreach ($id in $deviceIdsToConvert) {
         --padding "10 0 10 0" `
         --fit height `
         --icon-size $IconSize `
-        -o "devices/$outputFileName"
+        -o "images/devices/$outputFileName"
 
     if ($LASTEXITCODE -ne 0) {
         throw "cardglow failed for '$id' with exit code $LASTEXITCODE"

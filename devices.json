@@ -3106,7 +3106,7 @@
   {
     "id": "acemagic-kron-k5-core-5-320",
     "name": "ACEMAGIC Kron K5 Core 5 320",
-    "photo": null,
+    "photo": "./images/devices/acemagic-kron-k5-core-5-320.webp",
     "noise": {
       "idle": 29,
       "load_default": 39,
@@ -3138,7 +3138,7 @@
   {
     "id": "beelink-ser9-max-h350-ai-7-350",
     "name": "Beelink SER9 MAX H350 AI 7 350",
-    "photo": null,
+    "photo": "./images/devices/beelink-ser9-max-h350-ai-7-350.webp",
     "noise": {
       "idle": 29,
       "load_default": 32,
@@ -3170,7 +3170,7 @@
   {
     "id": "gmktec-k17-ultra-5-226v",
     "name": "GMKtec K17 Ultra 5 226V",
-    "photo": null,
+    "photo": "./images/devices/gmktec-k17-ultra-5-226v.webp",
     "noise": {
       "idle": 29,
       "load_default": 30,
@@ -3202,7 +3202,7 @@
   {
     "id": "minisforum-m2-pro-x7-358h",
     "name": "Minisforum M2 Pro X7 358H",
-    "photo": null,
+    "photo": "./images/devices/minisforum-m2-pro-x7-358h.webp",
     "noise": {
       "idle": 29,
       "load_default": 36,
@@ -3234,7 +3234,7 @@
   {
     "id": "asus-nuc-14-pro-i3-100u",
     "name": "ASUS NUC 14 Pro i3-100U",
-    "photo": null,
+    "photo": "./images/devices/asus-nuc-14-pro-i3-100u.webp",
     "noise": {
       "idle": null,
       "load_default": null,
@@ -3266,7 +3266,7 @@
   {
     "id": "asus-pn64-12500h",
     "name": "ASUS PN64-12500H",
-    "photo": null,
+    "photo": "./images/devices/asus-pn64-12500h.webp",
     "noise": {
       "idle": null,
       "load_default": null,
@@ -3298,7 +3298,7 @@
   {
     "id": "beelink-sei-12-i5-1235u",
     "name": "Beelink SEI 12 i5-1235U",
-    "photo": null,
+    "photo": "./images/devices/beelink-sei-12-i5-1235u.webp",
     "noise": {
       "idle": null,
       "load_default": null,
@@ -3330,7 +3330,7 @@
   {
     "id": "gmktec-k8-plus-8845hs",
     "name": "GMKtec K8 Plus 8845HS",
-    "photo": null,
+    "photo": "./images/devices/gmktec-k8-plus-8845hs.webp",
     "noise": {
       "idle": 32,
       "load_default": 38,
@@ -3362,7 +3362,7 @@
   {
     "id": "intel-nuc-12-pro-i5-1240p",
     "name": "Intel NUC 12 Pro i5-1240P",
-    "photo": null,
+    "photo": "./images/devices/intel-nuc-12-pro-i5-1240p.webp",
     "noise": {
       "idle": null,
       "load_default": null,
@@ -3394,7 +3394,7 @@
   {
     "id": "intel-nuc-12-pro-i7-1260p",
     "name": "Intel NUC 12 Pro i7-1260P",
-    "photo": null,
+    "photo": "./images/devices/intel-nuc-12-pro-i7-1260p.webp",
     "noise": {
       "idle": null,
       "load_default": null,
@@ -3426,7 +3426,7 @@
   {
     "id": "minisforum-um580-5800h",
     "name": "Minisforum UM580 5800H",
-    "photo": null,
+    "photo": "./images/devices/minisforum-um580-5800h.webp",
     "noise": {
       "idle": null,
       "load_default": null,
@@ -3458,7 +3458,7 @@
   {
     "id": "minisforum-um690-6900hx",
     "name": "Minisforum UM690 6900HX",
-    "photo": null,
+    "photo": "./images/devices/minisforum-um690-6900hx.webp",
     "noise": {
       "idle": null,
       "load_default": null,
@@ -3486,5 +3486,5 @@
     "ssd_temp": null,
     "volume": null,
     "wireless_audio": null
-  },
+  }
 ]
