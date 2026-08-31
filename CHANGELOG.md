@@ -2,8 +2,23 @@
 
 All notable changes to this project are documented here.
 
+## 2026-08-31
+
+- Added benchmark results for fourteen additional mini PCs.
+
+## 2026-08-30
+
+- Rebranded the site to MINI BENCH with a new logo and refreshed color scheme.
+- Added device photos to the details view
+
+## 2026-08-29
+
+- Updated store and review links for multiple mini PCs.
+- Merged duplicate device entries for Morefine M8S (N150).
+
 ## 2026-08-28
 
+- Added a custom 404 page for missing links and pages.
 - Added new mini PC benchmark results, including missing Cinebench R23 and Geekbench 6 entries.
 
 ## 2026-08-27
