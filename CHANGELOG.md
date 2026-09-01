@@ -2,9 +2,13 @@
 
 All notable changes to this project are documented here.
 
+## 2026-09-01
+
+- Added benchmark results for two additional mini PCs.
+
 ## 2026-08-31
 
-- Added benchmark results for fourteen additional mini PCs.
+- Added benchmark results for twelve additional mini PCs.
 
 ## 2026-08-30
 
