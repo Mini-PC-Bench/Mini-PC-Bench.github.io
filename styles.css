@@ -451,6 +451,30 @@ a.tab-btn:last-child {
   text-overflow: ellipsis;
 }
 
+.loading-info-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 6.35rem;
+}
+
+.loading-skeleton-label {
+  width: 7.5rem;
+  height: 0.55rem;
+  margin: 0.1rem 0 0.7rem;
+}
+
+.loading-skeleton-info-value {
+  width: 4.6rem;
+  height: 1.35rem;
+}
+
+.loading-skeleton-device {
+  width: 8.5rem;
+  height: 0.55rem;
+  margin-top: 0.55rem;
+}
+
 .controls {
   display: flex;
   align-items: center;
@@ -768,6 +792,32 @@ td.table-message {
   font-size: 0.82rem;
   color: var(--muted);
   padding: 1.15rem;
+}
+
+.loading-skeleton {
+  display: inline-block;
+  height: 0.72rem;
+  border-radius: 999px;
+  background: var(--border);
+  animation: loading-pulse 1.35s ease-in-out infinite;
+}
+
+.loading-skeleton-rank {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.loading-skeleton-value {
+  width: 4.2rem;
+}
+
+.loading-skeleton-name {
+  width: min(10rem, 75%);
+}
+
+@keyframes loading-pulse {
+  0%, 100% { opacity: .45; }
+  50% { opacity: 1; }
 }
 
 .cell-bar {
@@ -1223,6 +1273,36 @@ a:focus-visible {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 1.5rem;
+}
+
+.chart-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  min-height: 12rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.loading-spinner {
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 2px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: loading-spin .8s linear infinite;
+}
+
+@keyframes loading-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-skeleton,
+  .loading-spinner {
+    animation: none;
+  }
 }
 
 .chart-head {

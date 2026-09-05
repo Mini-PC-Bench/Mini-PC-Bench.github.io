@@ -557,8 +557,49 @@ function renderTableMessage(message) {
   benchmarkTable.innerHTML = `<tbody><tr><td class="table-message">${escapeHtml(message)}</td></tr></tbody>`;
 }
 
+function renderLoadingInfoCards() {
+  const cards = ['blue', 'green', 'amber', 'green', 'green', 'blue'];
+  infoGrid.setAttribute('aria-busy', 'true');
+  infoGrid.setAttribute('aria-label', 'Loading top benchmark values');
+  infoGrid.innerHTML = cards.map(cls => `
+    <div class="info-card ${cls} loading-info-card">
+      <span class="loading-skeleton loading-skeleton-label"></span>
+      <span class="loading-skeleton loading-skeleton-info-value"></span>
+      <span class="loading-skeleton loading-skeleton-device"></span>
+    </div>`).join('');
+}
+
+function renderLoadingTable() {
+  const visible = getVisibleColumns();
+  const cells = visible.map(column => `<td><span class="loading-skeleton loading-skeleton-${column.id === 'name' ? 'name' : 'value'}"></span></td>`).join('');
+  const rows = Array.from({ length: 8 }, (_, index) => `
+    <tr>
+      <td><span class="loading-skeleton loading-skeleton-rank"></span></td>
+      ${cells}
+    </tr>`).join('');
+
+  benchmarkTable.innerHTML = `
+    <thead>
+      <tr>
+        <th>#</th>
+        ${visible.map(column => `<th>${escapeHtml(column.label)}</th>`).join('')}
+      </tr>
+    </thead>
+    <tbody aria-busy="true" aria-label="Loading benchmark data">
+      ${rows}
+    </tbody>`;
+}
+
 function renderChartMessage(message) {
   chartBox.innerHTML = `<div class="chart-head"><div class="chart-title">Charts</div><div class="chart-desc">${escapeHtml(message)}</div></div>`;
+}
+
+function renderLoadingChart() {
+  chartBox.innerHTML = `
+    <div class="chart-loading" role="status" aria-label="Loading benchmark data">
+      <span class="loading-spinner" aria-hidden="true"></span>
+      <span>Loading benchmark data…</span>
+    </div>`;
 }
 
 function normalizeDevices(data) {
@@ -642,6 +683,9 @@ function applyDeviceLinks(linksByDeviceId) {
 }
 
 function renderInfoCards() {
+  infoGrid.removeAttribute('aria-busy');
+  infoGrid.removeAttribute('aria-label');
+
   if (!DEVICES.length) {
     infoGrid.innerHTML = '';
     return;
@@ -1103,8 +1147,9 @@ function renderChart() {
 function setLoadingState() {
   siteMetaEl.textContent = 'Loading benchmark data…';
   countEl.textContent = 'Loading data…';
-  renderTableMessage('Loading benchmark data…');
-  renderChartMessage('Loading benchmark data…');
+  renderLoadingInfoCards();
+  renderLoadingTable();
+  renderLoadingChart();
 }
 
 function setErrorState(message) {
