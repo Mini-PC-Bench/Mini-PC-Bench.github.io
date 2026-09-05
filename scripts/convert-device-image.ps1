@@ -67,7 +67,7 @@ function Update-DevicePhoto {
 
     $content = Get-Content -Raw $devicesFile
     $idPattern = [regex]::Escape($Id)
-    $devicePattern = '(?ms)(^  \{\r?\n    "id": "' + $idPattern + '".*?^  \})(,?)'
+    $devicePattern = '(?ims)(^  \{\r?\n    "id": "' + $idPattern + '".*?^  \})(,?)'
     $match = [regex]::Match($content, $devicePattern)
     if (-not $match.Success) {
         throw "No device with id '$Id' was found in devices.json."
@@ -116,15 +116,22 @@ if ($All) {
         Write-Warning "Skipped source files without a matching device id: $($skipped -join ', ')"
     }
 } else {
-    $deviceIdsToConvert = @($DeviceId)
+    $device = (Get-Content -Raw $devicesFile | ConvertFrom-Json | Where-Object { $_.id -ieq $DeviceId } | Select-Object -First 1)
+    if (-not $device) {
+        throw "No device with id '$DeviceId' was found in devices.json."
+    }
+
+    $deviceIdsToConvert = @($device.id)
 }
 
 foreach ($id in $deviceIdsToConvert) {
+    $id = $id.ToLowerInvariant()
     $sourceFile = $null
     foreach ($ext in $extensions) {
-        $candidate = Join-Path $sourceDir "$id.$ext"
-        if (Test-Path $candidate) {
-            $sourceFile = $candidate
+        $sourceFile = Get-ChildItem -File $sourceDir | Where-Object {
+            $_.BaseName -ieq $id -and $_.Extension.TrimStart('.').ToLowerInvariant() -eq $ext
+        } | Select-Object -First 1
+        if ($sourceFile) {
             break
         }
     }
