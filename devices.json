@@ -3554,7 +3554,7 @@
   {
     "id": "acemagic-w1-8745hs",
     "name": "ACEMAGIC W1 8745HS",
-    "photo": null,
+    "photo": "./images/devices/acemagic-w1-8745hs.webp",
     "noise": {
       "idle": 29,
       "load_default": 44,
@@ -3586,7 +3586,7 @@
   {
     "id": "alliwava-u58-5825u",
     "name": "ALLIWAVA U58 5825U",
-    "photo": null,
+    "photo": "./images/devices/alliwava-u58-5825u.webp",
     "noise": {
       "idle": 29,
       "load_default": 36,
@@ -3618,7 +3618,7 @@
   {
     "id": "aoostar-maco-h-255",
     "name": "AOOSTAR MACO H 255",
-    "photo": null,
+    "photo": "./images/devices/aoostar-maco-h-255.webp",
     "noise": {
       "idle": 29,
       "load_default": 40,
@@ -3650,7 +3650,7 @@
   {
     "id": "beelink-ser8-8845hs",
     "name": "Beelink SER8 8845HS",
-    "photo": null,
+    "photo": "./images/devices/beelink-ser8-8845hs.webp",
     "noise": {
       "idle": 29,
       "load_default": 33,
@@ -3682,7 +3682,7 @@
   {
     "id": "bosgame-m4-neo-7840hs",
     "name": "BOSGAME M4 Neo 7840HS",
-    "photo": null,
+    "photo": "./images/devices/bosgame-m4-neo-7840hs.webp",
     "noise": {
       "idle": 32,
       "load_default": 39,
@@ -3714,7 +3714,7 @@
   {
     "id": "chuwi-aubox-8745hs",
     "name": "Chuwi AUbox 8745HS",
-    "photo": null,
+    "photo": "./images/devices/chuwi-aubox-8745hs.webp",
     "noise": {
       "idle": 29,
       "load_default": 45,
@@ -3746,7 +3746,7 @@
   {
     "id": "dreamquest-max-7430u",
     "name": "DreamQuest Max 7430U",
-    "photo": null,
+    "photo": "./images/devices/dreamquest-max-7430u.webp",
     "noise": {
       "idle": 32,
       "load_default": 32,
@@ -3778,7 +3778,7 @@
   {
     "id": "gmktec-evo-x1-hx-370",
     "name": "GMKtec EVO-X1 HX 370",
-    "photo": null,
+    "photo": "./images/devices/gmktec-evo-x1-hx-370.webp",
     "noise": {
       "idle": 32,
       "load_default": 42,
@@ -3810,7 +3810,7 @@
   {
     "id": "gmktec-k10-i9-13900hk",
     "name": "GMKtec K10 i9-13900HK",
-    "photo": null,
+    "photo": "./images/devices/gmktec-k10-i9-13900hk.webp",
     "noise": {
       "idle": 29,
       "load_default": 40,
@@ -3842,7 +3842,7 @@
   {
     "id": "gmktec-k12-h-255",
     "name": "GMKtec K12 H 255",
-    "photo": null,
+    "photo": "./images/devices/gmktec-k12-h-255.webp",
     "noise": {
       "idle": 33,
       "load_default": 40,
@@ -3874,7 +3874,7 @@
   {
     "id": "herk-pulsar-5825u",
     "name": "Herk Pulsar 5825U",
-    "photo": null,
+    "photo": "./images/devices/herk-pulsar-5825u.webp",
     "noise": {
       "idle": 29,
       "load_default": 33,
@@ -3906,7 +3906,7 @@
   {
     "id": "minisforum-ai-x1-h-255",
     "name": "Minisforum AI X1 H 255",
-    "photo": null,
+    "photo": "./images/devices/minisforum-ai-x1-h-255.webp",
     "noise": {
       "idle": 29,
       "load_default": 40,
@@ -3938,7 +3938,7 @@
   {
     "id": "minisforum-ai-x1-pro-hx-370",
     "name": "Minisforum AI X1 Pro HX 370",
-    "photo": null,
+    "photo": "./images/devices/minisforum-ai-x1-pro-hx-370.webp",
     "noise": {
       "idle": 29,
       "load_default": 36,
@@ -3970,7 +3970,7 @@
   {
     "id": "minisforum-um690-slim-6900hx",
     "name": "Minisforum UM690 Slim 6900HX",
-    "photo": null,
+    "photo": "./images/devices/minisforum-um690-slim-6900hx.webp",
     "noise": {
       "idle": 32,
       "load_default": 42,
@@ -4002,7 +4002,7 @@
   {
     "id": "minisforum-um870-8745hs",
     "name": "Minisforum UM870 8745HS",
-    "photo": null,
+    "photo": "./images/devices/minisforum-um870-8745hs.webp",
     "noise": {
       "idle": 30,
       "load_default": 40,
@@ -4034,7 +4034,7 @@
   {
     "id": "minisforum-um880-plus-8845hs",
     "name": "Minisforum UM880 Plus 8845HS",
-    "photo": null,
+    "photo": "./images/devices/minisforum-um880-plus-8845hs.webp",
     "noise": {
       "idle": 29,
       "load_default": 43,
@@ -4066,7 +4066,7 @@
   {
     "id": "minisforum-x1-lite-h-255",
     "name": "Minisforum X1 Lite H 255",
-    "photo": null,
+    "photo": "./images/devices/minisforum-x1-lite-h-255.webp",
     "noise": {
       "idle": 29,
       "load_default": 36,
@@ -4098,7 +4098,7 @@
   {
     "id": "minix-nuc355-core-3-n355",
     "name": "MINIX NUC355 Core 3 N355",
-    "photo": null,
+    "photo": "./images/devices/minix-nuc355-core-3-n355.webp",
     "noise": {
       "idle": 29,
       "load_default": 30,
@@ -4130,7 +4130,7 @@
   {
     "id": "soayan-exr1-8745hs",
     "name": "SOAYAN EXR1 8745HS",
-    "photo": null,
+    "photo": "./images/devices/soayan-exr1-8745hs.webp",
     "noise": {
       "idle": 29,
       "load_default": 35,
