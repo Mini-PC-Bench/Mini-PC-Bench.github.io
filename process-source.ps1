@@ -112,7 +112,8 @@ function Get-DeviceSlug {
 }
 
 # Source labels use a consistent suffix convention for the tested configuration,
-# for example "GEEKOM IT15 Ultra 9 285H 2TB Gen4" or "GEEKOM A7 MAX 7940HS (DC)".
+# for example "GEEKOM IT15 Ultra 9 285H 2TB Gen4", "DreamQuest Max 7430U 512GB SATA",
+# or "GEEKOM A7 MAX 7940HS (DC)".
 # The suffix describes the drive/run configuration, not a separate device.
 function Get-SourceLabelBase {
   param([string]$RawName)
@@ -123,6 +124,7 @@ function Get-SourceLabelBase {
   while ($base -ne $previous) {
     $previous = $base
     $base = [regex]::Replace($base, '\s*\((?:DC|Gen\s*\d+)\)$', '', 'IgnoreCase')
+    $base = [regex]::Replace($base, '\s+\d+(?:GB|TB)(?:\s+[A-Za-z0-9][A-Za-z0-9._-]*)+$', '', 'IgnoreCase')
     $base = [regex]::Replace($base, '\s+\d+(?:GB|TB)$', '', 'IgnoreCase')
     $base = [regex]::Replace($base, '\s+Gen\s*\d+$', '', 'IgnoreCase')
     $base = $base.Trim()

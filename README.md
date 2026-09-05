@@ -325,6 +325,7 @@ Keep `AutoAddDevices` disabled until component resolutions and unresolved names 
 The `derived` tier handles the consistent disk-naming convention used by the source data. It repeatedly removes trailing configuration tokens from the label:
 
 - capacity tokens such as ` 512GB`, ` 1TB`, ` 2TB`
+- storage descriptors after capacity, such as drive vendors or interfaces (` SATA`, ` Kingston`)
 - generation tokens such as ` Gen3`, ` Gen4`, ` Gen5`
 - parenthesised tokens such as ` (DC)`, ` (Gen4)`
 
