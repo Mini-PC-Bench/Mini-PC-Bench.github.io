@@ -656,8 +656,12 @@
       "kind": "youtube"
     },
     {
+      "label": "Official Website",
+      "url": "https://www.minix.com.hk/products/minix-ngc-nr660-mini-pc?ref=yjmjldih"
+    },
+    {
       "label": "Amazon Affiliate Link",
-      "url": "https://geni.us/FoLH",
+      "url": "https://geni.us/gVFg",
       "kind": "affiliate"
     },
     {
@@ -1568,25 +1572,339 @@
       "kind": "youtube"
     }
   ],
-  "minisforum-ms-01-i9-13900h": [],
-  "minisforum-ms-03-ultra-9-386h": [],
-  "acemagic-w1-8745hs": [],
-  "alliwava-u58-5825u": [],
-  "aoostar-maco-h-255": [],
-  "beelink-ser8-8845hs": [],
-  "bosgame-m4-neo-7840hs": [],
-  "chuwi-aubox-8745hs": [],
-  "dreamquest-max-7430u": [],
-  "gmktec-evo-x1-hx-370": [],
-  "gmktec-k10-i9-13900hk": [],
-  "gmktec-k12-h-255": [],
-  "herk-pulsar-5825u": [],
-  "minisforum-ai-x1-h-255": [],
-  "minisforum-ai-x1-pro-hx-370": [],
-  "minisforum-um690-slim-6900hx": [],
-  "minisforum-um870-8745hs": [],
-  "minisforum-um880-plus-8845hs": [],
-  "minisforum-x1-lite-h-255": [],
-  "minix-nuc355-core-3-n355": [],
-  "soayan-exr1-8745hs": []
+  "minisforum-ms-01-i9-13900h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/vRUg8DLWlbU",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/4gMQY5W"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/G7fh",
+      "kind": "affiliate"
+    },
+    {
+      "label": "Best Buy US Affiliate Link",
+      "url": "https://bestbuycreators.7tiv.net/WOv1dP",
+      "kind": "affiliate"
+    }
+  ],
+  "minisforum-ms-03-ultra-9-386h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/PO7qD5dZEG8",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/45fpnVC"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/l8SskYf",
+      "kind": "affiliate"
+    },
+    {
+      "label": "Best Buy US Affiliate Link",
+      "url": "https://bestbuycreators.7tiv.net/YVvJnJ",
+      "kind": "affiliate"
+    }
+  ],
+  "acemagic-w1-8745hs": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/1g5rpRJAD8A",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website US",
+      "url": "https://shrsl.com/4xi63"
+    },
+    {
+      "label": "Official Website EU",
+      "url": "https://acemagic.eu/products/w1-minipc?aff=30"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/KrFam9",
+      "kind": "affiliate"
+    },
+    {
+      "label": "Best Buy US Affiliate Link",
+      "url": "https://bestbuycreators.7tiv.net/qWL7Zy",
+      "kind": "affiliate"
+    }
+  ],
+  "alliwava-u58-5825u": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/6KBfRuGGAms",
+      "kind": "youtube"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/LBcP",
+      "kind": "affiliate"
+    }
+  ],
+  "aoostar-maco-h-255": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/_tgTuMbpoXw",
+      "kind": "youtube"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/GP6bai",
+      "kind": "affiliate"
+    }
+  ],
+  "beelink-ser8-8845hs": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/XAQWGKem2ps",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://beelink.sjv.io/3JXbyk"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/28xzA",
+      "kind": "affiliate"
+    }
+  ],
+  "bosgame-m4-neo-7840hs": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/8wfqfphN1sk",
+      "kind": "youtube"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/28xzA",
+      "kind": "affiliate"
+    },
+    {
+      "label": "Best Buy US",
+      "url": "https://bestbuycreators.7tiv.net/VOvEaR",
+      "kind": "affiliate"
+    }
+  ],
+  "chuwi-aubox-8745hs": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/SArZ1radKJ0",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://hubs.li/Q03gYffC0"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/j11wog",
+      "kind": "affiliate"
+    }
+  ],
+  "dreamquest-max-7430u": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/TPs7gse5ULI",
+      "kind": "youtube"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/RrPwL",
+      "kind": "affiliate"
+    }
+  ],
+  "gmktec-evo-x1-hx-370": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/r_Saq87hvRA",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/3SK4ZJH"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/E9rFHDI",
+      "kind": "affiliate"
+    }
+  ],
+  "gmktec-k10-i9-13900hk": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/5B3ahT_DsIU",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/4xGv9fv"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/zhoqfo",
+      "kind": "affiliate"
+    }
+  ],
+  "gmktec-k12-h-255": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/U76Fmzuw2H4",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/3Kj7pds"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/wfGNxc",
+      "kind": "affiliate"
+    }
+  ],
+  "herk-pulsar-5825u": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/Q8VWPPID3ZE",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://herk.store/products/herk-pulsar-5825u?variant=42797351633007"
+    }
+  ],
+  "minisforum-ai-x1-h-255": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/c5K6Q5iZGwo",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/3StxhrS"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/Pa8cqH",
+      "kind": "affiliate"
+    }
+  ],
+  "minisforum-ai-x1-pro-hx-370": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/HY4TH1Z2-xw",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/4inYowZ"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/AZEeU",
+      "kind": "affiliate"
+    }
+  ],
+  "minisforum-um690-slim-6900hx": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/zYbsAbuw4aM",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/4gRRlMB"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/sSMD",
+      "kind": "affiliate"
+    }
+  ],
+  "minisforum-um870-8745hs": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/xKD2mU6shdo",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/4iNnGqj"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/5TQSO",
+      "kind": "affiliate"
+    }
+  ],
+  "minisforum-um880-plus-8845hs": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/i3O5PwT9yxY",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/4q4RcrK"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/DP8dJL",
+      "kind": "affiliate"
+    }
+  ],
+  "minisforum-x1-lite-h-255": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/AYMQNhWV6ko",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/4q4RcrK"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/7AO6D",
+      "kind": "affiliate"
+    }
+  ],
+  "minix-nuc355-core-3-n355": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/Gz_mjhOMeKg",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://www.minix.com.hk/products/minix-nuc355-mini-pc?ref=yjmjldih"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/1Nna8",
+      "kind": "affiliate"
+    }
+  ],
+  "soayan-exr1-8745hs": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/z9kKSUCiWfg",
+      "kind": "youtube"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/ndtu6Ix",
+      "kind": "affiliate"
+    }
+  ]
 }
