@@ -1425,8 +1425,30 @@ a:focus-visible {
   display: flex;
   align-items: center;
   gap: 0.35rem;
+  padding: 0.2rem 0.3rem;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  font-family: 'Outfit', sans-serif;
   font-size: 0.72rem;
   color: var(--text);
+  cursor: pointer;
+  opacity: 0.42;
+  transition: opacity .15s, background .15s;
+}
+
+.legend-item.active {
+  opacity: 1;
+}
+
+.legend-item:hover:not(:disabled),
+.legend-item:focus-visible {
+  background: var(--accent-dim);
+  outline: none;
+}
+
+.legend-item:disabled {
+  cursor: not-allowed;
 }
 
 .legend-dot {

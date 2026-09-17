@@ -116,6 +116,7 @@ const CHART_META = {
     lowerBetter: true,
     multiSeries: true,
     defaultSortSeries: 'noise_load',
+    defaultVisibleSeries: ['noise_idle', 'noise_load', 'noise_perf'],
     series: [
       { key: 'noise_idle', label: 'Idle', colorVar: '--noise1' },
       { key: 'noise_load', label: 'Load', colorVar: '--noise2' },
@@ -191,6 +192,7 @@ let linksLoaded = false;
 // Multi-series chart state
 let multiSeriesSort = 'noise_load';
 let multiSeriesMode = 'stacked'; // 'stacked' | 'grouped'
+let multiSeriesVisible = new Set(CHART_META.noise.defaultVisibleSeries ?? CHART_META.noise.series.map(series => series.key));
 
 const benchmarkTable = document.getElementById('benchmark-table');
 const infoGrid = document.getElementById('info-grid');
@@ -909,45 +911,26 @@ function renderColumnPicker() {
 // ── Multi-series chart helpers ──────────────────────────────────────────────
 
 function buildStackedSegments(device, meta, globalMax) {
-  const [s0, s1, s2] = meta.series;
-  const v0 = device[s0.key];
-  const v1 = device[s1.key];
-  const v2 = device[s2.key];
-
-  if (v0 == null && v1 == null && v2 == null) {
+  if (!meta.series.some(series => device[series.key] != null)) {
     return `<span class="chart-segment-empty">no data</span>`;
   }
 
   const toW = v => v != null && globalMax ? ((v / globalMax) * 100).toFixed(2) : '0';
   let segments = '';
+  let previousValue = null;
 
-  // Segment 0: idle absolute
-  if (v0 != null) {
-    segments += `<div class="chart-segment" data-w="${toW(v0)}" style="width:0;background:var(${s0.colorVar})" title="${s0.label}: ${fmt(v0)}${meta.unit}"></div>`;
-  }
-
-  // Segment 1: load delta (or absolute if idle missing)
-  if (v1 != null) {
-    if (v0 != null) {
-      const delta = Math.max(v1 - v0, 0);
+  meta.series.forEach(series => {
+    const value = device[series.key];
+    if (value == null) return;
+    if (previousValue != null) {
+      const delta = Math.max(value - previousValue, 0);
       const w = ((delta / globalMax) * 100).toFixed(2);
-      segments += `<div class="chart-segment" data-w="${w}" style="width:0;background:var(${s1.colorVar})" title="${s1.label}: ${fmt(v1)}${meta.unit} (+${fmt(Math.round(delta))})"></div>`;
+      segments += `<div class="chart-segment" data-w="${w}" style="width:0;background:var(${series.colorVar})" title="${series.label}: ${fmt(value)}${meta.unit} (+${fmt(Math.round(delta))})"></div>`;
     } else {
-      segments += `<div class="chart-segment" data-w="${toW(v1)}" style="width:0;background:var(${s1.colorVar})" title="${s1.label}: ${fmt(v1)}${meta.unit}"></div>`;
+      segments += `<div class="chart-segment" data-w="${toW(value)}" style="width:0;background:var(${series.colorVar})" title="${series.label}: ${fmt(value)}${meta.unit}"></div>`;
     }
-  }
-
-  // Segment 2: perf delta (or absolute if load missing)
-  if (v2 != null) {
-    const base = v1 ?? v0;
-    if (base != null) {
-      const delta = Math.max(v2 - base, 0);
-      const w = ((delta / globalMax) * 100).toFixed(2);
-      segments += `<div class="chart-segment" data-w="${w}" style="width:0;background:var(${s2.colorVar})" title="${s2.label}: ${fmt(v2)}${meta.unit} (+${fmt(Math.round(delta))})"></div>`;
-    } else {
-      segments += `<div class="chart-segment" data-w="${toW(v2)}" style="width:0;background:var(${s2.colorVar})" title="${s2.label}: ${fmt(v2)}${meta.unit}"></div>`;
-    }
-  }
+    previousValue = value;
+  });
 
   return segments;
 }
@@ -963,7 +946,9 @@ function buildGroupedTracks(device, meta, globalMax) {
 }
 
 function renderChartMultiSeries(meta) {
-  const devices = DEVICES.filter(d => meta.series.some(s => d[s.key] != null));
+  const enabledSeries = meta.series.filter(series => multiSeriesVisible.has(series.key));
+  const enabledMeta = { ...meta, series: enabledSeries };
+  const devices = DEVICES.filter(device => enabledSeries.some(series => device[series.key] != null));
 
   if (!devices.length) {
     renderChartMessage('No noise data available.');
@@ -971,7 +956,7 @@ function renderChartMultiSeries(meta) {
   }
 
   // Global max across all series for proportional bar sizing
-  const globalMax = Math.max(...devices.flatMap(d => meta.series.map(s => d[s.key] ?? 0)), 0);
+  const globalMax = Math.max(...devices.flatMap(device => enabledSeries.map(series => device[series.key] ?? 0)), 0);
 
   // Sort by selected series key (lower is better for noise)
   const sorted = [...devices].sort((a, b) => {
@@ -981,7 +966,7 @@ function renderChartMultiSeries(meta) {
   });
 
   // ── Controls ──
-  const sortPills = meta.series.map(s => `
+  const sortPills = enabledSeries.map(s => `
     <button class="chart-sort-pill${multiSeriesSort === s.key ? ' active' : ''}" data-sort="${s.key}">${s.label}</button>
   `).join('');
 
@@ -997,10 +982,10 @@ function renderChartMultiSeries(meta) {
   const legendHtml = `
     <div class="chart-legend">
       ${meta.series.map(s => `
-        <span class="legend-item">
+        <button type="button" class="legend-item${multiSeriesVisible.has(s.key) ? ' active' : ''}" data-series="${s.key}" aria-pressed="${multiSeriesVisible.has(s.key)}" ${enabledSeries.length === 1 && multiSeriesVisible.has(s.key) ? 'disabled' : ''}>
           <span class="legend-dot" style="background:var(${s.colorVar})"></span>
           <span>${s.label}</span>
-        </span>`).join('')}
+        </button>`).join('')}
       ${multiSeriesMode === 'stacked' ? `<span class="legend-hint">Segments show delta from previous profile</span>` : ''}
     </div>`;
 
@@ -1008,14 +993,14 @@ function renderChartMultiSeries(meta) {
   const rowsHtml = sorted.map((device, idx) => {
     const isTop = idx < 3;
     const primaryVal = device[multiSeriesSort];
-    const allVals = meta.series.map(s => device[s.key] != null ? `${fmt(device[s.key])}` : '—').join(' / ');
-    const numTitle = `${meta.series.map(s => `${s.label}: ${device[s.key] != null ? fmt(device[s.key]) + meta.unit : '—'}`).join(', ')}`;
+    const allVals = enabledSeries.map(s => device[s.key] != null ? `${fmt(device[s.key])}` : '—').join(' / ');
+    const numTitle = `${enabledSeries.map(s => `${s.label}: ${device[s.key] != null ? fmt(device[s.key]) + meta.unit : '—'}`).join(', ')}`;
 
     if (multiSeriesMode === 'stacked') {
       return `<div class="chart-row">
         <button type="button" class="chart-label${isTop ? ' top' : ''}" data-device-id="${escapeHtml(device.id)}" title="${escapeHtml(device.name)}">${escapeHtml(device.name)}</button>
         <div class="chart-track chart-track-stacked">
-          ${buildStackedSegments(device, meta, globalMax)}
+          ${buildStackedSegments(device, enabledMeta, globalMax)}
         </div>
         <span class="chart-num chart-num-multi${isTop ? ' top' : ''}" title="${escapeHtml(numTitle)}">${allVals}${meta.unit}</span>
       </div>`;
@@ -1023,7 +1008,7 @@ function renderChartMultiSeries(meta) {
       return `<div class="chart-row chart-row-grouped">
         <button type="button" class="chart-label${isTop ? ' top' : ''}" data-device-id="${escapeHtml(device.id)}" title="${escapeHtml(device.name)}">${escapeHtml(device.name)}</button>
         <div class="chart-track-group">
-          ${buildGroupedTracks(device, meta, globalMax)}
+          ${buildGroupedTracks(device, enabledMeta, globalMax)}
         </div>
         <span class="chart-num chart-num-multi${isTop ? ' top' : ''}" title="${escapeHtml(numTitle)}">${allVals}${meta.unit}</span>
       </div>`;
@@ -1062,6 +1047,22 @@ function renderChartMultiSeries(meta) {
   chartBox.querySelectorAll('.chart-sort-pill').forEach(btn => {
     btn.addEventListener('click', () => {
       multiSeriesSort = btn.dataset.sort;
+      renderChart();
+    });
+  });
+
+  chartBox.querySelectorAll('.legend-item[data-series]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const seriesKey = btn.dataset.series;
+      if (multiSeriesVisible.has(seriesKey)) {
+        if (multiSeriesVisible.size === 1) return;
+        multiSeriesVisible.delete(seriesKey);
+        if (multiSeriesSort === seriesKey) {
+          multiSeriesSort = meta.series.find(series => multiSeriesVisible.has(series.key)).key;
+        }
+      } else {
+        multiSeriesVisible.add(seriesKey);
+      }
       renderChart();
     });
   });
