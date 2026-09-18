@@ -2,6 +2,15 @@
 
 All notable changes to this project are documented here.
 
+## 2026-09-17
+
+- Added a multi-series toggle to the Charts view for comparing multiple benchmark results.
+
+## 2026-09-05
+
+- Added benchmark results for nineteen additional mini PCs.
+- Added loading indicators for benchmark data, tables, charts, and summary cards.
+
 ## 2026-09-01
 
 - Added benchmark results for two additional mini PCs.
