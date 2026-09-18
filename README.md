@@ -6,7 +6,7 @@ Static benchmark comparison page for mini PCs, designed to be hosted on GitHub P
 
 - `index.html` - main page markup
 - `styles.css` - page styles
-- `app.js` - client-side logic for loading data, rendering charts/table, and saving column visibility
+- `app.js` - client-side logic for loading data, rendering charts/table/comparison, and saving column visibility and the comparison basket
 - `theme.js` - shared light/dark theme behavior for site pages
 - `assets/mini-bench-logo.webp` - Mini Bench brand logo used in the site header
 - `devices.json` - benchmark dataset consumed by the page

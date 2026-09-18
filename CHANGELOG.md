@@ -2,6 +2,11 @@
 
 All notable changes to this project are documented here.
 
+## 2026-09-18
+
+- Added a comparison basket: tick devices in the Table view or the device popover, then open the new Compare tab to see them side by side with the best value in each row highlighted.
+- Comparison selections are remembered between visits and can be shared with a link.
+
 ## 2026-09-17
 
 - Added a multi-series toggle to the Charts view for comparing multiple benchmark results.

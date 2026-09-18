@@ -1,7 +1,11 @@
 const DATA_URL = './devices.json';
 const LINKS_URL = './device-links.json';
 const DEVICE_QUERY_PARAM = 'device';
+const COMPARE_QUERY_PARAM = 'compare';
 const COLUMN_STORAGE_KEY = 'minipc-benchmarks.visible-columns';
+const COMPARE_STORAGE_KEY = 'minipc-benchmarks.compare-selection';
+const COMPARE_DIFF_STORAGE_KEY = 'minipc-benchmarks.compare-diff-only';
+const COMPARE_MAX = 4;
 const META_SUFFIX = 'Cinebench R23 &nbsp;·&nbsp; Geekbench 6 &nbsp;·&nbsp; 3DMark &nbsp;·&nbsp; H264 &nbsp;·&nbsp; Power draw &nbsp;·&nbsp; Efficiency score';
 
 // Edit this list to define which optional columns are enabled for first-time visitors.
@@ -52,6 +56,7 @@ const BENCH_LOWER = [
 ];
 
 const TABLE_COLUMNS = [
+  { id: 'compare', label: '<span class="sr-only">Compare</span>⇄', pickerLabel: 'Compare', title: 'Add to the comparison basket', headerClass: 'col-compare', cellClass: 'col-compare', alwaysVisible: true, notSortable: true },
   { id: 'name', label: 'Device', pickerLabel: 'Device', title: 'Device name', headerClass: 'col-name', cellClass: 'col-name', alwaysVisible: true, sortDefaultDir: 1 },
   { id: 'cb23s', label: 'CB R23 1T', pickerLabel: 'CB R23 Single', title: 'Cinebench R23 Single Core (higher is better)', sortDefaultDir: -1 },
   { id: 'cb23m', label: 'CB R23 nT', pickerLabel: 'CB R23 Multi', title: 'Cinebench R23 Multi Core (higher is better)', sortDefaultDir: -1 },
@@ -188,6 +193,8 @@ let filterQ = '';
 let activeChart = 'cb23s';
 let activeDeviceId = null;
 let linksLoaded = false;
+let compareSelection = [];
+let compareDiffOnly = false;
 
 // Multi-series chart state
 let multiSeriesSort = 'noise_load';
@@ -207,6 +214,12 @@ const deviceDetailCloseBtn = document.getElementById('device-detail-close');
 const deviceDetailTitle = document.getElementById('device-detail-title');
 const deviceDetailSummary = document.getElementById('device-detail-summary');
 const deviceDetailBody = document.getElementById('device-detail-body');
+const compareBox = document.getElementById('compare-box');
+const compareSubtitleEl = document.getElementById('compare-subtitle');
+const compareTabCountEl = document.getElementById('compare-tab-count');
+const compareTrayEl = document.getElementById('compare-tray');
+const compareTrayItemsEl = document.getElementById('compare-tray-items');
+const compareDiffOnlyEl = document.getElementById('compare-diff-only');
 const siteHeader = document.querySelector('header');
 const tableWrap = document.querySelector('.table-wrap');
 let floatingTableHeader = null;
@@ -430,8 +443,16 @@ function renderDeviceDetail(device) {
   const metrics = DETAIL_METRIC_GROUPS.filter(group => group.type !== 'links').map(group => {
     return renderDetailMetrics(group, device);
   }).filter(Boolean).join('');
-  deviceDetailBody.innerHTML = `<div class="detail-feature-grid">${photo}${links}</div>${metrics}`;
+  const compareAction = `<div class="detail-actions">
+    <button type="button" class="detail-compare-toggle" data-device-id="${escapeHtml(device.id)}" aria-pressed="false">Add to comparison</button>
+  </div>`;
+  deviceDetailBody.innerHTML = `${compareAction}<div class="detail-feature-grid">${photo}${links}</div>${metrics}`;
   initDetailPhotoLoading();
+
+  deviceDetailBody.querySelector('.detail-compare-toggle')?.addEventListener('click', event => {
+    toggleCompare(event.currentTarget.dataset.deviceId);
+  });
+  syncCompareDetailButton();
 }
 
 function initDetailPhotoLoading() {
@@ -506,9 +527,305 @@ function syncDeviceDetailFromUrl() {
   openDeviceDetail(targetId, { syncUrl: false });
 }
 
+// ── Comparison basket ───────────────────────────────────────────────────────
+
+function sanitizeCompareIds(ids) {
+  const seen = new Set();
+  const result = [];
+
+  (Array.isArray(ids) ? ids : []).forEach(rawId => {
+    const id = typeof rawId === 'string' ? rawId.trim() : '';
+    if (!id || seen.has(id)) return;
+    if (DEVICES.length && !findDeviceById(id)) return;
+    seen.add(id);
+    if (result.length < COMPARE_MAX) result.push(id);
+  });
+
+  return result;
+}
+
+function getCompareIdsFromUrl() {
+  const raw = new URLSearchParams(window.location.search).get(COMPARE_QUERY_PARAM);
+  return raw ? raw.split(',') : null;
+}
+
+function setCompareIdsInUrl(ids, { replace = true } = {}) {
+  const url = new URL(window.location.href);
+  const current = url.searchParams.get(COMPARE_QUERY_PARAM);
+  const next = ids.length ? ids.join(',') : null;
+  if (current === next) return;
+
+  if (next) {
+    url.searchParams.set(COMPARE_QUERY_PARAM, next);
+  } else {
+    url.searchParams.delete(COMPARE_QUERY_PARAM);
+  }
+
+  window.history[replace ? 'replaceState' : 'pushState']({}, '', url);
+}
+
+function loadCompareSelection() {
+  try {
+    const raw = localStorage.getItem(COMPARE_STORAGE_KEY);
+    return raw ? sanitizeCompareIds(JSON.parse(raw)) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveCompareSelection() {
+  try {
+    localStorage.setItem(COMPARE_STORAGE_KEY, JSON.stringify(compareSelection));
+  } catch {
+    // Ignore storage failures.
+  }
+}
+
+function loadCompareDiffOnly() {
+  try {
+    return localStorage.getItem(COMPARE_DIFF_STORAGE_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+function saveCompareDiffOnly() {
+  try {
+    localStorage.setItem(COMPARE_DIFF_STORAGE_KEY, String(compareDiffOnly));
+  } catch {
+    // Ignore storage failures.
+  }
+}
+
+function isInCompare(deviceId) {
+  return compareSelection.includes(deviceId);
+}
+
+function getCompareDevices() {
+  return compareSelection.map(findDeviceById).filter(Boolean);
+}
+
+function setCompareSelection(ids, { syncUrl = true } = {}) {
+  compareSelection = sanitizeCompareIds(ids);
+  saveCompareSelection();
+  if (syncUrl) setCompareIdsInUrl(compareSelection);
+  renderCompareUi();
+}
+
+function toggleCompare(deviceId) {
+  if (!findDeviceById(deviceId)) return;
+
+  if (isInCompare(deviceId)) {
+    setCompareSelection(compareSelection.filter(id => id !== deviceId));
+    return;
+  }
+
+  if (compareSelection.length >= COMPARE_MAX) {
+    syncCompareControls();
+    return;
+  }
+  setCompareSelection([...compareSelection, deviceId]);
+}
+
+function syncCompareFromUrl() {
+  const fromUrl = getCompareIdsFromUrl();
+  if (!fromUrl) {
+    renderCompareUi();
+    return;
+  }
+
+  compareSelection = sanitizeCompareIds(fromUrl);
+  saveCompareSelection();
+  setCompareIdsInUrl(compareSelection);
+  renderCompareUi();
+}
+
+function isMetricLowerBetter(metricId) {
+  if (BENCH_LOWER.includes(metricId)) return true;
+  // `watts` is scored via the table column config rather than BENCH_LOWER.
+  return getColumnById(metricId)?.lowerBetter === true;
+}
+
+function compareMetricRow(metricId, devices) {
+  const values = devices.map(device => device[metricId] ?? null);
+  const present = values.filter(value => typeof value === 'number' && Number.isFinite(value));
+  if (!present.length) return null;
+
+  const lowerBetter = isMetricLowerBetter(metricId);
+  const best = lowerBetter ? Math.min(...present) : Math.max(...present);
+  const bestLabel = formatDetailMetricValue(metricId, best);
+  const labels = values.map(value => formatDetailMetricValue(metricId, value));
+  // Values that render identically must not be flagged as a winner over each other.
+  const identical = labels.every(label => label === labels[0]);
+
+  return { metricId, values, labels, bestLabel, identical };
+}
+
+function renderCompareGroup(group, devices) {
+  const rows = group.items
+    .map(metricId => compareMetricRow(metricId, devices))
+    .filter(Boolean)
+    .filter(row => !compareDiffOnly || !row.identical);
+
+  if (!rows.length) return '';
+
+  const label = metricId => DETAIL_METRICS[metricId]?.label ?? metricId;
+  const bodyHtml = rows.map(row => {
+    const cells = row.labels.map(formatted => {
+      if (formatted == null) return '<td class="compare-cell na">—</td>';
+      const isBest = !row.identical && formatted === row.bestLabel;
+      const classAttr = isBest ? ' class="compare-cell is-best"' : ' class="compare-cell"';
+      const badge = isBest ? '<span class="compare-best-badge" title="Best of the selected devices">best</span>' : '';
+      return `<td${classAttr}>${escapeHtml(formatted)}${badge}</td>`;
+    }).join('');
+    const arrow = isMetricLowerBetter(row.metricId) ? ' <span class="compare-metric-hint">↓</span>' : '';
+    return `<tr><th scope="row" class="compare-metric">${escapeHtml(label(row.metricId))}${arrow}</th>${cells}</tr>`;
+  }).join('');
+
+  return `<tbody class="compare-group">
+    <tr class="compare-group-head"><th scope="colgroup" colspan="${devices.length + 1}">${escapeHtml(group.title)}</th></tr>
+    ${bodyHtml}
+  </tbody>`;
+}
+
+function renderCompareDeviceHead(device) {
+  const photo = device.photo
+    ? `<img class="compare-head-photo" src="${escapeHtml(device.photo)}" alt="" loading="lazy" decoding="async">`
+    : '<span class="compare-head-photo is-empty" aria-hidden="true"></span>';
+
+  return `<th scope="col" class="compare-head-cell">
+    <div class="compare-head-card">
+      ${photo}
+      <button type="button" class="compare-head-name" data-compare-detail="${escapeHtml(device.id)}">${escapeHtml(device.name)}</button>
+      <button type="button" class="compare-head-remove" data-compare-remove="${escapeHtml(device.id)}" aria-label="Remove ${escapeHtml(device.name)} from comparison">Remove</button>
+    </div>
+  </th>`;
+}
+
+function renderCompareMessage(title, message) {
+  compareBox.innerHTML = `<div class="compare-empty">
+    <h3>${escapeHtml(title)}</h3>
+    <p>${escapeHtml(message)}</p>
+  </div>`;
+}
+
+function renderCompareView() {
+  const devices = getCompareDevices();
+
+  if (!devices.length) {
+    renderCompareMessage('Nothing to compare yet', `Pick up to ${COMPARE_MAX} mini PCs with the ⇄ checkbox in the Table view, then come back here.`);
+    return;
+  }
+
+  if (devices.length === 1) {
+    renderCompareMessage('Add one more mini PC', `“${devices[0].name}” is in your basket. Select at least one more device to see a side-by-side comparison.`);
+    return;
+  }
+
+  const groups = DETAIL_METRIC_GROUPS
+    .filter(group => group.type !== 'links' && Array.isArray(group.items))
+    .map(group => renderCompareGroup(group, devices))
+    .filter(Boolean)
+    .join('');
+
+  if (!groups) {
+    renderCompareMessage('No differences to show', 'The selected mini PCs have identical values for every recorded metric. Turn off “Differences only” to see the full comparison.');
+    return;
+  }
+
+  compareBox.innerHTML = `<div class="compare-table-wrap">
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th scope="col" class="compare-corner">Metric</th>
+          ${devices.map(renderCompareDeviceHead).join('')}
+        </tr>
+      </thead>
+      ${groups}
+    </table>
+  </div>`;
+
+  compareBox.querySelectorAll('[data-compare-remove]').forEach(button => {
+    button.addEventListener('click', () => toggleCompare(button.dataset.compareRemove));
+  });
+
+  compareBox.querySelectorAll('[data-compare-detail]').forEach(button => {
+    button.addEventListener('click', () => openDeviceDetail(button.dataset.compareDetail));
+  });
+}
+
+function renderCompareTray() {
+  const devices = getCompareDevices();
+  compareTrayEl.hidden = devices.length === 0;
+  document.body.classList.toggle('has-compare-tray', devices.length > 0);
+
+  compareTrayItemsEl.innerHTML = devices.map(device => `
+    <span class="compare-chip">
+      <span class="compare-chip-name">${escapeHtml(device.name)}</span>
+      <button type="button" class="compare-chip-remove" data-compare-remove="${escapeHtml(device.id)}" aria-label="Remove ${escapeHtml(device.name)} from comparison">×</button>
+    </span>`).join('');
+
+  compareTrayItemsEl.querySelectorAll('[data-compare-remove]').forEach(button => {
+    button.addEventListener('click', () => toggleCompare(button.dataset.compareRemove));
+  });
+}
+
+function syncCompareControls() {
+  const count = getCompareDevices().length;
+
+  compareTabCountEl.hidden = count === 0;
+  compareTabCountEl.textContent = String(count);
+
+  compareSubtitleEl.textContent = count
+    ? `${count} of ${COMPARE_MAX} selected · best value in each row is highlighted`
+    : `Select up to ${COMPARE_MAX} mini PCs to compare them side by side.`;
+
+  document.querySelectorAll('.compare-checkbox').forEach(input => {
+    const selected = isInCompare(input.dataset.deviceId);
+    input.checked = selected;
+    input.disabled = !selected && count >= COMPARE_MAX;
+  });
+
+  syncCompareDetailButton();
+}
+
+function syncCompareDetailButton() {
+  const button = deviceDetailBody.querySelector('.detail-compare-toggle');
+  if (!button || !activeDeviceId) return;
+
+  const selected = isInCompare(activeDeviceId);
+  const full = !selected && compareSelection.length >= COMPARE_MAX;
+  button.classList.toggle('is-active', selected);
+  button.disabled = full;
+  button.setAttribute('aria-pressed', String(selected));
+  button.textContent = selected
+    ? 'Remove from comparison'
+    : full
+      ? `Comparison full (${COMPARE_MAX})`
+      : 'Add to comparison';
+}
+
+function renderCompareUi() {
+  renderCompareTray();
+  syncCompareControls();
+  renderCompareView();
+}
+
+function showView(viewName) {
+  document.querySelectorAll('.tab-btn[data-view]').forEach(item => {
+    item.classList.toggle('active', item.dataset.view === viewName);
+  });
+  document.querySelectorAll('.view').forEach(panel => {
+    panel.classList.toggle('active', panel.id === `${viewName}-view`);
+  });
+  if (viewName === 'charts') renderChart();
+  if (viewName === 'compare') renderCompareView();
+}
+
 function getColumnById(id) {
   return TABLE_COLUMNS.find(column => column.id === id);
 }
+
 
 function getOptionalColumns() {
   return TABLE_COLUMNS.filter(column => !column.alwaysVisible);
@@ -733,7 +1050,7 @@ function getFiltered() {
 }
 
 function ensureValidSortColumn() {
-  const available = getVisibleColumns();
+  const available = getVisibleColumns().filter(column => !column.notSortable);
   if (available.some(column => column.id === sortCol)) return;
   const fallback = available.find(column => column.id !== 'name') || available[0];
   sortCol = fallback?.id ?? 'name';
@@ -786,6 +1103,12 @@ function renderBenchCell(column, value) {
 }
 
 function renderTableCell(column, device, metrics) {
+  if (column.id === 'compare') {
+    const selected = isInCompare(device.id);
+    const disabled = !selected && compareSelection.length >= COMPARE_MAX ? ' disabled' : '';
+    return `<td class="col-compare"><input type="checkbox" class="compare-checkbox" data-device-id="${escapeHtml(device.id)}" aria-label="Compare ${escapeHtml(device.name)}"${selected ? ' checked' : ''}${disabled}></td>`;
+  }
+
   if (BENCH_HIGHER.includes(column.id) || BENCH_LOWER.includes(column.id)) {
     return renderBenchCell(column, device[column.id]);
   }
@@ -839,6 +1162,9 @@ function renderTable() {
     const active = column.id === sortCol;
     const classes = [column.headerClass, active ? 'active' : ''].filter(Boolean).join(' ');
     const classAttr = classes ? ` class="${classes}"` : '';
+    if (column.notSortable) {
+      return `<th${classAttr} title="${escapeHtml(column.title)}">${column.label}</th>`;
+    }
     return `<th data-col="${column.id}"${classAttr} title="${escapeHtml(column.title)}">${column.label} <span class="sort-ind">${sortIndicatorFor(column)}</span></th>`;
   }).join('');
 
@@ -882,6 +1208,11 @@ function renderTable() {
       openDeviceDetail(button.dataset.deviceId);
     });
   });
+
+  benchmarkTable.querySelectorAll('.compare-checkbox').forEach(input => {
+    input.addEventListener('change', () => toggleCompare(input.dataset.deviceId));
+  });
+
   renderFloatingTableHeader();
 }
 
@@ -1170,11 +1501,13 @@ async function loadData() {
     }
     const data = await response.json();
     normalizeDevices(data);
+    compareSelection = loadCompareSelection();
     updateSiteMeta();
     renderInfoCards();
     renderTable();
     renderChart();
     syncDeviceDetailFromUrl();
+    syncCompareFromUrl();
     loadLinks();
   } catch (error) {
     console.error(error);
@@ -1208,12 +1541,7 @@ async function loadLinks() {
 
 document.querySelectorAll('.tab-btn[data-view]').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn[data-view]').forEach(item => item.classList.toggle('active', item === btn));
-    const view = btn.dataset.view;
-    document.querySelectorAll('.view').forEach(panel => {
-      panel.classList.toggle('active', panel.id === `${view}-view`);
-    });
-    if (view === 'charts') renderChart();
+    showView(btn.dataset.view);
   });
 });
 
@@ -1270,8 +1598,30 @@ tableWrap.addEventListener('scroll', syncFloatingTableHeader, { passive: true })
 window.addEventListener('popstate', () => {
   if (!DEVICES.length) return;
   syncDeviceDetailFromUrl();
+  syncCompareFromUrl();
+});
+
+document.getElementById('compare-tray-open').addEventListener('click', () => {
+  showView('compare');
+  document.getElementById('compare-view').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+document.getElementById('compare-tray-clear').addEventListener('click', () => {
+  setCompareSelection([]);
+});
+
+document.getElementById('compare-clear').addEventListener('click', () => {
+  setCompareSelection([]);
+});
+
+compareDiffOnlyEl.addEventListener('change', event => {
+  compareDiffOnly = event.target.checked;
+  saveCompareDiffOnly();
+  renderCompareView();
 });
 
 visibleColumns = loadVisibleColumns();
+compareDiffOnly = loadCompareDiffOnly();
+compareDiffOnlyEl.checked = compareDiffOnly;
 renderColumnPicker();
 loadData();

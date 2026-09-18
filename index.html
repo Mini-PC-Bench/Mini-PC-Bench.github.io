@@ -45,6 +45,7 @@
       <nav class="view-tabs">
         <button class="tab-btn active" data-view="table">Table View</button>
         <button class="tab-btn" data-view="charts">Charts</button>
+        <button class="tab-btn" data-view="compare">Compare <span id="compare-tab-count" class="tab-badge" hidden>0</span></button>
         <a id="changelog-link" class="page-link" href="./changelog.html">Changelog</a>
       </nav>
     </div>
@@ -126,7 +127,36 @@
       <div id="chart-box" class="chart-box"></div>
     </div>
 
+    <!-- ── Compare View ── -->
+    <div id="compare-view" class="view">
+      <div class="compare-controls">
+        <div class="compare-controls-text">
+          <h2 class="compare-title">Side-by-side comparison</h2>
+          <p id="compare-subtitle" class="compare-subtitle"></p>
+        </div>
+        <div class="compare-controls-actions">
+          <label class="compare-diff-toggle">
+            <input id="compare-diff-only" type="checkbox">
+            <span>Differences only</span>
+          </label>
+          <button id="compare-clear" class="compare-clear" type="button">Clear all</button>
+        </div>
+      </div>
+      <div id="compare-box" class="compare-box"></div>
+    </div>
+
   </main>
+
+  <div id="compare-tray" class="compare-tray" hidden>
+    <div class="container compare-tray-inner">
+      <span class="compare-tray-label">Comparison basket</span>
+      <div id="compare-tray-items" class="compare-tray-items"></div>
+      <div class="compare-tray-actions">
+        <button id="compare-tray-clear" class="compare-tray-clear" type="button">Clear</button>
+        <button id="compare-tray-open" class="compare-tray-open" type="button">Compare</button>
+      </div>
+    </div>
+  </div>
 
   <div id="device-detail-overlay" class="device-detail-overlay" hidden>
     <div class="device-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="device-detail-title">
