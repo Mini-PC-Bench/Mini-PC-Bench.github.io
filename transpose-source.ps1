@@ -102,6 +102,73 @@ function Get-RowValues {
   return $result
 }
 
+function Get-AiTokenValues {
+  param([string]$FilePath)
+
+  $result = Get-RowValues -FilePath $FilePath -PreferredRows @('Default')
+  if (-not (Test-Path -LiteralPath $FilePath)) {
+    return $result
+  }
+
+  $lines = @(Get-Content -LiteralPath $FilePath | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+  if ($lines.Count -lt 2) {
+    return $result
+  }
+
+  $pendingName = $null
+  foreach ($line in $lines[1..($lines.Count - 1)]) {
+    $parts = $line.Split(',')
+    $first = $parts[0].Trim()
+    $firstValue = $null
+    if ($first -match '^\s*-?(?:\d+(?:\.\d*)?|\.\d+)\s*$') {
+      $firstValue = Convert-Number -Raw $first
+    }
+    $hasOtherValues = $false
+
+    for ($i = 1; $i -lt $parts.Count; $i++) {
+      if (-not [string]::IsNullOrWhiteSpace($parts[$i])) {
+        $hasOtherValues = $true
+        break
+      }
+    }
+
+    if ($hasOtherValues) {
+      $pendingName = $null
+      continue
+    }
+
+    if ([string]::IsNullOrWhiteSpace($first)) {
+      continue
+    }
+
+    if ($null -ne $firstValue) {
+      if ($null -ne $pendingName) {
+        $result[$pendingName] = $firstValue
+        $pendingName = $null
+      }
+      continue
+    }
+
+    $pendingName = $first
+  }
+
+  return $result
+}
+
+function Get-MetricValues {
+  param(
+    [string]$FilePath,
+    [string[]]$PreferredRows,
+    [string]$Kind
+  )
+
+  if ($Kind -eq 'ai_token') {
+    return Get-AiTokenValues -FilePath $FilePath
+  }
+
+  return Get-RowValues -FilePath $FilePath -PreferredRows $PreferredRows
+}
+
 if (-not (Test-Path -LiteralPath $SourceDir)) {
   throw "source directory not found: $SourceDir"
 }
@@ -111,6 +178,9 @@ $specs = @(
   @{ File = 'Cinebench R23 Multicore.csv'; Key = 'cb23m'; Rows = @('Default') },
   @{ File = 'Geekbench 6 Single Core.csv'; Key = 'gb6s'; Rows = @('Default') },
   @{ File = 'Geekbench 6 Multicore.csv'; Key = 'gb6m'; Rows = @('Default') },
+  @{ File = 'Geekbench 7 Single Core.csv'; Key = 'gb7s'; Rows = @('Default') },
+  @{ File = 'Geekbench 7 Multicore.csv'; Key = 'gb7m'; Rows = @('Default') },
+  @{ File = 'AI Token Test.csv'; Key = 'ai_tokens'; Kind = 'ai_token'; Rows = @('Default') },
   @{ File = 'Geekbench AI CPU.csv'; Key = 'gbai_cpu'; Rows = @('Quantised', 'Single', 'Default') },
   @{ File = 'Geekbench AI GPU.csv'; Key = 'gbai_gpu'; Rows = @('Half', 'Single', 'Default') },
   @{ File = '3DMark Fire Strike.csv'; Key = 'firestrike'; Rows = @('Default') },
@@ -151,7 +221,8 @@ function Ensure-DeviceRow {
 
 foreach ($spec in $specs) {
   $path = Join-Path $SourceDir $spec.File
-  $metricValues = Get-RowValues -FilePath $path -PreferredRows $spec.Rows
+  $kind = if ($spec.ContainsKey('Kind')) { $spec.Kind } else { '' }
+  $metricValues = Get-MetricValues -FilePath $path -PreferredRows $spec.Rows -Kind $kind
 
   foreach ($rawName in $metricValues.Keys) {
     $row = Ensure-DeviceRow -DeviceName $rawName
