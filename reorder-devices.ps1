@@ -13,6 +13,7 @@ if (-not (Test-Path -LiteralPath $DevicesPath)) {
 $deviceOrder = @(
   'id',
   'name',
+  'photo',
   'noise',
   'cb23s',
   'cb23m',
