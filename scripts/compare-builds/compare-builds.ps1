@@ -58,13 +58,18 @@ function New-SiteBuild {
 
   $worktree = Join-Path $TargetDir "src"
   $site = Join-Path $TargetDir "site"
+  $buildChangelog = Join-Path $worktree 'scripts/ci/build-changelog.ps1'
+  $minifyAssets = Join-Path $worktree 'scripts/ci/minify-assets.ps1'
   New-Item -ItemType Directory -Force -Path $TargetDir | Out-Null
 
   Invoke-Native git @('-C', $repoRoot, 'worktree', 'add', '--detach', '--force', $worktree, $Sha)
 
   try {
     # changelog.html is generated, not committed.
-    Invoke-Native pwsh @('-NoProfile', '-File', (Join-Path $worktree 'build-changelog.ps1')) -WorkingDirectory $worktree
+    if (-not (Test-Path -LiteralPath $buildChangelog -PathType Leaf)) {
+      throw "Build script '$buildChangelog' is missing in ref '$Ref'."
+    }
+    Invoke-Native pwsh @('-NoProfile', '-File', $buildChangelog) -WorkingDirectory $worktree
 
     New-Item -ItemType Directory -Force -Path $site | Out-Null
     foreach ($rawPath in Get-Content (Join-Path $worktree 'publish-files.txt')) {
@@ -78,7 +83,10 @@ function New-SiteBuild {
     }
 
     if ($Minify) {
-      Invoke-Native pwsh @('-NoProfile', '-File', (Join-Path $worktree 'minify-assets.ps1'), '-SiteDir', $site) -WorkingDirectory $worktree
+      if (-not (Test-Path -LiteralPath $minifyAssets -PathType Leaf)) {
+        throw "Minification script '$minifyAssets' is missing in ref '$Ref'."
+      }
+      Invoke-Native pwsh @('-NoProfile', '-File', $minifyAssets, '-SiteDir', $site) -WorkingDirectory $worktree
     }
   } finally {
     Invoke-Native git @('-C', $repoRoot, 'worktree', 'remove', '--force', $worktree)
