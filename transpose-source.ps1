@@ -38,24 +38,20 @@ function Convert-Number {
   return [math]::Round($number, 4)
 }
 
-function Get-RowValues {
-  param(
-    [string]$FilePath,
-    [string[]]$PreferredRows
-  )
+function Get-RowValueMaps {
+  param([string]$FilePath)
 
   if (-not (Test-Path -LiteralPath $FilePath)) {
     return @{}
   }
 
-  $lines = Get-Content -LiteralPath $FilePath | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+  $lines = @(Get-Content -LiteralPath $FilePath | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
   if ($lines.Count -lt 2) {
     return @{}
   }
 
   $headers = $lines[0].Split(',')
-  $rows = @{}
-
+  $results = @{}
   foreach ($line in $lines[1..($lines.Count - 1)]) {
     $parts = $line.Split(',')
     if ($parts.Count -eq 0) {
@@ -67,141 +63,83 @@ function Get-RowValues {
       continue
     }
 
-    $rows[$label] = $parts
-  }
+    $values = @{}
+    $maxIndex = [math]::Min($headers.Count - 1, $parts.Count - 1)
+    for ($i = 1; $i -le $maxIndex; $i++) {
+      $name = $headers[$i].Trim()
+      $value = Convert-Number -Raw $parts[$i]
+      if ([string]::IsNullOrWhiteSpace($name) -or $null -eq $value) {
+        continue
+      }
 
-  $selected = $null
-  foreach ($candidate in $PreferredRows) {
-    if ($rows.ContainsKey($candidate)) {
-      $selected = $rows[$candidate]
-      break
-    }
-  }
-
-  if (-not $selected) {
-    $selected = $rows.Values | Select-Object -First 1
-  }
-
-  if (-not $selected) {
-    return @{}
-  }
-
-  $result = @{}
-  $maxIndex = [math]::Min($headers.Count - 1, $selected.Count - 1)
-  for ($i = 1; $i -le $maxIndex; $i++) {
-    $name = $headers[$i].Trim()
-    $value = Convert-Number -Raw $selected[$i]
-
-    if ([string]::IsNullOrWhiteSpace($name) -or $null -eq $value) {
-      continue
+      $values[$name] = $value
     }
 
-    $result[$name] = $value
+    $results[$label] = $values
   }
 
-  return $result
+  return $results
 }
 
-function Get-AiTokenValues {
-  param([string]$FilePath)
-
-  $result = Get-RowValues -FilePath $FilePath -PreferredRows @('Default')
-  if (-not (Test-Path -LiteralPath $FilePath)) {
-    return $result
-  }
-
-  $lines = @(Get-Content -LiteralPath $FilePath | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
-  if ($lines.Count -lt 2) {
-    return $result
-  }
-
-  $pendingName = $null
-  foreach ($line in $lines[1..($lines.Count - 1)]) {
-    $parts = $line.Split(',')
-    $first = $parts[0].Trim()
-    $firstValue = $null
-    if ($first -match '^\s*-?(?:\d+(?:\.\d*)?|\.\d+)\s*$') {
-      $firstValue = Convert-Number -Raw $first
-    }
-    $hasOtherValues = $false
-
-    for ($i = 1; $i -lt $parts.Count; $i++) {
-      if (-not [string]::IsNullOrWhiteSpace($parts[$i])) {
-        $hasOtherValues = $true
-        break
-      }
-    }
-
-    if ($hasOtherValues) {
-      $pendingName = $null
-      continue
-    }
-
-    if ([string]::IsNullOrWhiteSpace($first)) {
-      continue
-    }
-
-    if ($null -ne $firstValue) {
-      if ($null -ne $pendingName) {
-        $result[$pendingName] = $firstValue
-        $pendingName = $null
-      }
-      continue
-    }
-
-    $pendingName = $first
-  }
-
-  return $result
-}
-
-function Get-MetricValues {
+function Select-RowValueMap {
   param(
-    [string]$FilePath,
-    [string[]]$PreferredRows,
-    [string]$Kind
+    [hashtable]$RowMaps,
+    [string[]]$PreferredRows
   )
 
-  if ($Kind -eq 'ai_token') {
-    return Get-AiTokenValues -FilePath $FilePath
+  foreach ($candidate in $PreferredRows) {
+    if ($RowMaps.ContainsKey($candidate)) {
+      return $RowMaps[$candidate]
+    }
   }
 
-  return Get-RowValues -FilePath $FilePath -PreferredRows $PreferredRows
+  return @{}
 }
 
 if (-not (Test-Path -LiteralPath $SourceDir)) {
   throw "source directory not found: $SourceDir"
 }
 
+$defaultRowLabel = 'Default'
+$performanceRowLabel = 'Performance'
+
 $specs = @(
-  @{ File = 'Cinebench R23 Single Core.csv'; Key = 'cb23s'; Rows = @('Default') },
-  @{ File = 'Cinebench R23 Multicore.csv'; Key = 'cb23m'; Rows = @('Default') },
-  @{ File = 'Geekbench 6 Single Core.csv'; Key = 'gb6s'; Rows = @('Default') },
-  @{ File = 'Geekbench 6 Multicore.csv'; Key = 'gb6m'; Rows = @('Default') },
-  @{ File = 'Geekbench 7 Single Core.csv'; Key = 'gb7s'; Rows = @('Default') },
-  @{ File = 'Geekbench 7 Multicore.csv'; Key = 'gb7m'; Rows = @('Default') },
-  @{ File = 'AI Token Test.csv'; Key = 'ai_tokens'; Kind = 'ai_token'; Rows = @('Default') },
-  @{ File = 'Geekbench AI CPU.csv'; Key = 'gbai_cpu'; Rows = @('Quantised', 'Single', 'Default') },
-  @{ File = 'Geekbench AI GPU.csv'; Key = 'gbai_gpu'; Rows = @('Half', 'Single', 'Default') },
-  @{ File = '3DMark Fire Strike.csv'; Key = 'firestrike'; Rows = @('Default') },
-  @{ File = '3DMark Time Spy.csv'; Key = 'timespy'; Rows = @('Default') },
-  @{ File = '3DMark Steel Nomad.csv'; Key = 'steelnomad'; Rows = @('Default') },
-  @{ File = '3DMark Storage Benchmark.csv'; Key = 'storage'; Rows = @('Default') },
-  @{ File = 'Coding.csv'; Key = 'coding'; Rows = @('Default') },
-  @{ File = 'Photoshop.csv'; Key = 'photoshop'; Rows = @('Default') },
-  @{ File = 'Premiere.csv'; Key = 'premiere'; Rows = @('Default') },
-  @{ File = 'H264 Encoding.csv'; Key = 'h264'; Rows = @('Default') },
-  @{ File = 'AV1 Encoding.csv'; Key = 'av1'; Rows = @('Default') },
-  @{ File = 'AV1 Encoding (Hardware).csv'; Key = 'av1_hw'; Rows = @('Default') },
-  @{ File = 'Maximum Power Draw.csv'; Key = 'watts'; Rows = @('Default') },
-  @{ File = 'Idle Power Draw.csv'; Key = 'power_idle_watts'; Rows = @('Default') },
-  @{ File = 'Maximum CPU Temperature.csv'; Key = 'cpu_temp'; Rows = @('Default') },
-  @{ File = 'SSD Temperatures.csv'; Key = 'ssd_temp'; Rows = @('Drive', 'Default', 'Controller') },
-  @{ File = 'Volume.csv'; Key = 'volume'; Rows = @('Default') },
-  @{ File = 'Wireless Bluetooth Audio.csv'; Key = 'wireless_audio'; Rows = @('Metres', 'Default') }
+  @{ File = 'Cinebench R23 Single Core.csv'; Key = 'cb23s'; PerfKey = 'cb23s_perf' },
+  @{ File = 'Cinebench R23 Multicore.csv'; Key = 'cb23m'; PerfKey = 'cb23m_perf' },
+  @{ File = 'Geekbench 6 Single Core.csv'; Key = 'gb6s'; PerfKey = 'gb6s_perf' },
+  @{ File = 'Geekbench 6 Multicore.csv'; Key = 'gb6m'; PerfKey = 'gb6m_perf' },
+  @{ File = 'Geekbench 7 Single Core.csv'; Key = 'gb7s'; PerfKey = 'gb7s_perf' },
+  @{ File = 'Geekbench 7 Multicore.csv'; Key = 'gb7m'; PerfKey = 'gb7m_perf' },
+  @{ File = 'AI Token Test.csv'; Key = 'ai_tokens' },
+  @{ File = 'Geekbench AI CPU.csv'; Variants = @{ Half = 'gbai_cpu_half'; Single = 'gbai_cpu_single'; Quantised = 'gbai_cpu_quantised' } },
+  @{ File = 'Geekbench AI GPU.csv'; Variants = @{ Half = 'gbai_gpu_half'; Single = 'gbai_gpu_single'; Quantised = 'gbai_gpu_quantised' } },
+  @{ File = '3DMark Fire Strike.csv'; Key = 'firestrike'; PerfKey = 'firestrike_perf' },
+  @{ File = '3DMark Time Spy.csv'; Key = 'timespy'; PerfKey = 'timespy_perf' },
+  @{ File = '3DMark Steel Nomad.csv'; Key = 'steelnomad'; PerfKey = 'steelnomad_perf' },
+  @{ File = '3DMark Storage Benchmark.csv'; Key = 'storage' },
+  @{ File = 'Coding.csv'; Key = 'coding'; PerfKey = 'coding_perf' },
+  @{ File = 'Photoshop.csv'; Key = 'photoshop'; PerfKey = 'photoshop_perf' },
+  @{ File = 'Premiere.csv'; Key = 'premiere'; PerfKey = 'premiere_perf' },
+  @{ File = 'H264 Encoding.csv'; Key = 'h264'; PerfKey = 'h264_perf' },
+  @{ File = 'AV1 Encoding.csv'; Key = 'av1'; PerfKey = 'av1_perf' },
+  @{ File = 'AV1 Encoding (Hardware).csv'; Key = 'av1_hw'; PerfKey = 'av1_hw_perf' },
+  @{ File = 'Maximum Power Draw.csv'; Key = 'watts'; PerfKey = 'watts_perf' },
+  @{ File = 'Idle Power Draw.csv'; Key = 'power_idle_watts' },
+  @{ File = 'Maximum CPU Temperature.csv'; Key = 'cpu_temp'; PerfKey = 'cpu_temp_perf' },
+  @{ File = 'SSD Temperatures.csv'; Key = 'ssd_temp'; DefaultRows = @('Drive', 'Default', 'Controller') },
+  @{ File = 'Volume.csv'; Key = 'volume' },
+  @{ File = 'Wireless Bluetooth Audio.csv'; Key = 'wireless_audio'; DefaultRows = @('Metres', 'Default') }
 )
 
-$metricColumns = @($specs | ForEach-Object { $_.Key }) + @('noise_idle', 'noise_load', 'noise_perf')
+$metricColumns = @($specs | ForEach-Object {
+    if ($_.ContainsKey('Variants')) {
+      $_.Variants.Values
+    } elseif ($_.ContainsKey('PerfKey')) {
+      @($_.Key, $_.PerfKey)
+    } else {
+      $_.Key
+    }
+  }) + @('noise_idle', 'noise_load', 'noise_perf')
 
 $rowsByDevice = @{}
 
@@ -221,19 +159,39 @@ function Ensure-DeviceRow {
 
 foreach ($spec in $specs) {
   $path = Join-Path $SourceDir $spec.File
-  $kind = if ($spec.ContainsKey('Kind')) { $spec.Kind } else { '' }
-  $metricValues = Get-MetricValues -FilePath $path -PreferredRows $spec.Rows -Kind $kind
+  $rowMaps = Get-RowValueMaps -FilePath $path
+  $imports = @()
 
-  foreach ($rawName in $metricValues.Keys) {
-    $row = Ensure-DeviceRow -DeviceName $rawName
-    $row[$spec.Key] = $metricValues[$rawName]
+  if ($spec.ContainsKey('Variants')) {
+    foreach ($variant in $spec.Variants.GetEnumerator()) {
+      if ($rowMaps.ContainsKey($variant.Key)) {
+        $imports += @{ Key = $variant.Value; Values = $rowMaps[$variant.Key] }
+      }
+    }
+  } else {
+    $defaultRows = if ($spec.ContainsKey('DefaultRows')) { $spec.DefaultRows } else { @($defaultRowLabel) }
+    $imports += @{ Key = $spec.Key; Values = (Select-RowValueMap -RowMaps $rowMaps -PreferredRows $defaultRows) }
+    if ($spec.ContainsKey('PerfKey')) {
+      $performanceValues = Select-RowValueMap -RowMaps $rowMaps -PreferredRows @($performanceRowLabel)
+      if ($performanceValues.Count -gt 0) {
+        $imports += @{ Key = $spec.PerfKey; Values = $performanceValues }
+      }
+    }
+  }
+
+  foreach ($import in $imports) {
+    foreach ($rawName in $import.Values.Keys) {
+      $row = Ensure-DeviceRow -DeviceName $rawName
+      $row[$import.Key] = $import.Values[$rawName]
+    }
   }
 }
 
 $fanNoisePath = Join-Path $SourceDir 'Fan Noise.csv'
-$noiseIdle = Get-RowValues -FilePath $fanNoisePath -PreferredRows @('Idle')
-$noiseLoad = Get-RowValues -FilePath $fanNoisePath -PreferredRows @('Load Default', 'Default')
-$noisePerf = Get-RowValues -FilePath $fanNoisePath -PreferredRows @('Load Performance', 'Performance')
+$fanNoiseRows = Get-RowValueMaps -FilePath $fanNoisePath
+$noiseIdle = Select-RowValueMap -RowMaps $fanNoiseRows -PreferredRows @('Idle')
+$noiseLoad = Select-RowValueMap -RowMaps $fanNoiseRows -PreferredRows @('Load Default', 'Default')
+$noisePerf = Select-RowValueMap -RowMaps $fanNoiseRows -PreferredRows @('Load Performance', 'Performance')
 
 foreach ($rawName in $noiseIdle.Keys) {
   $row = Ensure-DeviceRow -DeviceName $rawName

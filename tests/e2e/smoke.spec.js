@@ -25,6 +25,12 @@ test('the benchmark dashboard loads without local errors', async ({ page, baseUR
   expect(localRequestFailures).toEqual([]);
 });
 
+test('does not leak header markup while benchmark data loads', async ({ page }) => {
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+  await expect(page.locator('#benchmark-table thead')).not.toContainText('<SPAN CLASS="SR-ONLY">');
+});
+
 test('the logo links home on every site page', async ({ page }) => {
   for (const path of ['/', '/changelog.html', '/404.html']) {
     await page.goto(path);

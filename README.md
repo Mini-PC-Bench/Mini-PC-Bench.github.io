@@ -210,8 +210,32 @@ Use this workflow each time you review a new device.
   "cb23m": null,
   "gb6s": null,
   "gb6m": null,
-  "gbai_cpu": null,
-  "gbai_gpu": null,
+  "gb7s": null,
+  "gb7m": null,
+  "ai_tokens": null,
+  "gbai_cpu_half": null,
+  "gbai_cpu_single": null,
+  "gbai_cpu_quantised": null,
+  "gbai_gpu_half": null,
+  "gbai_gpu_single": null,
+  "gbai_gpu_quantised": null,
+  "cb23s_perf": null,
+  "cb23m_perf": null,
+  "gb6s_perf": null,
+  "gb6m_perf": null,
+  "gb7s_perf": null,
+  "gb7m_perf": null,
+  "firestrike_perf": null,
+  "timespy_perf": null,
+  "steelnomad_perf": null,
+  "coding_perf": null,
+  "photoshop_perf": null,
+  "premiere_perf": null,
+  "h264_perf": null,
+  "av1_perf": null,
+  "av1_hw_perf": null,
+  "watts_perf": null,
+  "cpu_temp_perf": null,
   "watts": null,
   "h264": null,
   "av1": null,
@@ -250,8 +274,8 @@ Use this workflow each time you review a new device.
 - `cb23m`: Cinebench R23 multi-core score. Higher is better.
 - `gb6s`: Geekbench 6 single-core score. Higher is better.
 - `gb6m`: Geekbench 6 multi-core score. Higher is better.
-- `gbai_cpu`: Geekbench AI CPU score. Higher is better.
-- `gbai_gpu`: Geekbench AI GPU score. Higher is better.
+- `gbai_cpu_half`, `gbai_cpu_single`, `gbai_cpu_quantised`: Geekbench AI CPU scores by numeric format. Higher is better.
+- `gbai_gpu_half`, `gbai_gpu_single`, `gbai_gpu_quantised`: Geekbench AI GPU scores by numeric format. Higher is better.
 - `watts`: Maximum power draw from the wall under load. Lower is better.
 - `h264`: H264 encode time in seconds. Lower is better.
 - `av1`: AV1 software encode time in seconds. Lower is better.

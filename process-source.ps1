@@ -39,24 +39,20 @@ function Convert-Number {
   return [math]::Round($number, 4)
 }
 
-function Get-RowValues {
-  param(
-    [string]$FilePath,
-    [string[]]$PreferredRows
-  )
+function Get-RowValueMaps {
+  param([string]$FilePath)
 
   if (-not (Test-Path -LiteralPath $FilePath)) {
     return @{}
   }
 
-  $lines = Get-Content -LiteralPath $FilePath | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+  $lines = @(Get-Content -LiteralPath $FilePath | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
   if ($lines.Count -lt 2) {
     return @{}
   }
 
   $headers = $lines[0].Split(',')
-  $rows = @{}
-
+  $results = @{}
   foreach ($line in $lines[1..($lines.Count - 1)]) {
     $parts = $line.Split(',')
     if ($parts.Count -eq 0) {
@@ -68,106 +64,37 @@ function Get-RowValues {
       continue
     }
 
-    $rows[$label] = $parts
-  }
+    $values = @{}
+    $maxIndex = [math]::Min($headers.Count - 1, $parts.Count - 1)
+    for ($i = 1; $i -le $maxIndex; $i++) {
+      $name = $headers[$i].Trim()
+      $value = Convert-Number -Raw $parts[$i]
+      if ([string]::IsNullOrWhiteSpace($name) -or $null -eq $value) {
+        continue
+      }
 
-  $selected = $null
-  foreach ($candidate in $PreferredRows) {
-    if ($rows.ContainsKey($candidate)) {
-      $selected = $rows[$candidate]
-      break
-    }
-  }
-
-  if (-not $selected) {
-    $selected = $rows.Values | Select-Object -First 1
-  }
-
-  if (-not $selected) {
-    return @{}
-  }
-
-  $result = @{}
-  $maxIndex = [math]::Min($headers.Count - 1, $selected.Count - 1)
-  for ($i = 1; $i -le $maxIndex; $i++) {
-    $name = $headers[$i].Trim()
-    $value = Convert-Number -Raw $selected[$i]
-
-    if ([string]::IsNullOrWhiteSpace($name) -or $null -eq $value) {
-      continue
+      $values[$name] = $value
     }
 
-    $result[$name] = $value
+    $results[$label] = $values
   }
 
-  return $result
+  return $results
 }
 
-function Get-AiTokenValues {
-  param([string]$FilePath)
-
-  $result = Get-RowValues -FilePath $FilePath -PreferredRows @('Default')
-  if (-not (Test-Path -LiteralPath $FilePath)) {
-    return $result
-  }
-
-  $lines = @(Get-Content -LiteralPath $FilePath | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
-  if ($lines.Count -lt 2) {
-    return $result
-  }
-
-  $pendingName = $null
-  foreach ($line in $lines[1..($lines.Count - 1)]) {
-    $parts = $line.Split(',')
-    $first = $parts[0].Trim()
-    $firstValue = $null
-    if ($first -match '^\s*-?(?:\d+(?:\.\d*)?|\.\d+)\s*$') {
-      $firstValue = Convert-Number -Raw $first
-    }
-    $hasOtherValues = $false
-
-    for ($i = 1; $i -lt $parts.Count; $i++) {
-      if (-not [string]::IsNullOrWhiteSpace($parts[$i])) {
-        $hasOtherValues = $true
-        break
-      }
-    }
-
-    if ($hasOtherValues) {
-      $pendingName = $null
-      continue
-    }
-
-    if ([string]::IsNullOrWhiteSpace($first)) {
-      continue
-    }
-
-    if ($null -ne $firstValue) {
-      if ($null -ne $pendingName) {
-        $result[$pendingName] = $firstValue
-        $pendingName = $null
-      }
-      continue
-    }
-
-    $pendingName = $first
-  }
-
-  return $result
-}
-
-function Get-MetricValues {
+function Select-RowValueMap {
   param(
-    [string]$FilePath,
-    [string[]]$PreferredRows,
-    [string]$Kind
+    [hashtable]$RowMaps,
+    [string[]]$PreferredRows
   )
 
-  if ($Kind -eq 'ai_token') {
-    return Get-AiTokenValues -FilePath $FilePath
+  foreach ($candidate in $PreferredRows) {
+    if ($RowMaps.ContainsKey($candidate)) {
+      return $RowMaps[$candidate]
+    }
   }
 
-  return Get-RowValues -FilePath $FilePath -PreferredRows $PreferredRows
+  return @{}
 }
 
 function Get-DeviceSlug {
@@ -304,8 +231,12 @@ function New-DeviceTemplate {
     gb7s = $null
     gb7m = $null
     ai_tokens = $null
-    gbai_cpu = $null
-    gbai_gpu = $null
+    gbai_cpu_half = $null
+    gbai_cpu_single = $null
+    gbai_cpu_quantised = $null
+    gbai_gpu_half = $null
+    gbai_gpu_single = $null
+    gbai_gpu_quantised = $null
     firestrike = $null
     timespy = $null
     steelnomad = $null
@@ -317,6 +248,23 @@ function New-DeviceTemplate {
     av1 = $null
     av1_hw = $null
     watts = $null
+    cb23s_perf = $null
+    cb23m_perf = $null
+    gb6s_perf = $null
+    gb6m_perf = $null
+    gb7s_perf = $null
+    gb7m_perf = $null
+    firestrike_perf = $null
+    timespy_perf = $null
+    steelnomad_perf = $null
+    coding_perf = $null
+    photoshop_perf = $null
+    premiere_perf = $null
+    h264_perf = $null
+    av1_perf = $null
+    av1_hw_perf = $null
+    watts_perf = $null
+    cpu_temp_perf = $null
     power_idle_watts = $null
     cpu_temp = $null
     ssd_temp = $null
@@ -349,6 +297,31 @@ function Ensure-UniqueDeviceIds {
 
     $device | Add-Member -NotePropertyName id -NotePropertyValue $candidateId -Force
     [void]$usedIds.Add($candidateId)
+  }
+}
+
+function Migrate-LegacyAiValues {
+  param([object[]]$Devices)
+
+  foreach ($device in $Devices) {
+    $legacyCpu = $device.PSObject.Properties['gbai_cpu']
+    $legacyGpu = $device.PSObject.Properties['gbai_gpu']
+    $cpuQuantised = $device.PSObject.Properties['gbai_cpu_quantised']
+    $gpuHalf = $device.PSObject.Properties['gbai_gpu_half']
+
+    if ($null -ne $legacyCpu -and ($null -eq $cpuQuantised -or $null -eq $cpuQuantised.Value)) {
+      $device | Add-Member -NotePropertyName gbai_cpu_quantised -NotePropertyValue $legacyCpu.Value
+    }
+    if ($null -ne $legacyGpu -and ($null -eq $gpuHalf -or $null -eq $gpuHalf.Value)) {
+      $device | Add-Member -NotePropertyName gbai_gpu_half -NotePropertyValue $legacyGpu.Value
+    }
+
+    if ($null -ne $legacyCpu) {
+      $device.PSObject.Properties.Remove('gbai_cpu')
+    }
+    if ($null -ne $legacyGpu) {
+      $device.PSObject.Properties.Remove('gbai_gpu')
+    }
   }
 }
 
@@ -440,21 +413,24 @@ function Set-DeviceMetric {
 
   switch ($Key) {
     'noise_load' {
-      if (-not $Device.noise) {
+      $noiseProp = $Device.PSObject.Properties['noise']
+      if ($null -eq $noiseProp -or $null -eq $noiseProp.Value) {
         $Device | Add-Member -NotePropertyName noise -NotePropertyValue ([pscustomobject]@{}) -Force
       }
       $Device.noise | Add-Member -NotePropertyName load_default -NotePropertyValue $Value -Force
       return
     }
     'noise_perf' {
-      if (-not $Device.noise) {
+      $noiseProp = $Device.PSObject.Properties['noise']
+      if ($null -eq $noiseProp -or $null -eq $noiseProp.Value) {
         $Device | Add-Member -NotePropertyName noise -NotePropertyValue ([pscustomobject]@{}) -Force
       }
       $Device.noise | Add-Member -NotePropertyName load_performance -NotePropertyValue $Value -Force
       return
     }
     'noise_idle' {
-      if (-not $Device.noise) {
+      $noiseProp = $Device.PSObject.Properties['noise']
+      if ($null -eq $noiseProp -or $null -eq $noiseProp.Value) {
         $Device | Add-Member -NotePropertyName noise -NotePropertyValue ([pscustomobject]@{}) -Force
       }
       $Device.noise | Add-Member -NotePropertyName idle -NotePropertyValue $Value -Force
@@ -498,32 +474,35 @@ foreach ($device in $devices) {
   Register-DeviceSlug -SlugLookup $slugLookup -Name $device.name
 }
 
+$defaultRowLabel = 'Default'
+$performanceRowLabel = 'Performance'
+
 $specs = @(
-  @{ File = 'Cinebench R23 Single Core.csv'; Key = 'cb23s'; Rows = @('Default') },
-  @{ File = 'Cinebench R23 Multicore.csv'; Key = 'cb23m'; Rows = @('Default') },
-  @{ File = 'Geekbench 6 Single Core.csv'; Key = 'gb6s'; Rows = @('Default') },
-  @{ File = 'Geekbench 6 Multicore.csv'; Key = 'gb6m'; Rows = @('Default') },
-  @{ File = 'Geekbench 7 Single Core.csv'; Key = 'gb7s'; Rows = @('Default') },
-  @{ File = 'Geekbench 7 Multicore.csv'; Key = 'gb7m'; Rows = @('Default') },
-  @{ File = 'AI Token Test.csv'; Key = 'ai_tokens'; Kind = 'ai_token'; Rows = @('Default') },
-  @{ File = 'Geekbench AI CPU.csv'; Key = 'gbai_cpu'; Rows = @('Quantised', 'Single', 'Default') },
-  @{ File = 'Geekbench AI GPU.csv'; Key = 'gbai_gpu'; Kind = 'gpu'; Rows = @('Half', 'Single', 'Default') },
-  @{ File = '3DMark Fire Strike.csv'; Key = 'firestrike'; Kind = 'gpu'; Rows = @('Default') },
-  @{ File = '3DMark Time Spy.csv'; Key = 'timespy'; Kind = 'gpu'; Rows = @('Default') },
-  @{ File = '3DMark Steel Nomad.csv'; Key = 'steelnomad'; Kind = 'gpu'; Rows = @('Default') },
-  @{ File = '3DMark Storage Benchmark.csv'; Key = 'storage'; Kind = 'storage'; Rows = @('Default') },
-  @{ File = 'Coding.csv'; Key = 'coding'; Rows = @('Default') },
-  @{ File = 'Photoshop.csv'; Key = 'photoshop'; Rows = @('Default') },
-  @{ File = 'Premiere.csv'; Key = 'premiere'; Rows = @('Default') },
-  @{ File = 'H264 Encoding.csv'; Key = 'h264'; Rows = @('Default') },
-  @{ File = 'AV1 Encoding.csv'; Key = 'av1'; Rows = @('Default') },
-  @{ File = 'AV1 Encoding (Hardware).csv'; Key = 'av1_hw'; Rows = @('Default') },
-  @{ File = 'Maximum Power Draw.csv'; Key = 'watts'; Rows = @('Default') },
-  @{ File = 'Idle Power Draw.csv'; Key = 'power_idle_watts'; Rows = @('Default') },
-  @{ File = 'Maximum CPU Temperature.csv'; Key = 'cpu_temp'; Rows = @('Default') },
-  @{ File = 'SSD Temperatures.csv'; Key = 'ssd_temp'; Kind = 'storage'; Rows = @('Drive', 'Default', 'Controller') },
-  @{ File = 'Volume.csv'; Key = 'volume'; Rows = @('Default') },
-  @{ File = 'Wireless Bluetooth Audio.csv'; Key = 'wireless_audio'; Rows = @('Metres', 'Default') }
+  @{ File = 'Cinebench R23 Single Core.csv'; Key = 'cb23s'; PerfKey = 'cb23s_perf' },
+  @{ File = 'Cinebench R23 Multicore.csv'; Key = 'cb23m'; PerfKey = 'cb23m_perf' },
+  @{ File = 'Geekbench 6 Single Core.csv'; Key = 'gb6s'; PerfKey = 'gb6s_perf' },
+  @{ File = 'Geekbench 6 Multicore.csv'; Key = 'gb6m'; PerfKey = 'gb6m_perf' },
+  @{ File = 'Geekbench 7 Single Core.csv'; Key = 'gb7s'; PerfKey = 'gb7s_perf' },
+  @{ File = 'Geekbench 7 Multicore.csv'; Key = 'gb7m'; PerfKey = 'gb7m_perf' },
+  @{ File = 'AI Token Test.csv'; Key = 'ai_tokens' },
+  @{ File = 'Geekbench AI CPU.csv'; Variants = @{ Half = 'gbai_cpu_half'; Single = 'gbai_cpu_single'; Quantised = 'gbai_cpu_quantised' } },
+  @{ File = 'Geekbench AI GPU.csv'; Kind = 'gpu'; Variants = @{ Half = 'gbai_gpu_half'; Single = 'gbai_gpu_single'; Quantised = 'gbai_gpu_quantised' } },
+  @{ File = '3DMark Fire Strike.csv'; Key = 'firestrike'; PerfKey = 'firestrike_perf'; Kind = 'gpu' },
+  @{ File = '3DMark Time Spy.csv'; Key = 'timespy'; PerfKey = 'timespy_perf'; Kind = 'gpu' },
+  @{ File = '3DMark Steel Nomad.csv'; Key = 'steelnomad'; PerfKey = 'steelnomad_perf'; Kind = 'gpu' },
+  @{ File = '3DMark Storage Benchmark.csv'; Key = 'storage'; Kind = 'storage' },
+  @{ File = 'Coding.csv'; Key = 'coding'; PerfKey = 'coding_perf'; LowerBetter = $true },
+  @{ File = 'Photoshop.csv'; Key = 'photoshop'; PerfKey = 'photoshop_perf' },
+  @{ File = 'Premiere.csv'; Key = 'premiere'; PerfKey = 'premiere_perf' },
+  @{ File = 'H264 Encoding.csv'; Key = 'h264'; PerfKey = 'h264_perf'; LowerBetter = $true },
+  @{ File = 'AV1 Encoding.csv'; Key = 'av1'; PerfKey = 'av1_perf'; LowerBetter = $true },
+  @{ File = 'AV1 Encoding (Hardware).csv'; Key = 'av1_hw'; PerfKey = 'av1_hw_perf'; LowerBetter = $true },
+  @{ File = 'Maximum Power Draw.csv'; Key = 'watts'; PerfKey = 'watts_perf'; LowerBetter = $true; PerfExpectedWorse = $true },
+  @{ File = 'Idle Power Draw.csv'; Key = 'power_idle_watts' },
+  @{ File = 'Maximum CPU Temperature.csv'; Key = 'cpu_temp'; PerfKey = 'cpu_temp_perf'; LowerBetter = $true; PerfExpectedWorse = $true },
+  @{ File = 'SSD Temperatures.csv'; Key = 'ssd_temp'; Kind = 'storage'; DefaultRows = @('Drive', 'Default', 'Controller') },
+  @{ File = 'Volume.csv'; Key = 'volume' },
+  @{ File = 'Wireless Bluetooth Audio.csv'; Key = 'wireless_audio'; DefaultRows = @('Metres', 'Default') }
 )
 
 $devicesByName = @{}
@@ -532,6 +511,7 @@ foreach ($device in $devices) {
 }
 
 Ensure-UniqueDeviceIds -Devices $devices
+Migrate-LegacyAiValues -Devices $devices
 
 $usedIds = [System.Collections.Generic.HashSet[string]]::new()
 foreach ($device in $devices) {
@@ -544,6 +524,12 @@ $mappingMatches = @()
 $derivedMatches = @()
 $unresolved = [System.Collections.Generic.HashSet[string]]::new()
 $orphans = [System.Collections.Generic.HashSet[string]]::new()
+$performanceSources = @{}
+foreach ($spec in $specs) {
+  if ($spec.ContainsKey('PerfKey')) {
+    $performanceSources[$spec.Key] = [System.Collections.Generic.HashSet[string]]::new()
+  }
+}
 
 foreach ($mappingProperty in $mappingObject.PSObject.Properties) {
   $targetId = [string]$mappingProperty.Value
@@ -567,11 +553,6 @@ if ($AutoAddDevices) {
       [void]$sourceLabels.Add($label)
     }
 
-    $kind = if ($spec.ContainsKey('Kind')) { $spec.Kind } else { '' }
-    $metricValues = Get-MetricValues -FilePath $path -PreferredRows $spec.Rows -Kind $kind
-    foreach ($label in $metricValues.Keys) {
-      [void]$sourceLabels.Add($label)
-    }
   }
 
   $fanNoisePathPre = Join-Path $SourceDir 'Fan Noise.csv'
@@ -628,44 +609,78 @@ if ($AutoAddDevices) {
 foreach ($spec in $specs) {
   $path = Join-Path $SourceDir $spec.File
   $kind = if ($spec.ContainsKey('Kind')) { $spec.Kind } else { '' }
-  $metricValues = Get-MetricValues -FilePath $path -PreferredRows $spec.Rows -Kind $kind
+  $rowMaps = Get-RowValueMaps -FilePath $path
 
-  foreach ($rawName in $metricValues.Keys) {
-    $result = Resolve-DeviceName -RawName $rawName -KnownDevices $devices -CanonicalLookup $canonicalLookup -Aliases $aliases -SlugLookup $slugLookup
-    if (-not $result) {
-      [void]$unresolved.Add($rawName)
-      if ($kind -eq 'gpu' -or $kind -eq 'storage') {
-        [void]$orphans.Add($rawName)
+  foreach ($ignoredLabel in @('Silent', 'Load Silent')) {
+    if ($rowMaps.ContainsKey($ignoredLabel) -and $rowMaps[$ignoredLabel].Count -gt 0) {
+      Write-Warning "Skipping populated $ignoredLabel row in $($spec.File)"
+    }
+  }
+
+  $imports = @()
+  if ($spec.ContainsKey('Variants')) {
+    foreach ($variant in $spec.Variants.GetEnumerator()) {
+      if ($rowMaps.ContainsKey($variant.Key)) {
+        $imports += @{ Key = $variant.Value; Values = $rowMaps[$variant.Key] }
       }
-      continue
     }
-
-    $resolvedName = $result.name
-    $device = $devicesByName[$resolvedName]
-    if (-not $device) {
-      [void]$unresolved.Add($rawName)
-      if ($kind -eq 'gpu' -or $kind -eq 'storage') {
-        [void]$orphans.Add($rawName)
+  } else {
+    $defaultRows = if ($spec.ContainsKey('DefaultRows')) { $spec.DefaultRows } else { @($defaultRowLabel) }
+    $imports += @{ Key = $spec.Key; Values = (Select-RowValueMap -RowMaps $rowMaps -PreferredRows $defaultRows) }
+    if ($spec.ContainsKey('PerfKey')) {
+      $performanceValues = Select-RowValueMap -RowMaps $rowMaps -PreferredRows @($performanceRowLabel)
+      if ($performanceValues.Count -gt 0) {
+        $imports += @{ Key = $spec.PerfKey; Values = $performanceValues; SourceMetric = $spec.Key }
       }
-      continue
     }
+  }
 
-    # Track explicit mapping decisions for the import audit.
-    if ($result.method -eq 'mapping') {
-      $mappingMatches += @{ raw = $rawName; resolved = $resolvedName }
-    } elseif ($result.method -eq 'derived') {
-      $derivedMatches += @{ raw = $rawName; resolved = $resolvedName }
+  foreach ($import in $imports) {
+    foreach ($rawName in $import.Values.Keys) {
+      $result = Resolve-DeviceName -RawName $rawName -KnownDevices $devices -CanonicalLookup $canonicalLookup -Aliases $aliases -SlugLookup $slugLookup
+      if (-not $result) {
+        [void]$unresolved.Add($rawName)
+        if ($kind -eq 'gpu' -or $kind -eq 'storage') {
+          [void]$orphans.Add($rawName)
+        }
+        continue
+      }
+
+      $resolvedName = $result.name
+      $device = $devicesByName[$resolvedName]
+      if (-not $device) {
+        [void]$unresolved.Add($rawName)
+        if ($kind -eq 'gpu' -or $kind -eq 'storage') {
+          [void]$orphans.Add($rawName)
+        }
+        continue
+      }
+
+      if ($result.method -eq 'mapping') {
+        $mappingMatches += @{ raw = $rawName; resolved = $resolvedName }
+      } elseif ($result.method -eq 'derived') {
+        $derivedMatches += @{ raw = $rawName; resolved = $resolvedName }
+      }
+
+      Set-DeviceMetric -Device $device -Key $import.Key -Value $import.Values[$rawName]
+      if ($import.ContainsKey('SourceMetric')) {
+        [void]$performanceSources[$import.SourceMetric].Add($resolvedName)
+      }
+      $updatedCount++
     }
-
-    Set-DeviceMetric -Device $device -Key $spec.Key -Value $metricValues[$rawName]
-    $updatedCount++
   }
 }
 
 $fanNoisePath = Join-Path $SourceDir 'Fan Noise.csv'
-$noiseIdle = Get-RowValues -FilePath $fanNoisePath -PreferredRows @('Idle')
-$noiseLoad = Get-RowValues -FilePath $fanNoisePath -PreferredRows @('Load Default', 'Default')
-$noisePerf = Get-RowValues -FilePath $fanNoisePath -PreferredRows @('Load Performance', 'Performance')
+$fanNoiseRows = Get-RowValueMaps -FilePath $fanNoisePath
+$noiseIdle = Select-RowValueMap -RowMaps $fanNoiseRows -PreferredRows @('Idle')
+$noiseLoad = Select-RowValueMap -RowMaps $fanNoiseRows -PreferredRows @('Load Default', 'Default')
+$noisePerf = Select-RowValueMap -RowMaps $fanNoiseRows -PreferredRows @('Load Performance', 'Performance')
+$performanceSources['noise_load'] = [System.Collections.Generic.HashSet[string]]::new()
+
+if ($fanNoiseRows.ContainsKey('Load Silent') -and $fanNoiseRows['Load Silent'].Count -gt 0) {
+  Write-Warning 'Skipping populated Load Silent row in Fan Noise.csv'
+}
 
 foreach ($rawName in $noiseIdle.Keys) {
   $result = Resolve-DeviceName -RawName $rawName -KnownDevices $devices -CanonicalLookup $canonicalLookup -Aliases $aliases -SlugLookup $slugLookup
@@ -718,7 +733,75 @@ foreach ($rawName in $noisePerf.Keys) {
   }
 
   Set-DeviceMetric -Device $devicesByName[$resolvedName] -Key 'noise_perf' -Value $noisePerf[$rawName]
+  if (-not $performanceSources.ContainsKey('noise_load')) {
+    $performanceSources['noise_load'] = [System.Collections.Generic.HashSet[string]]::new()
+  }
+  [void]$performanceSources['noise_load'].Add($resolvedName)
   $updatedCount++
+}
+
+$equalAnomalies = @{}
+$wrongDirectionAnomalies = @{}
+function Add-PerformanceAnomaly {
+  param(
+    [hashtable]$Target,
+    [string]$Metric,
+    [string]$DeviceName
+  )
+
+  if (-not $Target.ContainsKey($Metric)) {
+    $Target[$Metric] = @()
+  }
+  $Target[$Metric] += $DeviceName
+}
+
+foreach ($spec in $specs) {
+  if (-not $spec.ContainsKey('PerfKey')) {
+    continue
+  }
+
+  foreach ($deviceName in $performanceSources[$spec.Key]) {
+    $device = $devicesByName[$deviceName]
+    $defaultProperty = $device.PSObject.Properties[$spec.Key]
+    $performanceProperty = $device.PSObject.Properties[$spec.PerfKey]
+    if ($null -eq $defaultProperty -or $null -eq $performanceProperty -or $null -eq $defaultProperty.Value -or $null -eq $performanceProperty.Value) {
+      continue
+    }
+
+    $equal = $defaultProperty.Value -eq $performanceProperty.Value
+    $worse = if ($spec.ContainsKey('PerfExpectedWorse') -and $spec.PerfExpectedWorse) {
+      if ($spec.ContainsKey('LowerBetter') -and $spec.LowerBetter) {
+        $performanceProperty.Value -lt $defaultProperty.Value
+      } else {
+        $performanceProperty.Value -gt $defaultProperty.Value
+      }
+    } elseif ($spec.ContainsKey('LowerBetter') -and $spec.LowerBetter) {
+      $performanceProperty.Value -gt $defaultProperty.Value
+    } else {
+      $performanceProperty.Value -lt $defaultProperty.Value
+    }
+
+    if ($equal) {
+      Add-PerformanceAnomaly -Target $equalAnomalies -Metric $spec.Key -DeviceName $device.name
+    } elseif ($worse) {
+      Add-PerformanceAnomaly -Target $wrongDirectionAnomalies -Metric $spec.Key -DeviceName $device.name
+    }
+  }
+}
+
+foreach ($deviceName in $performanceSources['noise_load']) {
+  $device = $devicesByName[$deviceName]
+  $defaultNoise = $device.noise.load_default
+  $performanceNoise = $device.noise.load_performance
+  if ($null -eq $defaultNoise -or $null -eq $performanceNoise) {
+    continue
+  }
+
+  if ($defaultNoise -eq $performanceNoise) {
+    Add-PerformanceAnomaly -Target $equalAnomalies -Metric 'noise_load' -DeviceName $device.name
+  } elseif ($performanceNoise -lt $defaultNoise) {
+    Add-PerformanceAnomaly -Target $wrongDirectionAnomalies -Metric 'noise_load' -DeviceName $device.name
+  }
 }
 
 $json = @($devices | ForEach-Object { ConvertTo-OrderedDevice -Device $_ }) | ConvertTo-Json -Depth 10
@@ -758,4 +841,20 @@ if ($orphans.Count -gt 0) {
   Write-Host ""
   Write-Host "Potential component orphans (explicit mapping required):"
   $orphans | Sort-Object | ForEach-Object { Write-Host " - $_" }
+}
+
+if ($equalAnomalies.Count -gt 0) {
+  Write-Host ""
+  Write-Host "Performance values equal to Default:"
+  foreach ($metric in ($equalAnomalies.Keys | Sort-Object)) {
+    Write-Host "  ${metric}: $($equalAnomalies[$metric] -join ', ')"
+  }
+}
+
+if ($wrongDirectionAnomalies.Count -gt 0) {
+  Write-Host ""
+  Write-Host "Performance values in wrong direction:"
+  foreach ($metric in ($wrongDirectionAnomalies.Keys | Sort-Object)) {
+    Write-Host "  ${metric}: $($wrongDirectionAnomalies[$metric] -join ', ')"
+  }
 }
