@@ -4552,7 +4552,7 @@
   {
     "id": "geekom-a6-6800h",
     "name": "GEEKOM A6 6800H",
-    "photo": null,
+    "photo": "./images/devices/geekom-a6-6800h.webp",
     "noise": {
       "idle": 30,
       "load_default": 45,
@@ -4587,7 +4587,7 @@
   {
     "id": "geekom-a8-max-8945hs",
     "name": "GEEKOM A8 MAX 8945HS",
-    "photo": null,
+    "photo": "./images/devices/geekom-a8-max-8945hs.webp",
     "noise": {
       "idle": 29,
       "load_default": 40,
@@ -4622,7 +4622,7 @@
   {
     "id": "geekom-it13-i9-13900h",
     "name": "GEEKOM IT13 i9-13900H",
-    "photo": null,
+    "photo": "./images/devices/geekom-it13-i9-13900h.webp",
     "noise": {
       "idle": 36,
       "load_default": 38,
@@ -4657,7 +4657,7 @@
   {
     "id": "gmktec-k11-8945hs",
     "name": "GMKtec K11 8945HS",
-    "photo": null,
+    "photo": "./images/devices/gmktec-k11-8945hs.webp",
     "noise": {
       "idle": 32,
       "load_default": 38,
@@ -4692,7 +4692,7 @@
   {
     "id": "minix-eu715-ai-ultra-7-155h",
     "name": "Minix EU715 AI Ultra 7 155H",
-    "photo": null,
+    "photo": "./images/devices/minix-eu715-ai-ultra-7-155h.webp",
     "noise": {
       "idle": 29,
       "load_default": 47,
