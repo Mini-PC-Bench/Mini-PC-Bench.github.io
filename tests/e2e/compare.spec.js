@@ -87,6 +87,32 @@ test('toggles the basket from the device detail popover', async ({ page }) => {
   await expect(page.locator('#compare-tray')).toBeHidden();
 });
 
+test('shows Performance metrics in details and comparison', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('.compare-checkbox').first().waitFor();
+
+  const performanceNames = await page.evaluate(async () => {
+    const devices = await (await fetch('./devices.json')).json();
+    return devices
+      .filter(device => device.cb23s_perf != null && device.watts_perf != null)
+      .slice(0, 2)
+      .map(device => device.name);
+  });
+  const firstPerformanceRow = page.locator('#benchmark-table tbody tr').filter({ hasText: performanceNames[0] });
+  await firstPerformanceRow.locator('.device-name-trigger').click();
+  await expect(page.locator('.detail-stat dt', { hasText: 'Cinebench R23 single (Performance)' })).toBeVisible();
+  await expect(page.locator('.detail-stat dt', { hasText: 'Max power draw (Performance)' })).toBeVisible();
+  await page.locator('#device-detail-close').click();
+
+  for (const name of performanceNames) {
+    const row = page.locator('#benchmark-table tbody tr').filter({ hasText: name });
+    await row.locator('.compare-checkbox').check();
+  }
+  await page.locator('#compare-tray-open').click();
+  await expect(page.locator('.compare-metric', { hasText: 'Cinebench R23 single (Performance)' })).toBeVisible();
+  await expect(page.locator('.compare-metric', { hasText: 'Max power draw (Performance)' })).toBeVisible();
+});
+
 test('hides identical rows when differences only is enabled', async ({ page }) => {
   await page.goto('/');
   await page.locator('.compare-checkbox').first().waitFor();

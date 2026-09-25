@@ -27,10 +27,27 @@ test('sorts the table when a benchmark header is selected', async ({ page }) => 
 test('persists selected columns across reloads', async ({ page }) => {
   await page.goto('/');
   await page.locator('#column-toggle').click();
-  const option = page.locator('#column-options input[value="gbai_cpu"]');
+  const option = page.locator('#column-options input[value="gbai_cpu_single"]');
   await option.check();
-  await expect(page.locator('th[data-col="gbai_cpu"]').first()).toBeVisible();
+  await expect(page.locator('th[data-col="gbai_cpu_single"]').first()).toBeVisible();
 
   await page.reload();
-  await expect(page.locator('th[data-col="gbai_cpu"]').first()).toBeVisible();
+  await expect(page.locator('th[data-col="gbai_cpu_single"]').first()).toBeVisible();
+});
+
+test('keeps default metrics and exposes Performance metrics separately', async ({ page }) => {
+  await page.goto('/');
+
+  await expect(page.locator('th[data-col="cb23s"]').first()).toBeVisible();
+  await expect(page.locator('th[data-col="cb23s_perf"]').first()).toHaveCount(0);
+
+  await page.locator('#column-toggle').click();
+  const option = page.locator('#column-options input[value="cb23s_perf"]');
+  await expect(option).toBeVisible();
+  await expect(option.locator('..')).toContainText('Perf: CB R23 Single');
+  await option.check();
+
+  const performanceHeader = page.locator('th[data-col="cb23s_perf"]').first();
+  await expect(performanceHeader).toBeVisible();
+  await expect(performanceHeader).toContainText('Perf');
 });

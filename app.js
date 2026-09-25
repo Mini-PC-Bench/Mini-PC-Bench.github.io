@@ -14,6 +14,8 @@ const DEFAULT_VISIBLE_COLUMNS = [
   'cb23m',
   'gb6s',
   'gb6m',
+  'gbai_cpu_single',
+  'gbai_gpu_single',
   'firestrike',
   'timespy',
   'h264',
@@ -23,7 +25,9 @@ const DEFAULT_VISIBLE_COLUMNS = [
   'noise_load',
   'noise_perf',
   'composite',
-  'efficiency'
+  'efficiency',
+  'composite_perf',
+  'efficiency_perf'
 ];
 
 const BENCH_HIGHER = [
@@ -31,8 +35,8 @@ const BENCH_HIGHER = [
   'cb23m',
   'gb6s',
   'gb6m',
-  'gbai_cpu',
-  'gbai_gpu',
+  'gbai_cpu_single',
+  'gbai_gpu_single',
   'firestrike',
   'timespy',
   'steelnomad',
@@ -55,64 +59,138 @@ const BENCH_LOWER = [
   'volume'
 ];
 
+function createPerformanceColumn(id, label, pickerLabel, title, lowerBetter = false, extra = {}) {
+  return {
+    id: `${id}_perf`,
+    label: `${label} <span class="profile-label">Perf</span>`,
+    pickerLabel: `Perf: ${pickerLabel}`,
+    title,
+    lowerBetter,
+    sortDefaultDir: lowerBetter ? 1 : -1,
+    ...extra
+  };
+}
+
 const TABLE_COLUMNS = [
   { id: 'compare', label: '<span class="sr-only">Compare</span>⇄', pickerLabel: 'Compare', title: 'Add to the comparison basket', headerClass: 'col-compare', cellClass: 'col-compare', alwaysVisible: true, notSortable: true },
   { id: 'name', label: 'Device', pickerLabel: 'Device', title: 'Device name', headerClass: 'col-name', cellClass: 'col-name', alwaysVisible: true, sortDefaultDir: 1 },
   { id: 'cb23s', label: 'CB R23 1T', pickerLabel: 'CB R23 Single', title: 'Cinebench R23 Single Core (higher is better)', sortDefaultDir: -1 },
+  createPerformanceColumn('cb23s', 'CB R23 1T', 'CB R23 Single', 'Cinebench R23 Single Core (Performance profile; higher is better)'),
   { id: 'cb23m', label: 'CB R23 nT', pickerLabel: 'CB R23 Multi', title: 'Cinebench R23 Multi Core (higher is better)', sortDefaultDir: -1 },
+  createPerformanceColumn('cb23m', 'CB R23 nT', 'CB R23 Multi', 'Cinebench R23 Multi Core (Performance profile; higher is better)'),
   { id: 'gb6s', label: 'GB6 1T', pickerLabel: 'GB6 Single', title: 'Geekbench 6 Single Core (higher is better)', sortDefaultDir: -1 },
+  createPerformanceColumn('gb6s', 'GB6 1T', 'GB6 Single', 'Geekbench 6 Single Core (Performance profile; higher is better)'),
   { id: 'gb6m', label: 'GB6 nT', pickerLabel: 'GB6 Multi', title: 'Geekbench 6 Multi Core (higher is better)', sortDefaultDir: -1 },
-  { id: 'gbai_cpu', label: 'GB AI CPU', pickerLabel: 'Geekbench AI CPU', title: 'Geekbench AI CPU score (higher is better)', sortDefaultDir: -1 },
-  { id: 'gbai_gpu', label: 'GB AI GPU', pickerLabel: 'Geekbench AI GPU', title: 'Geekbench AI GPU score (higher is better)', sortDefaultDir: -1 },
+  createPerformanceColumn('gb6m', 'GB6 nT', 'GB6 Multi', 'Geekbench 6 Multi Core (Performance profile; higher is better)'),
+  { id: 'gbai_cpu_single', label: 'GB AI CPU', pickerLabel: 'Geekbench AI CPU (Single)', title: 'Geekbench AI CPU Single score (higher is better)', sortDefaultDir: -1 },
+  { id: 'gbai_gpu_single', label: 'GB AI GPU', pickerLabel: 'Geekbench AI GPU (Single)', title: 'Geekbench AI GPU Single score (higher is better)', sortDefaultDir: -1 },
   { id: 'firestrike', label: 'FireStrike', pickerLabel: 'Fire Strike', title: '3DMark Fire Strike - DirectX 11 GPU benchmark (higher is better)', sortDefaultDir: -1 },
+  createPerformanceColumn('firestrike', 'FireStrike', 'Fire Strike', '3DMark Fire Strike - DirectX 11 GPU benchmark (Performance profile; higher is better)'),
   { id: 'timespy', label: 'Time Spy', pickerLabel: 'Time Spy', title: '3DMark Time Spy - DirectX 12 GPU benchmark (higher is better)', sortDefaultDir: -1 },
+  createPerformanceColumn('timespy', 'Time Spy', 'Time Spy', '3DMark Time Spy - DirectX 12 GPU benchmark (Performance profile; higher is better)'),
   { id: 'steelnomad', label: 'Steel Nomad', pickerLabel: 'Steel Nomad', title: '3DMark Steel Nomad score (higher is better)', sortDefaultDir: -1 },
+  createPerformanceColumn('steelnomad', 'Steel Nomad', 'Steel Nomad', '3DMark Steel Nomad score (Performance profile; higher is better)'),
   { id: 'coding', label: 'Coding ↓', pickerLabel: 'Coding', title: 'Coding benchmark score (lower is better)', lowerBetter: true, sortDefaultDir: 1 },
+  createPerformanceColumn('coding', 'Coding ↓', 'Coding', 'Coding benchmark score (Performance profile; lower is better)', true),
   { id: 'photoshop', label: 'Photoshop', pickerLabel: 'Photoshop', title: 'Photoshop benchmark score (higher is better)', sortDefaultDir: -1 },
+  createPerformanceColumn('photoshop', 'Photoshop', 'Photoshop', 'Photoshop benchmark score (Performance profile; higher is better)'),
   { id: 'premiere', label: 'Premiere', pickerLabel: 'Premiere', title: 'Premiere benchmark score (higher is better)', sortDefaultDir: -1 },
+  createPerformanceColumn('premiere', 'Premiere', 'Premiere', 'Premiere benchmark score (Performance profile; higher is better)'),
   { id: 'storage', label: 'Storage', pickerLabel: 'Storage Benchmark', title: '3DMark Storage Benchmark score (higher is better)', sortDefaultDir: -1 },
   { id: 'wireless_audio', label: 'BT Audio', pickerLabel: 'Wireless BT Audio', title: 'Wireless Bluetooth audio benchmark score (higher is better)', sortDefaultDir: -1 },
   { id: 'h264', label: 'H264 (s) ↓', pickerLabel: 'H264', title: 'H264 video encode time in seconds (lower is better)', lowerBetter: true, sortDefaultDir: 1 },
+  createPerformanceColumn('h264', 'H264 (s) ↓', 'H264', 'H264 video encode time in seconds (Performance profile; lower is better)', true),
   { id: 'av1', label: 'AV1 (s) ↓', pickerLabel: 'AV1 Encode', title: 'AV1 encode time in seconds (lower is better)', lowerBetter: true, sortDefaultDir: 1 },
+  createPerformanceColumn('av1', 'AV1 (s) ↓', 'AV1 Encode', 'AV1 encode time in seconds (Performance profile; lower is better)', true),
   { id: 'av1_hw', label: 'AV1 HW (s) ↓', pickerLabel: 'AV1 HW Encode', title: 'AV1 hardware encode time in seconds (lower is better)', lowerBetter: true, sortDefaultDir: 1 },
+  createPerformanceColumn('av1_hw', 'AV1 HW (s) ↓', 'AV1 HW Encode', 'AV1 hardware encode time in seconds (Performance profile; lower is better)', true),
   { id: 'watts', label: 'Watts ↓', pickerLabel: 'Max Power Draw', title: 'Maximum power draw from wall under load (lower is better)', lowerBetter: true, cellClass: 'watts-cell', sortDefaultDir: 1 },
+  createPerformanceColumn('watts', 'Watts ↓', 'Max Power Draw', 'Maximum power draw from wall under load (Performance profile; lower is better)', true, { cellClass: 'watts-cell' }),
   { id: 'power_idle_watts', label: 'Idle W ↓', pickerLabel: 'Idle Power', title: 'Power draw at idle in watts (lower is better)', lowerBetter: true, sortDefaultDir: 1 },
   { id: 'cpu_temp', label: 'CPU C ↓', pickerLabel: 'Max CPU Temp', title: 'Maximum CPU temperature under load in degrees Celsius (lower is better)', lowerBetter: true, sortDefaultDir: 1 },
+  createPerformanceColumn('cpu_temp', 'CPU C ↓', 'Max CPU Temp', 'Maximum CPU temperature under load in degrees Celsius (Performance profile; lower is better)', true),
   { id: 'ssd_temp', label: 'SSD C ↓', pickerLabel: 'SSD Temp', title: 'SSD temperature under load in degrees Celsius (lower is better)', lowerBetter: true, sortDefaultDir: 1 },
   { id: 'volume', label: 'Volume ↓', pickerLabel: 'Volume', title: 'Chassis volume in liters (lower is better)', lowerBetter: true, sortDefaultDir: 1 },
   { id: 'noise_idle', label: 'Idle dB ↓', pickerLabel: 'Idle Noise', title: 'Fan noise at idle in dB(A) (lower is better)', lowerBetter: true, sortDefaultDir: 1 },
   { id: 'noise_load', label: 'Load dB ↓', pickerLabel: 'Load Noise', title: 'Fan noise at load (default profile) in dB(A) (lower is better)', lowerBetter: true, sortDefaultDir: 1 },
   { id: 'noise_perf', label: 'Perf dB ↓', pickerLabel: 'Perf Noise', title: 'Fan noise at load (performance profile) in dB(A) (lower is better)', lowerBetter: true, sortDefaultDir: 1 },
   { id: 'composite', label: 'Score', pickerLabel: 'Composite Score', title: 'Average of all available normalized benchmark scores (0-100 each, relative to dataset max)', cellClass: 'score', sortDefaultDir: -1 },
-  { id: 'efficiency', label: 'Eff.', pickerLabel: 'Efficiency', title: 'Score / Watts x 10 - higher means more performance per watt', cellClass: 'eff', sortDefaultDir: -1 }
+  { id: 'efficiency', label: 'Eff.', pickerLabel: 'Efficiency', title: 'Score / Watts x 10 - higher means more performance per watt', cellClass: 'eff', sortDefaultDir: -1 },
+  { id: 'composite_perf', label: 'Perf Score', pickerLabel: 'Perf. Composite Score', title: 'Performance profile score using Performance values with Default fallback', cellClass: 'score', sortDefaultDir: -1 },
+  { id: 'efficiency_perf', label: 'Perf Eff.', pickerLabel: 'Perf. Efficiency', title: 'Performance profile score per Performance watts', cellClass: 'eff', sortDefaultDir: -1 }
 ];
 
+function createPerformanceChart(key, title, desc, unit = '', lowerBetter = false) {
+  return {
+    title,
+    desc,
+    unit,
+    lowerBetter,
+    multiSeries: true,
+    defaultSortSeries: key,
+    defaultMode: 'stacked',
+    defaultVisibleSeries: [key, `${key}_perf`],
+    emptyMessage: 'No Default or Performance data available for this metric yet.',
+    series: [
+      { key, label: 'Default', colorVar: '--profile-default' },
+      { key: `${key}_perf`, label: 'Performance', colorVar: '--profile-performance' }
+    ]
+  };
+}
+
 const CHART_META = {
-  cb23s: { title: 'Cinebench R23 · Single Core CPU', desc: 'Higher is better', unit: '', lowerBetter: false },
-  cb23m: { title: 'Cinebench R23 · Multi Core CPU', desc: 'Higher is better', unit: '', lowerBetter: false },
-  gb6s: { title: 'Geekbench 6 · Single Core CPU', desc: 'Higher is better', unit: '', lowerBetter: false },
-  gb6m: { title: 'Geekbench 6 · Multi Core CPU', desc: 'Higher is better', unit: '', lowerBetter: false },
-  gbai_cpu: { title: 'Geekbench AI · CPU', desc: 'Higher is better', unit: '', lowerBetter: false },
-  gbai_gpu: { title: 'Geekbench AI · GPU', desc: 'Higher is better', unit: '', lowerBetter: false },
-  firestrike: { title: '3DMark Fire Strike', desc: 'Higher is better · DirectX 11 GPU benchmark', unit: '', lowerBetter: false },
-  timespy: { title: '3DMark Time Spy', desc: 'Higher is better · DirectX 12 GPU benchmark', unit: '', lowerBetter: false },
-  steelnomad: { title: '3DMark Steel Nomad', desc: 'Higher is better', unit: '', lowerBetter: false },
-  coding: { title: 'Coding', desc: 'Lower is better', unit: '', lowerBetter: true },
-  photoshop: { title: 'Photoshop', desc: 'Higher is better', unit: '', lowerBetter: false },
-  premiere: { title: 'Premiere', desc: 'Higher is better', unit: '', lowerBetter: false },
+  cb23s: createPerformanceChart('cb23s', 'Cinebench R23 · Single Core CPU', 'Higher is better'),
+  cb23m: createPerformanceChart('cb23m', 'Cinebench R23 · Multi Core CPU', 'Higher is better'),
+  gb6s: createPerformanceChart('gb6s', 'Geekbench 6 · Single Core CPU', 'Higher is better'),
+  gb6m: createPerformanceChart('gb6m', 'Geekbench 6 · Multi Core CPU', 'Higher is better'),
+  gbai_cpu: {
+    title: 'Geekbench AI · CPU',
+    desc: 'Higher is better',
+    unit: '',
+    lowerBetter: false,
+    multiSeries: true,
+    defaultSortSeries: 'gbai_cpu_single',
+    defaultMode: 'stacked',
+    defaultVisibleSeries: ['gbai_cpu_half', 'gbai_cpu_single', 'gbai_cpu_quantised'],
+    emptyMessage: 'No Geekbench AI CPU data available yet.',
+    series: [
+      { key: 'gbai_cpu_half', label: 'Half', colorVar: '--ai-cpu-half' },
+      { key: 'gbai_cpu_single', label: 'Single', colorVar: '--ai-cpu-single' },
+      { key: 'gbai_cpu_quantised', label: 'Quantised', colorVar: '--ai-cpu-quantised' }
+    ]
+  },
+  gbai_gpu: {
+    title: 'Geekbench AI · GPU',
+    desc: 'Higher is better',
+    unit: '',
+    lowerBetter: false,
+    multiSeries: true,
+    defaultSortSeries: 'gbai_gpu_single',
+    defaultMode: 'stacked',
+    defaultVisibleSeries: ['gbai_gpu_half', 'gbai_gpu_single', 'gbai_gpu_quantised'],
+    emptyMessage: 'No Geekbench AI GPU data available yet.',
+    series: [
+      { key: 'gbai_gpu_half', label: 'Half', colorVar: '--ai-gpu-half' },
+      { key: 'gbai_gpu_single', label: 'Single', colorVar: '--ai-gpu-single' },
+      { key: 'gbai_gpu_quantised', label: 'Quantised', colorVar: '--ai-gpu-quantised' }
+    ]
+  },
+  firestrike: createPerformanceChart('firestrike', '3DMark Fire Strike', 'Higher is better · DirectX 11 GPU benchmark'),
+  timespy: createPerformanceChart('timespy', '3DMark Time Spy', 'Higher is better · DirectX 12 GPU benchmark'),
+  steelnomad: createPerformanceChart('steelnomad', '3DMark Steel Nomad', 'Higher is better'),
+  coding: createPerformanceChart('coding', 'Coding', 'Lower is better', '', true),
+  photoshop: createPerformanceChart('photoshop', 'Photoshop', 'Higher is better'),
+  premiere: createPerformanceChart('premiere', 'Premiere', 'Higher is better'),
   storage: { title: '3DMark Storage Benchmark', desc: 'Higher is better', unit: '', lowerBetter: false },
   wireless_audio: { title: 'Wireless Bluetooth Audio', desc: 'Higher is better', unit: '', lowerBetter: false },
-  h264: { title: 'H264 Video Encode', desc: 'Lower is better · seconds to encode sample video', unit: 's', lowerBetter: true },
-  av1: { title: 'AV1 Encoding', desc: 'Lower is better · seconds to encode sample video', unit: 's', lowerBetter: true },
-  av1_hw: { title: 'AV1 Encoding (Hardware)', desc: 'Lower is better · seconds to encode sample video', unit: 's', lowerBetter: true },
-  watts: { title: 'Maximum Power Draw from the Wall', desc: 'Lower is better · watts under full CPU load', unit: 'W', lowerBetter: true },
+  h264: createPerformanceChart('h264', 'H264 Video Encode', 'Lower is better · seconds to encode sample video', 's', true),
+  av1: createPerformanceChart('av1', 'AV1 Encoding', 'Lower is better · seconds to encode sample video', 's', true),
+  av1_hw: createPerformanceChart('av1_hw', 'AV1 Encoding (Hardware)', 'Lower is better · seconds to encode sample video', 's', true),
+  watts: createPerformanceChart('watts', 'Maximum Power Draw from the Wall', 'Lower is better · watts under full CPU load', 'W', true),
   power_idle_watts: { title: 'Power Draw at Idle', desc: 'Lower is better · watts at desktop idle', unit: 'W', lowerBetter: true },
-  cpu_temp: { title: 'Maximum CPU Temperature', desc: 'Lower is better · measured under sustained load', unit: 'C', lowerBetter: true },
+  cpu_temp: createPerformanceChart('cpu_temp', 'Maximum CPU Temperature', 'Lower is better · measured under sustained load', 'C', true),
   ssd_temp: { title: 'SSD Temperatures', desc: 'Lower is better · measured under sustained storage load', unit: 'C', lowerBetter: true },
   volume: { title: 'Volume', desc: 'Lower is better · chassis size in liters', unit: 'L', lowerBetter: true },
-  noise_load: { title: 'Fan Noise at Load (Default Profile)', desc: 'Lower is better · dB(A) measured at 30 cm', unit: 'dB', lowerBetter: true },
-  noise_perf: { title: 'Fan Noise at Load (Performance Profile)', desc: 'Lower is better · dB(A) measured at 30 cm', unit: 'dB', lowerBetter: true },
-  noise_idle: { title: 'Fan Noise at Idle', desc: 'Lower is better · dB(A) measured at 30 cm', unit: 'dB', lowerBetter: true },
   // Multi-series chart
   noise: {
     title: 'Fan Noise · All Profiles',
@@ -123,9 +201,9 @@ const CHART_META = {
     defaultSortSeries: 'noise_load',
     defaultVisibleSeries: ['noise_idle', 'noise_load', 'noise_perf'],
     series: [
-      { key: 'noise_idle', label: 'Idle', colorVar: '--noise1' },
-      { key: 'noise_load', label: 'Load', colorVar: '--noise2' },
-      { key: 'noise_perf', label: 'Performance', colorVar: '--noise3' }
+      { key: 'noise_idle', label: 'Idle', colorVar: '--noise-idle' },
+      { key: 'noise_load', label: 'Load', colorVar: '--noise-load' },
+      { key: 'noise_perf', label: 'Performance', colorVar: '--noise-performance' }
     ]
   }
 };
@@ -137,47 +215,64 @@ const DETAIL_METRIC_GROUPS = [
   },
   {
     title: 'Quick View',
-    items: ['composite', 'efficiency', 'watts', 'power_idle_watts', 'volume']
+    items: ['composite', 'efficiency', 'composite_perf', 'efficiency_perf', 'watts', 'watts_perf', 'power_idle_watts', 'volume']
   },
   {
     title: 'CPU',
-    items: ['cb23s', 'cb23m', 'gb6s', 'gb6m', 'gbai_cpu']
+    items: ['cb23s', 'cb23s_perf', 'cb23m', 'cb23m_perf', 'gb6s', 'gb6s_perf', 'gb6m', 'gb6m_perf', 'gbai_cpu_single']
   },
   {
     title: 'GPU & Pro Apps',
-    items: ['gbai_gpu', 'firestrike', 'timespy', 'steelnomad', 'coding', 'photoshop', 'premiere']
+    items: ['gbai_gpu_single', 'firestrike', 'firestrike_perf', 'timespy', 'timespy_perf', 'steelnomad', 'steelnomad_perf', 'coding', 'coding_perf', 'photoshop', 'photoshop_perf', 'premiere', 'premiere_perf']
   },
   {
     title: 'Media, Thermals & Acoustics',
-    items: ['h264', 'av1', 'av1_hw', 'noise_idle', 'noise_load', 'noise_perf', 'cpu_temp', 'ssd_temp', 'storage', 'wireless_audio']
+    items: ['h264', 'h264_perf', 'av1', 'av1_perf', 'av1_hw', 'av1_hw_perf', 'noise_idle', 'noise_load', 'noise_perf', 'cpu_temp', 'cpu_temp_perf', 'ssd_temp', 'storage', 'wireless_audio']
   }
 ];
 
 const DETAIL_METRICS = {
   composite: { label: 'Composite score', decimals: 1 },
   efficiency: { label: 'Efficiency', decimals: 1 },
+  composite_perf: { label: 'Performance composite score', decimals: 1 },
+  efficiency_perf: { label: 'Performance efficiency', decimals: 1 },
   watts: { label: 'Max power draw', unit: 'W' },
+  watts_perf: { label: 'Max power draw (Performance)', unit: 'W' },
   power_idle_watts: { label: 'Idle power', unit: 'W' },
   volume: { label: 'Volume', unit: 'L', decimals: 2 },
   cb23s: { label: 'Cinebench R23 single' },
+  cb23s_perf: { label: 'Cinebench R23 single (Performance)' },
   cb23m: { label: 'Cinebench R23 multi' },
+  cb23m_perf: { label: 'Cinebench R23 multi (Performance)' },
   gb6s: { label: 'Geekbench 6 single' },
+  gb6s_perf: { label: 'Geekbench 6 single (Performance)' },
   gb6m: { label: 'Geekbench 6 multi' },
-  gbai_cpu: { label: 'Geekbench AI CPU' },
-  gbai_gpu: { label: 'Geekbench AI GPU' },
+  gb6m_perf: { label: 'Geekbench 6 multi (Performance)' },
+  gbai_cpu_single: { label: 'Geekbench AI CPU (Single)' },
+  gbai_gpu_single: { label: 'Geekbench AI GPU (Single)' },
   firestrike: { label: '3DMark Fire Strike' },
+  firestrike_perf: { label: '3DMark Fire Strike (Performance)' },
   timespy: { label: '3DMark Time Spy' },
+  timespy_perf: { label: '3DMark Time Spy (Performance)' },
   steelnomad: { label: '3DMark Steel Nomad' },
+  steelnomad_perf: { label: '3DMark Steel Nomad (Performance)' },
   coding: { label: 'Coding', decimals: 3 },
+  coding_perf: { label: 'Coding (Performance)', decimals: 3 },
   photoshop: { label: 'Photoshop' },
+  photoshop_perf: { label: 'Photoshop (Performance)' },
   premiere: { label: 'Premiere' },
+  premiere_perf: { label: 'Premiere (Performance)' },
   h264: { label: 'H264 encode', unit: 's' },
+  h264_perf: { label: 'H264 encode (Performance)', unit: 's' },
   av1: { label: 'AV1 encode', unit: 's' },
+  av1_perf: { label: 'AV1 encode (Performance)', unit: 's' },
   av1_hw: { label: 'AV1 hardware encode', unit: 's' },
+  av1_hw_perf: { label: 'AV1 hardware encode (Performance)', unit: 's' },
   noise_idle: { label: 'Idle noise', unit: 'dB' },
   noise_load: { label: 'Load noise', unit: 'dB' },
   noise_perf: { label: 'Performance noise', unit: 'dB' },
   cpu_temp: { label: 'CPU temperature', unit: 'C' },
+  cpu_temp_perf: { label: 'CPU temperature (Performance)', unit: 'C' },
   ssd_temp: { label: 'SSD temperature', unit: 'C' },
   storage: { label: 'Storage score' },
   wireless_audio: { label: 'Wireless BT audio', decimals: 1 }
@@ -196,10 +291,7 @@ let linksLoaded = false;
 let compareSelection = [];
 let compareDiffOnly = false;
 
-// Multi-series chart state
-let multiSeriesSort = 'noise_load';
-let multiSeriesMode = 'stacked'; // 'stacked' | 'grouped'
-let multiSeriesVisible = new Set(CHART_META.noise.defaultVisibleSeries ?? CHART_META.noise.series.map(series => series.key));
+const multiSeriesState = new Map();
 
 const benchmarkTable = document.getElementById('benchmark-table');
 const infoGrid = document.getElementById('info-grid');
@@ -901,7 +993,7 @@ function renderLoadingTable() {
     <thead>
       <tr>
         <th>#</th>
-        ${visible.map(column => `<th>${escapeHtml(column.label)}</th>`).join('')}
+        ${visible.map(column => `<th>${escapeHtml(column.pickerLabel)}</th>`).join('')}
       </tr>
     </thead>
     <tbody aria-busy="true" aria-label="Loading benchmark data">
@@ -945,8 +1037,12 @@ function normalizeDevices(data) {
       h264: device.h264 ?? device.handbrake ?? null,
       av1: device.av1 ?? null,
       av1_hw: device.av1_hw ?? device.av1_hardware ?? null,
-      gbai_cpu: device.gbai_cpu ?? device.geekbench_ai_cpu ?? null,
-      gbai_gpu: device.gbai_gpu ?? device.geekbench_ai_gpu ?? null,
+      gbai_cpu_half: device.gbai_cpu_half ?? null,
+      gbai_cpu_single: device.gbai_cpu_single ?? null,
+      gbai_cpu_quantised: device.gbai_cpu_quantised ?? null,
+      gbai_gpu_half: device.gbai_gpu_half ?? null,
+      gbai_gpu_single: device.gbai_gpu_single ?? null,
+      gbai_gpu_quantised: device.gbai_gpu_quantised ?? null,
       steelnomad: device.steelnomad ?? device.steel_nomad ?? null,
       coding: device.coding ?? null,
       photoshop: device.photoshop ?? null,
@@ -978,6 +1074,18 @@ function normalizeDevices(data) {
       .filter(value => value !== null);
     device.composite = scores.length ? scores.reduce((sum, value) => sum + value, 0) / scores.length : 0;
     device.efficiency = device.watts ? (device.composite / device.watts) * 10 : 0;
+
+    const performanceScores = BENCH_HIGHER
+      .map(column => {
+        const value = device[`${column}_perf`] ?? device[column];
+        return value != null && MAX_H[column] ? (value / MAX_H[column]) * 100 : null;
+      })
+      .filter(value => value !== null);
+    device.composite_perf = performanceScores.length
+      ? performanceScores.reduce((sum, value) => sum + value, 0) / performanceScores.length
+      : 0;
+    const performanceWatts = device.watts_perf ?? device.watts;
+    device.efficiency_perf = performanceWatts ? (device.composite_perf / performanceWatts) * 10 : 0;
   });
 }
 
@@ -1134,6 +1242,16 @@ function renderTableCell(column, device, metrics) {
     return `<td class="eff">${cellBar(pct, ' g')}${fmtD(device.efficiency)}</td>`;
   }
 
+  if (column.id === 'composite_perf') {
+    const pct = metrics.maxCompositePerf ? (device.composite_perf / metrics.maxCompositePerf) * 100 : 0;
+    return `<td class="score">${cellBar(pct)}${fmtD(device.composite_perf)}</td>`;
+  }
+
+  if (column.id === 'efficiency_perf') {
+    const pct = metrics.maxEfficiencyPerf ? (device.efficiency_perf / metrics.maxEfficiencyPerf) * 100 : 0;
+    return `<td class="eff">${cellBar(pct, ' g')}${fmtD(device.efficiency_perf)}</td>`;
+  }
+
   const classAttr = column.cellClass ? ` class="${column.cellClass}"` : '';
   return `<td${classAttr}>${fmt(device[column.id])}</td>`;
 }
@@ -1151,7 +1269,9 @@ function renderTable() {
   const visible = getVisibleColumns();
   const metrics = {
     maxComposite: Math.max(...DEVICES.map(device => device.composite), 0),
-    maxEfficiency: Math.max(...DEVICES.map(device => device.efficiency), 0)
+    maxEfficiency: Math.max(...DEVICES.map(device => device.efficiency), 0),
+    maxCompositePerf: Math.max(...DEVICES.map(device => device.composite_perf), 0),
+    maxEfficiencyPerf: Math.max(...DEVICES.map(device => device.efficiency_perf), 0)
   };
 
   countEl.textContent = filterQ.trim()
@@ -1241,6 +1361,18 @@ function renderColumnPicker() {
 
 // ── Multi-series chart helpers ──────────────────────────────────────────────
 
+function getMultiSeriesState(meta) {
+  if (!multiSeriesState.has(activeChart)) {
+    multiSeriesState.set(activeChart, {
+      sort: meta.defaultSortSeries ?? meta.series[0].key,
+      mode: meta.defaultMode ?? 'stacked',
+      visible: new Set(meta.defaultVisibleSeries ?? meta.series.map(series => series.key))
+    });
+  }
+
+  return multiSeriesState.get(activeChart);
+}
+
 function buildStackedSegments(device, meta, globalMax) {
   if (!meta.series.some(series => device[series.key] != null)) {
     return `<span class="chart-segment-empty">no data</span>`;
@@ -1254,9 +1386,9 @@ function buildStackedSegments(device, meta, globalMax) {
     const value = device[series.key];
     if (value == null) return;
     if (previousValue != null) {
-      const delta = Math.max(value - previousValue, 0);
+      const delta = Math.abs(value - previousValue);
       const w = ((delta / globalMax) * 100).toFixed(2);
-      segments += `<div class="chart-segment" data-w="${w}" style="width:0;background:var(${series.colorVar})" title="${series.label}: ${fmt(value)}${meta.unit} (+${fmt(Math.round(delta))})"></div>`;
+      segments += `<div class="chart-segment" data-w="${w}" style="width:0;background:var(${series.colorVar})" title="${series.label}: ${fmt(value)}${meta.unit} (delta ${fmt(Math.round(delta))})"></div>`;
     } else {
       segments += `<div class="chart-segment" data-w="${toW(value)}" style="width:0;background:var(${series.colorVar})" title="${series.label}: ${fmt(value)}${meta.unit}"></div>`;
     }
@@ -1277,35 +1409,39 @@ function buildGroupedTracks(device, meta, globalMax) {
 }
 
 function renderChartMultiSeries(meta) {
-  const enabledSeries = meta.series.filter(series => multiSeriesVisible.has(series.key));
+  const state = getMultiSeriesState(meta);
+  const enabledSeries = meta.series.filter(series => state.visible.has(series.key));
   const enabledMeta = { ...meta, series: enabledSeries };
   const devices = DEVICES.filter(device => enabledSeries.some(series => device[series.key] != null));
 
   if (!devices.length) {
-    renderChartMessage('No noise data available.');
+    renderChartMessage(meta.emptyMessage ?? 'No chart data available.');
     return;
   }
 
   // Global max across all series for proportional bar sizing
   const globalMax = Math.max(...devices.flatMap(device => enabledSeries.map(series => device[series.key] ?? 0)), 0);
 
-  // Sort by selected series key (lower is better for noise)
+  const sortDirection = meta.lowerBetter ? 1 : -1;
   const sorted = [...devices].sort((a, b) => {
-    const av = a[multiSeriesSort] ?? Infinity;
-    const bv = b[multiSeriesSort] ?? Infinity;
-    return av - bv;
+    const av = a[state.sort];
+    const bv = b[state.sort];
+    if (av == null && bv == null) return 0;
+    if (av == null) return 1;
+    if (bv == null) return -1;
+    return sortDirection * (av - bv);
   });
 
   // ── Controls ──
   const sortPills = enabledSeries.map(s => `
-    <button class="chart-sort-pill${multiSeriesSort === s.key ? ' active' : ''}" data-sort="${s.key}">${s.label}</button>
+    <button class="chart-sort-pill${state.sort === s.key ? ' active' : ''}" data-sort="${s.key}">${s.label}</button>
   `).join('');
 
   const modeBtns = `
-    <button class="chart-mode-btn${multiSeriesMode === 'stacked' ? ' active' : ''}" data-mode="stacked" title="Stacked bars">
+    <button class="chart-mode-btn${state.mode === 'stacked' ? ' active' : ''}" data-mode="stacked" title="Stacked bars">
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="3" width="12" height="3" rx="1" fill="currentColor"/><rect x="1" y="8" width="12" height="3" rx="1" fill="currentColor" opacity=".4"/></svg>
     </button>
-    <button class="chart-mode-btn${multiSeriesMode === 'grouped' ? ' active' : ''}" data-mode="grouped" title="Grouped bars">
+    <button class="chart-mode-btn${state.mode === 'grouped' ? ' active' : ''}" data-mode="grouped" title="Grouped bars">
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="2" width="4" height="10" rx="1" fill="currentColor"/><rect x="5.5" y="2" width="4" height="10" rx="1" fill="currentColor" opacity=".6"/><rect x="10" y="2" width="3" height="10" rx="1" fill="currentColor" opacity=".3"/></svg>
     </button>`;
 
@@ -1313,21 +1449,20 @@ function renderChartMultiSeries(meta) {
   const legendHtml = `
     <div class="chart-legend">
       ${meta.series.map(s => `
-        <button type="button" class="legend-item${multiSeriesVisible.has(s.key) ? ' active' : ''}" data-series="${s.key}" aria-pressed="${multiSeriesVisible.has(s.key)}" ${enabledSeries.length === 1 && multiSeriesVisible.has(s.key) ? 'disabled' : ''}>
+        <button type="button" class="legend-item${state.visible.has(s.key) ? ' active' : ''}" data-series="${s.key}" aria-pressed="${state.visible.has(s.key)}" ${enabledSeries.length === 1 && state.visible.has(s.key) ? 'disabled' : ''}>
           <span class="legend-dot" style="background:var(${s.colorVar})"></span>
           <span>${s.label}</span>
         </button>`).join('')}
-      ${multiSeriesMode === 'stacked' ? `<span class="legend-hint">Segments show delta from previous profile</span>` : ''}
+      ${state.mode === 'stacked' ? `<span class="legend-hint">Segments show delta from previous series</span>` : ''}
     </div>`;
 
   // ── Rows ──
   const rowsHtml = sorted.map((device, idx) => {
     const isTop = idx < 3;
-    const primaryVal = device[multiSeriesSort];
     const allVals = enabledSeries.map(s => device[s.key] != null ? `${fmt(device[s.key])}` : '—').join(' / ');
     const numTitle = `${enabledSeries.map(s => `${s.label}: ${device[s.key] != null ? fmt(device[s.key]) + meta.unit : '—'}`).join(', ')}`;
 
-    if (multiSeriesMode === 'stacked') {
+    if (state.mode === 'stacked') {
       return `<div class="chart-row">
         <button type="button" class="chart-label${isTop ? ' top' : ''}" data-device-id="${escapeHtml(device.id)}" title="${escapeHtml(device.name)}">${escapeHtml(device.name)}</button>
         <div class="chart-track chart-track-stacked">
@@ -1377,7 +1512,7 @@ function renderChartMultiSeries(meta) {
   // Sort pill listeners
   chartBox.querySelectorAll('.chart-sort-pill').forEach(btn => {
     btn.addEventListener('click', () => {
-      multiSeriesSort = btn.dataset.sort;
+      state.sort = btn.dataset.sort;
       renderChart();
     });
   });
@@ -1385,14 +1520,15 @@ function renderChartMultiSeries(meta) {
   chartBox.querySelectorAll('.legend-item[data-series]').forEach(btn => {
     btn.addEventListener('click', () => {
       const seriesKey = btn.dataset.series;
-      if (multiSeriesVisible.has(seriesKey)) {
-        if (multiSeriesVisible.size === 1) return;
-        multiSeriesVisible.delete(seriesKey);
-        if (multiSeriesSort === seriesKey) {
-          multiSeriesSort = meta.series.find(series => multiSeriesVisible.has(series.key)).key;
+      if (state.visible.has(seriesKey)) {
+        if (state.visible.size === 1) return;
+        state.visible.delete(seriesKey);
+        if (state.sort === seriesKey) {
+          const nextSeries = meta.series.find(series => state.visible.has(series.key));
+          state.sort = nextSeries?.key ?? meta.series[0].key;
         }
       } else {
-        multiSeriesVisible.add(seriesKey);
+        state.visible.add(seriesKey);
       }
       renderChart();
     });
@@ -1401,7 +1537,7 @@ function renderChartMultiSeries(meta) {
   // Mode toggle listeners
   chartBox.querySelectorAll('.chart-mode-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      multiSeriesMode = btn.dataset.mode;
+      state.mode = btn.dataset.mode;
       renderChart();
     });
   });

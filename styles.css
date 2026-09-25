@@ -17,10 +17,17 @@
   --pow2: #10B981;
   --pow3: #34D399;
   --pow-dim: #94A3B8;
-  /* Noise multi-series: green → amber → red (quiet → loud) */
-  --noise1: #10B981;
-  --noise2: #F59E0B;
-  --noise3: #EF4444;
+  --noise-idle: #10B981;
+  --noise-load: #F59E0B;
+  --noise-performance: #EF4444;
+  --profile-default: #2563EB;
+  --profile-performance: #F97316;
+  --ai-cpu-half: #0F766E;
+  --ai-cpu-single: #0891B2;
+  --ai-cpu-quantised: #7C3AED;
+  --ai-gpu-half: #65A30D;
+  --ai-gpu-single: #CA8A04;
+  --ai-gpu-quantised: #DC2626;
   /* Product photo background */
   --photo-bg: #FFFFFF;
 }
@@ -44,6 +51,17 @@
   --pow2: #10B981;
   --pow3: #059669;
   --pow-dim: #475569;
+  --noise-idle: #34D399;
+  --noise-load: #FBBF24;
+  --noise-performance: #F87171;
+  --profile-default: #60A5FA;
+  --profile-performance: #FB923C;
+  --ai-cpu-half: #2DD4BF;
+  --ai-cpu-single: #22D3EE;
+  --ai-cpu-quantised: #A78BFA;
+  --ai-gpu-half: #A3E635;
+  --ai-gpu-single: #FACC15;
+  --ai-gpu-quantised: #F87171;
   /* Product photo background */
   --photo-bg: #263449;
 }
@@ -624,6 +642,19 @@ a.tab-btn:last-child {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.profile-label {
+  display: inline-block;
+  margin-left: 0.18rem;
+  padding: 0.12rem 0.25rem;
+  border: 1px solid var(--profile-performance);
+  border-radius: 3px;
+  color: var(--profile-performance);
+  font-size: 0.5rem;
+  line-height: 1;
+  letter-spacing: 0.03em;
+  vertical-align: 0.08em;
 }
 
 .table-wrap {

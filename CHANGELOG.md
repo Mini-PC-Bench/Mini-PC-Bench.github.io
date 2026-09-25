@@ -2,6 +2,11 @@
 
 All notable changes to this project are documented here.
 
+## 2026-09-20
+
+- Imported **Default** and **Performance** benchmark rows as separate fields, and split Geekbench AI CPU and GPU results into Half, Single, and Quantised variants.
+- Added stacked-by-default Default-versus-Performance charts for all supported profile metrics, grouped noise profile charts, Geekbench AI variant charts with grouped mode, and Performance composite and efficiency scores.
+
 ## 2026-09-18
 
 - Added a comparison basket: tick devices in the Table view or the device popover, then open the new Compare tab to see them side by side with the best value in each row highlighted.
