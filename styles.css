@@ -1,4 +1,5 @@
 :root {
+  --header-offset: 5rem;
   --bg: #F8FAFC;
   --surface: #FFFFFF;
   --border: #E2E8F0;
@@ -379,6 +380,24 @@ a.tab-btn:last-child {
   border-top: 1px solid var(--border);
   margin: 1.5rem 0 0.5rem;
   padding-top: 1rem;
+  scroll-margin-top: calc(var(--header-offset) + 1rem);
+}
+
+.changelog-body h2.changelog-date .changelog-date-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.changelog-body h2.changelog-date .changelog-date-link::after {
+  content: '#';
+  margin-left: 0.4em;
+  opacity: 0;
+  color: var(--accent);
+}
+
+.changelog-body h2.changelog-date .changelog-date-link:hover::after,
+.changelog-body h2.changelog-date .changelog-date-link:focus-visible::after {
+  opacity: 1;
 }
 
 .changelog-body p {

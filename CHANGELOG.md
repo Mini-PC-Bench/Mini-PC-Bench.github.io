@@ -2,9 +2,14 @@
 
 All notable changes to this project are documented here.
 
+## 2026-09-27
+
+- Added benchmark results for additional mini PCs and updated performance metrics for existing devices.
+
 ## 2026-09-20
 
 - Imported **Default** and **Performance** benchmark rows as separate fields, and split Geekbench AI CPU and GPU results into Half, Single, and Quantised variants.
+- Added Geekbench 7 benchmark results and support for importing AI token metrics.
 - Added stacked-by-default Default-versus-Performance charts for all supported profile metrics, grouped noise profile charts, Geekbench AI variant charts with grouped mode, and Performance composite and efficiency scores.
 
 ## 2026-09-18

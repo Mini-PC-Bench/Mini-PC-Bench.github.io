@@ -1,5 +1,6 @@
 const THEME_STORAGE_KEY = 'minipc-benchmarks.theme';
 const themeToggleBtn = document.getElementById('theme-toggle');
+const themeHeaderEl = document.querySelector('header');
 
 function getSavedTheme() {
   try {
@@ -33,3 +34,15 @@ themeToggleBtn.addEventListener('click', () => {
   applyTheme(nextTheme);
   saveTheme(nextTheme);
 });
+
+// Keep anchor scroll offset in sync with the sticky header's actual height.
+function updateHeaderOffset() {
+  if (!themeHeaderEl) return;
+  document.documentElement.style.setProperty('--header-offset', `${themeHeaderEl.offsetHeight}px`);
+}
+
+if (themeHeaderEl) {
+  updateHeaderOffset();
+  window.addEventListener('resize', updateHeaderOffset);
+  window.addEventListener('load', updateHeaderOffset);
+}

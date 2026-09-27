@@ -38,8 +38,14 @@ function Convert-MarkdownToHtml {
     if ($trimmed -match '^##\s+(.*)$') {
       if ($inList) { [void]$html.AppendLine('</ul>'); $inList = $false }
       $heading = $Matches[1]
-      $class = if ($heading -match '^\d{4}-\d{2}-\d{2}(\s+(?:[–-]|to)\s+\d{4}-\d{2}-\d{2})?$') { ' class="changelog-date"' } else { '' }
-      [void]$html.AppendLine("<h2$class>$(Convert-InlineMarkdown $heading)</h2>")
+      $isDate = $heading -match '^\d{4}-\d{2}-\d{2}(\s+(?:[–-]|to)\s+\d{4}-\d{2}-\d{2})?$'
+      if ($isDate) {
+        $slug = ($heading -replace '\s+(?:[–-]|to)\s+', '-to-') -replace '\s', ''
+        [void]$html.AppendLine("<h2 class=`"changelog-date`" id=`"$slug`"><a class=`"changelog-date-link`" href=`"#$slug`">$(Convert-InlineMarkdown $heading)</a></h2>")
+      }
+      else {
+        [void]$html.AppendLine("<h2>$(Convert-InlineMarkdown $heading)</h2>")
+      }
       continue
     }
 
