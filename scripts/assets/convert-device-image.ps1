@@ -29,10 +29,10 @@
     Edge feather radius in px (default: 3).
 
 .EXAMPLE
-    .\scripts\convert-device-image.ps1 -DeviceId asus-rog-nuc-15-ultra-9-275hx
+    .\scripts\assets\convert-device-image.ps1 -DeviceId asus-rog-nuc-15-ultra-9-275hx
 
 .EXAMPLE
-    .\scripts\convert-device-image.ps1 -DeviceId asus-rog-nuc-15-ultra-9-275hx -BgTolerance 40
+    .\scripts\assets\convert-device-image.ps1 -DeviceId asus-rog-nuc-15-ultra-9-275hx -BgTolerance 40
 #>
 
 param(
@@ -48,7 +48,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-$repoRoot = Split-Path -Parent $PSScriptRoot
+$repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $sourceDir = Join-Path $repoRoot "temp/devices-source"
 $outputDir = Join-Path $repoRoot "images/devices"
 $devicesFile = Join-Path $repoRoot "devices.json"

@@ -1,4 +1,4 @@
-$root = Split-Path -Parent $MyInvocation.MyCommand.Path
+$root = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $listener = [System.Net.HttpListener]::new()
 $listener.Prefixes.Add("http://localhost:80/")
 $listener.Start()

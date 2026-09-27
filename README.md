@@ -12,8 +12,13 @@ Static benchmark comparison page for mini PCs, designed to be hosted on GitHub P
 - `devices.json` - benchmark dataset consumed by the page
 - `device-links.json` - editorial links keyed by device id
 - `source-device-map.json` - reviewed raw source-label ownership mappings used by the importer
-- `sync-device-links.ps1` - adds missing empty link entries from `devices.json`
-- `scripts/validate-device-links.ps1` - resolves and sanity-checks YouTube and Amazon device links
+- `scripts/devices/sync-device-links.ps1` - adds missing empty link entries from `devices.json`
+- `scripts/devices/validate-device-links.ps1` - resolves and sanity-checks YouTube and Amazon device links
+- `scripts/devices/reorder-devices.ps1` - applies the preferred device field order
+- `scripts/source/process-source.ps1` - imports benchmark CSV data into `devices.json`
+- `scripts/source/transpose-source.ps1` - exports raw source labels to a flat CSV
+- `scripts/assets/convert-device-image.ps1` - converts device source images for the site
+- `scripts/dev/serve.ps1` - serves the site locally with PowerShell
 - `CHANGELOG.md` - project changelog (source of truth); edit this file
 - `changelog.template.html` - HTML layout for the generated changelog page
 - `scripts/ci/build-changelog.ps1` - regenerates `changelog.html` from `CHANGELOG.md` and its template (`pwsh ./scripts/ci/build-changelog.ps1`)
@@ -25,13 +30,13 @@ Static benchmark comparison page for mini PCs, designed to be hosted on GitHub P
 Run the link sanity check from the repository root:
 
 ```powershell
-.\scripts\validate-device-links.ps1
+.\scripts\devices\validate-device-links.ps1
 ```
 
 The report is written to `device-links-report.md`. To check one device, use:
 
 ```powershell
-.\scripts\validate-device-links.ps1 -DeviceId minisforum-ai-x1-pro-hx-470
+.\scripts\devices\validate-device-links.ps1 -DeviceId minisforum-ai-x1-pro-hx-470
 ```
 
 `-DevicesPath <device-id>` is also accepted as a backwards-compatible shorthand for
@@ -68,7 +73,7 @@ http://127.0.0.1:8123/
 No Python or Node required. Run the included PowerShell script (as Administrator):
 
 ```powershell
-.\serve.ps1
+.\scripts\dev\serve.ps1
 ```
 
 Press `Ctrl+C` to stop the server.
@@ -79,7 +84,7 @@ Then open:
 http://localhost:80/
 ```
 
-> **Note:** Port 80 requires an elevated PowerShell session. Alternatively, change the port in `serve.ps1` to anything above 1024 (e.g. `8123`) to run without Administrator privileges.
+> **Note:** Port 80 requires an elevated PowerShell session. Alternatively, change the port in `scripts/dev/serve.ps1` to anything above 1024 (e.g. `8123`) to run without Administrator privileges.
 
 ## End-to-End Tests
 
@@ -308,21 +313,21 @@ Use this workflow each time you review a new device.
 
 There are two PowerShell scripts for working with the raw CSV files in `source`:
 
-- `./process-source.ps1` updates `devices.json` by resolving source labels to canonical device names.
-- `./transpose-source.ps1` exports a flat CSV for inspection without any name matching or consolidation.
+- `./scripts/source/process-source.ps1` updates `devices.json` by resolving source labels to canonical device names.
+- `./scripts/source/transpose-source.ps1` exports a flat CSV for inspection without any name matching or consolidation.
 
 ### Import into devices.json
 
 Use the importer script to map benchmark values from the `source` folder into `devices.json`:
 
 ```powershell
-./process-source.ps1
+./scripts/source/process-source.ps1
 ```
 
 Optional parameters:
 
 ```powershell
-./process-source.ps1 -SourceDir ./source -DevicesPath ./devices.json -AutoAddDevices $false
+./scripts/source/process-source.ps1 -SourceDir ./source -DevicesPath ./devices.json -AutoAddDevices $false
 ```
 
 - `SourceDir`: path to the source CSV folder (default: `./source`)
@@ -339,7 +344,7 @@ Keep `AutoAddDevices` disabled until component resolutions and unresolved names 
 
 ### Resolver Order
 
-`process-source.ps1` resolves source labels in this order:
+`scripts/source/process-source.ps1` resolves source labels in this order:
 
 1. `mapping`: exact source label exists in `source-device-map.json` and points to a valid device id.
 2. `exact`: source label exactly matches a device name in `devices.json`.
@@ -365,7 +370,7 @@ When `AutoAddDevices` creates a new device, it assigns a stable slug derived fro
 
 ### Importer Output
 
-`process-source.ps1` logs the result of the import run:
+`scripts/source/process-source.ps1` logs the result of the import run:
 
 - `Updated metric entries`: number of metrics written into `devices.json`
 - `Explicit source mappings used`: reviewed source labels resolved through `source-device-map.json`
@@ -390,13 +395,13 @@ Derived source mappings used (configuration suffix stripped):
 Use the transpose script when you want to inspect the raw source labels without any matching logic:
 
 ```powershell
-./transpose-source.ps1
+./scripts/source/transpose-source.ps1
 ```
 
 Optional parameters:
 
 ```powershell
-./transpose-source.ps1 -SourceDir ./source -OutputCsv ./source-transposed.csv
+./scripts/source/transpose-source.ps1 -SourceDir ./source -OutputCsv ./source-transposed.csv
 ```
 
 This writes a CSV with one row per raw device label and one column per metric. It preserves variant labels as separate rows, which makes it useful for auditing unresolved names, storage variants, and generation-tag variants.
@@ -425,7 +430,7 @@ Guidelines:
 
 ## Resolve Unresolved Source Names
 
-When `process-source.ps1` reports unresolved names, use this decision flow:
+When `scripts/source/process-source.ps1` reports unresolved names, use this decision flow:
 
 1. If the unresolved name belongs to an existing device, add an entry to `source-device-map.json` using that device's `id`.
 2. If it is a truly new device, add a new object to `devices.json` using the template above.
@@ -446,7 +451,7 @@ Treat the unresolved list as a work queue for the current import run:
 
 - add new devices for models you want to track in `devices.json`
 - add explicit mappings for labels that represent existing devices with extra storage or generation suffixes
-- use `./transpose-source.ps1` to inspect the exact raw labels before deciding which path to take
+- use `./scripts/source/transpose-source.ps1` to inspect the exact raw labels before deciding which path to take
 
 ### Notes
 
@@ -456,7 +461,7 @@ Treat the unresolved list as a work queue for the current import run:
 - Keep `device-links.json` valid JSON and keyed by existing device ids.
 - The app recalculates overall score and efficiency automatically from the numeric fields.
 - Prefer explicit mappings for ambiguous labels or labels that must not depend on name similarity.
-- Use `./transpose-source.ps1` to inspect the exact raw source labels before adding aliases.
+- Use `./scripts/source/transpose-source.ps1` to inspect the exact raw source labels before adding aliases.
 
 ## Default Visible Columns
 

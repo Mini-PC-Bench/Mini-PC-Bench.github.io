@@ -16,15 +16,15 @@
   resolved text. Scores below -MinScore are reported as warnings.
 
 .EXAMPLE
-  ./scripts/validate-device-links.ps1
-  ./scripts/validate-device-links.ps1 -DeviceId beelink-ser10-max-hx-470 -ReportPath report.md
-  ./scripts/validate-device-links.ps1 -DevicesPath beelink-ser10-max-hx-470
+  ./scripts/devices/validate-device-links.ps1
+  ./scripts/devices/validate-device-links.ps1 -DeviceId beelink-ser10-max-hx-470 -ReportPath report.md
+  ./scripts/devices/validate-device-links.ps1 -DevicesPath beelink-ser10-max-hx-470
 #>
 [CmdletBinding()]
 param(
-  [string]$DevicesPath = (Join-Path $PSScriptRoot '..\devices.json'),
-  [string]$LinksPath = (Join-Path $PSScriptRoot '..\device-links.json'),
-  [string]$ReportPath = (Join-Path $PSScriptRoot '..\device-links-report.md'),
+  [string]$DevicesPath = (Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) 'devices.json'),
+  [string]$LinksPath = (Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) 'device-links.json'),
+  [string]$ReportPath = (Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) 'device-links-report.md'),
   [string[]]$DeviceId,
   [double]$MinScore = 0.6,
   [int]$DelayMs = 1500,
@@ -233,7 +233,7 @@ if (-not (Test-Path -LiteralPath $LinksPath)) { throw "device-links.json not fou
 if (-not (Test-Path -LiteralPath $DevicesPath)) {
   if ($PSBoundParameters.ContainsKey('DevicesPath') -and -not $PSBoundParameters.ContainsKey('DeviceId')) {
     $DeviceId = @($DevicesPath)
-    $DevicesPath = Join-Path $PSScriptRoot '..\devices.json'
+    $DevicesPath = Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) 'devices.json'
   }
   else {
     throw "devices.json not found: $DevicesPath"
