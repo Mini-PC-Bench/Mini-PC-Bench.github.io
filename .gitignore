@@ -1,5 +1,6 @@
 source/**/*.csv
 changelog.html
+license.html
 playwright-report/
 test-results/
 compare-out/

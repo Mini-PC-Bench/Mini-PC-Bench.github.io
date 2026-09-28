@@ -29,6 +29,9 @@ function saveTheme(theme) {
 
 applyTheme(getSavedTheme());
 
+const copyrightYearEl = document.getElementById('copyright-year');
+if (copyrightYearEl) copyrightYearEl.textContent = String(new Date().getFullYear());
+
 themeToggleBtn.addEventListener('click', () => {
   const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
   applyTheme(nextTheme);

@@ -1,6 +1,8 @@
 index.html
 404.html
 changelog.html
+license.html
+robots.txt
 styles.css
 app.js
 theme.js

@@ -27,6 +27,10 @@ jobs:
         shell: pwsh
         run: ./scripts/ci/build-changelog.ps1
 
+      - name: Build license
+        shell: pwsh
+        run: ./scripts/ci/build-license.ps1
+
       - name: Verify devices.json is valid JSON
         run: python3 -m json.tool devices.json > /dev/null
 

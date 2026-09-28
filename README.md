@@ -23,6 +23,11 @@ Static benchmark comparison page for mini PCs, designed to be hosted on GitHub P
 - `changelog.template.html` - HTML layout for the generated changelog page
 - `scripts/ci/build-changelog.ps1` - regenerates `changelog.html` from `CHANGELOG.md` and its template (`pwsh ./scripts/ci/build-changelog.ps1`)
 - `changelog.html` - generated static changelog page, linked from the site header
+- `LICENSE` - project license (source of truth); edit this file
+- `license.template.html` - HTML layout for the generated license page
+- `scripts/ci/build-license.ps1` - regenerates `license.html` from `LICENSE` and its template (`pwsh ./scripts/ci/build-license.ps1`)
+- `license.html` - generated static license page, linked from the site footer
+- `robots.txt` - disallows known AI/scraper crawlers and direct crawling of the JSON datasets
 - `publish-files.txt` - allowlist of files and directories included in the GitHub Pages deployment
 
 ## Link Validation
