@@ -70,6 +70,42 @@ test('isolates multi-series state and keeps decreasing GPU deltas visible', asyn
   expect(widths[1]).toBeGreaterThan(0);
   expect(widths[2]).toBeGreaterThan(0);
 
+  const intelRow = page.locator('.chart-row').filter({ hasText: 'Intel NUC 12 E i7-12700H' });
+  await expect(intelRow).toHaveCount(1);
+  await expect(intelRow.locator('.chart-segment')).toHaveCount(3);
+  const intelSegmentLabels = await intelRow.locator('.chart-segment').evaluateAll(elements => elements.map(element => element.title.split(':')[0]));
+  expect(intelSegmentLabels).toEqual(['Half', 'Single', 'Quantised']);
+
+  for (const deviceName of ['ASUS ROG GR70 9955HX3D', 'ASUS ROG NUC 15 Ultra 9 275HX']) {
+    const row = page.locator('.chart-row').filter({ hasText: deviceName });
+    await expect(row).toHaveCount(1);
+    await expect(row.locator('.chart-track-stacked')).toHaveCSS('overflow', 'hidden');
+    await expect(row.locator('.chart-stack-clip')).toHaveCSS('overflow', 'hidden');
+    await expect(row.locator('.chart-stack-clip')).toHaveCSS('border-top-right-radius', '3px');
+    await expect(row.locator('.chart-stack-content')).toHaveCSS('transition-property', 'transform');
+    await expect(row.locator('.chart-segment').first()).toHaveCSS('transition-property', 'all');
+    await expect(row.locator('.chart-separator')).toHaveCount(2);
+    await expect(row.locator('.chart-separator').first()).toHaveCSS('width', '1px');
+    await expect.poll(() => row.locator('.chart-stack-content').evaluate(element => getComputedStyle(element).transform)).toBe('matrix(1, 0, 0, 1, 0, 0)');
+    await expect.poll(() => row.locator('.chart-segment').evaluateAll(elements => elements.every(element => element.getBoundingClientRect().width > 0))).toBe(true);
+
+    const layout = await row.evaluate(element => {
+      const track = element.querySelector('.chart-track-stacked').getBoundingClientRect();
+      return {
+        track: { left: track.left, right: track.right },
+        segments: [...element.querySelectorAll('.chart-segment')].map(segment => {
+          const rect = segment.getBoundingClientRect();
+          return { left: rect.left, right: rect.right };
+        })
+      };
+    });
+    for (const segment of layout.segments) {
+      expect(segment.left).toBeGreaterThanOrEqual(layout.track.left - 0.5);
+      expect(segment.right).toBeLessThanOrEqual(layout.track.right + 0.5);
+    }
+  }
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(await page.evaluate(() => window.innerWidth));
+
   await page.locator('.chart-tab[data-chart="noise"]').click();
   await expect(page.locator('.chart-sort-pill')).toHaveCount(3);
   await expect(page.locator('.chart-sort-pill.active')).toHaveText('Load');

@@ -1596,30 +1596,46 @@ a:focus-visible {
 /* ── Stacked multi-series bars ───────────────────────────────────────────── */
 
 .chart-track-stacked {
-  display: flex;
-  gap: 1px;
-  /* override the single-series overflow:hidden so segments animate correctly */
-  overflow: visible;
+  position: relative;
+  overflow: hidden;
   background: #F1F5F9;
 }
 
-.chart-segment {
+.chart-stack-clip {
+  position: absolute;
+  top: 0;
+  left: 0;
   height: 100%;
-  width: 0;
-  flex-shrink: 0;
-  transition: width .55s cubic-bezier(.16, 1, .3, 1);
-}
-
-.chart-segment:first-child {
-  border-radius: 3px 0 0 3px;
-}
-
-.chart-segment:last-child {
-  border-radius: 0 3px 3px 0;
-}
-
-.chart-segment:only-child {
+  overflow: hidden;
+  background: inherit;
   border-radius: 3px;
+}
+
+.chart-stack-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: inherit;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform .55s cubic-bezier(.16, 1, .3, 1);
+}
+
+.chart-segment {
+  position: absolute;
+  top: 0;
+  height: 100%;
+}
+
+.chart-separator {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: inherit;
+  z-index: 2;
+  pointer-events: none;
 }
 
 .chart-segment-empty {
@@ -2096,6 +2112,7 @@ body.has-compare-tray {
 
 :root[data-theme="dark"] thead th,
 :root[data-theme="dark"] .chart-track,
+:root[data-theme="dark"] .chart-track-stacked,
 :root[data-theme="dark"] .compare-corner,
 :root[data-theme="dark"] .compare-head-cell,
 :root[data-theme="dark"] .chart-track-thin {

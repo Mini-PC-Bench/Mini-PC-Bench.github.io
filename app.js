@@ -1373,29 +1373,55 @@ function getMultiSeriesState(meta) {
   return multiSeriesState.get(activeChart);
 }
 
-function buildStackedSegments(device, meta, globalMax) {
+function getStackedTotal(device, seriesList) {
+  let previousValue = null;
+  let total = 0;
+
+  seriesList.forEach(series => {
+    const value = device[series.key];
+    if (value == null) return;
+    total += previousValue == null ? value : Math.abs(value - previousValue);
+    previousValue = value;
+  });
+
+  return total;
+}
+
+function buildStackedSegments(device, meta, globalStackMax) {
   if (!meta.series.some(series => device[series.key] != null)) {
     return `<span class="chart-segment-empty">no data</span>`;
   }
 
-  const toW = v => v != null && globalMax ? ((v / globalMax) * 100).toFixed(2) : '0';
+  const toPct = v => v != null && globalStackMax ? ((v / globalStackMax) * 100).toFixed(2) : '0';
   let segments = '';
+  let separators = '';
+  const presentSeries = meta.series.filter(series => device[series.key] != null);
+  const rowTotal = getStackedTotal(device, presentSeries);
   let previousValue = null;
+  let cumulative = 0;
 
-  meta.series.forEach(series => {
+  presentSeries.forEach(series => {
     const value = device[series.key];
-    if (value == null) return;
-    if (previousValue != null) {
-      const delta = Math.abs(value - previousValue);
-      const w = ((delta / globalMax) * 100).toFixed(2);
-      segments += `<div class="chart-segment" data-w="${w}" style="width:0;background:var(${series.colorVar})" title="${series.label}: ${fmt(value)}${meta.unit} (delta ${fmt(Math.round(delta))})"></div>`;
-    } else {
-      segments += `<div class="chart-segment" data-w="${toW(value)}" style="width:0;background:var(${series.colorVar})" title="${series.label}: ${fmt(value)}${meta.unit}"></div>`;
+    const delta = previousValue == null ? value : Math.abs(value - previousValue);
+    if (delta <= 0) {
+      previousValue = value;
+      return;
     }
+
+    const left = rowTotal ? (cumulative / rowTotal) * 100 : 0;
+    const width = rowTotal ? (delta / rowTotal) * 100 : 0;
+    const title = previousValue == null
+      ? `${series.label}: ${fmt(value)}${meta.unit}`
+      : `${series.label}: ${fmt(value)}${meta.unit} (delta ${fmt(Math.round(delta))})`;
+    if (cumulative > 0) {
+      separators += `<span class="chart-separator" aria-hidden="true" style="left:${left.toFixed(2)}%"></span>`;
+    }
+    segments += `<div class="chart-segment" data-w="${width.toFixed(2)}" style="left:${left.toFixed(2)}%;width:${width.toFixed(2)}%;background:var(${series.colorVar})" title="${title}"></div>`;
+    cumulative += delta;
     previousValue = value;
   });
 
-  return segments;
+  return `<div class="chart-stack-clip" style="width:${toPct(rowTotal)}%"><div class="chart-stack-content" style="width:100%">${segments}${separators}</div></div>`;
 }
 
 function buildGroupedTracks(device, meta, globalMax) {
@@ -1421,6 +1447,7 @@ function renderChartMultiSeries(meta) {
 
   // Global max across all series for proportional bar sizing
   const globalMax = Math.max(...devices.flatMap(device => enabledSeries.map(series => device[series.key] ?? 0)), 0);
+  const globalStackMax = Math.max(...devices.map(device => getStackedTotal(device, enabledSeries)), 0);
 
   const sortDirection = meta.lowerBetter ? 1 : -1;
   const sorted = [...devices].sort((a, b) => {
@@ -1453,7 +1480,7 @@ function renderChartMultiSeries(meta) {
           <span class="legend-dot" style="background:var(${s.colorVar})"></span>
           <span>${s.label}</span>
         </button>`).join('')}
-      ${state.mode === 'stacked' ? `<span class="legend-hint">Segments show delta from previous series</span>` : ''}
+      ${state.mode === 'stacked' ? `<span class="legend-hint">Segments show score deltas in legend order</span>` : ''}
     </div>`;
 
   // ── Rows ──
@@ -1466,7 +1493,7 @@ function renderChartMultiSeries(meta) {
       return `<div class="chart-row">
         <button type="button" class="chart-label${isTop ? ' top' : ''}" data-device-id="${escapeHtml(device.id)}" title="${escapeHtml(device.name)}">${escapeHtml(device.name)}</button>
         <div class="chart-track chart-track-stacked">
-          ${buildStackedSegments(device, enabledMeta, globalMax)}
+          ${buildStackedSegments(device, enabledMeta, globalStackMax)}
         </div>
         <span class="chart-num chart-num-multi${isTop ? ' top' : ''}" title="${escapeHtml(numTitle)}">${allVals}${meta.unit}</span>
       </div>`;
@@ -1501,8 +1528,8 @@ function renderChartMultiSeries(meta) {
 
   // Animate bars
   requestAnimationFrame(() => requestAnimationFrame(() => {
-    chartBox.querySelectorAll('.chart-segment[data-w]').forEach(el => {
-      el.style.width = `${el.dataset.w}%`;
+    chartBox.querySelectorAll('.chart-stack-content').forEach(el => {
+      el.style.transform = 'scaleX(1)';
     });
     chartBox.querySelectorAll('.chart-fill[data-w]').forEach(el => {
       el.style.width = `${el.dataset.w}%`;
