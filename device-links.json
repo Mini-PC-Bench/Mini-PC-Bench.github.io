@@ -734,7 +734,7 @@
   "intel-nuc-12-e-i7-12700h": [
     {
       "label": "Review Video",
-      "url": "https://youtu.be/VchgDi860Ec",
+      "url": "https://youtu.be/18cdpfY1CCc",
       "kind": "youtube"
     },
     {
@@ -1907,19 +1907,245 @@
       "kind": "affiliate"
     }
   ],
-  "geekom-a6-6800h": [],
-  "geekom-a8-max-8945hs": [],
-  "geekom-it13-i9-13900h": [],
-  "gmktec-k11-8945hs": [],
-  "minix-eu715-ai-ultra-7-155h": [],
-  "gmktec-evo-x1-pro-hx-470": [],
-  "minisforum-m2-air-304-core-3-304": [],
-  "minix-n304-ai-core-3-304": [],
-  "geekom-it13-i9-13900hk": [],
-  "gmktec-m7-6850h": [],
-  "gmktec-m7-pro-6950h": [],
-  "minisforum-um760-7640hs": [],
-  "minisforum-um790-pro-7940hs": [],
-  "gmktec-k13-ultra-7-256v": [],
-  "wo-we-h8-core-3-304": []
+  "geekom-a6-6800h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/PdkjExikejo",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website US",
+      "url": "https://tidd.ly/4rWd4YP"
+    },
+    {
+      "label": "Official Website UK",
+      "url": "https://shrsl.com/4u9f1"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/cJwFxB",
+      "kind": "affiliate"
+    }
+  ],
+  "geekom-a8-max-8945hs": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/1Yf_DQiGW-8",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website US",
+      "url": "https://tidd.ly/4rWdjDd"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/ixJmO",
+      "kind": "affiliate"
+    }
+  ],
+  "geekom-it13-i9-13900h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/BjdKePJQxBM",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/4yw1031"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/0ADtQg",
+      "kind": "affiliate"
+    }
+  ],
+  "gmktec-k11-8945hs": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/RyS_BE3jkvo",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/4rMLEEx"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/DKqS6n",
+      "kind": "affiliate"
+    }
+  ],
+  "minix-eu715-ai-ultra-7-155h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/K-nD-3anjFE",
+      "kind": "youtube"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/Ov1HFr",
+      "kind": "affiliate"
+    }
+  ],
+  "gmktec-evo-x1-pro-hx-470": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/NpqP8c2MUpU",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/3T1vKJK"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/j7J7",
+      "kind": "affiliate"
+    }
+  ],
+  "minisforum-m2-air-304-core-3-304": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/cm7R5IqZcF8",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/4xtV7BU"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/Y4jan",
+      "kind": "affiliate"
+    },
+    {
+      "label": "Best Buy US Affiliate Link",
+      "url": "https://bestbuycreators.7tiv.net/QYX5o9",
+      "kind": "affiliate"
+    }
+  ],
+  "minix-n304-ai-core-3-304": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/gvQM4Gt_DVw",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://www.minix.com.hk/products/minix-n304-ai-mini-pc?ref=yjmjldih"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/HVHQ4W",
+      "kind": "affiliate"
+    }
+  ],
+  "geekom-it13-i9-13900hk": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/3j5yjnjnPMA",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/4yw1031"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/gK214",
+      "kind": "affiliate"
+    }
+  ],
+  "gmktec-m7-6850h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/1BSD1q9xtZw",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/43LTjIC"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/wIk9",
+      "kind": "affiliate"
+    }
+  ],
+  "gmktec-m7-pro-6950h": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/-i3qhpa4Jf4",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/4z5LOcA"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/jmvYG2O",
+      "kind": "affiliate"
+    }
+  ],
+  "minisforum-um760-7640hs": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/noPRv5yueQs",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/4humSFT"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/PKCts7",
+      "kind": "affiliate"
+    }
+  ],
+  "minisforum-um790-pro-7940hs": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/m4DDBhEe6S0",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/4jyoi3y"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/ydRg6i",
+      "kind": "affiliate"
+    }
+  ],
+  "gmktec-k13-ultra-7-256v": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/HsRJidNRaW8",
+      "kind": "youtube"
+    },
+    {
+      "label": "Official Website",
+      "url": "https://tidd.ly/4hV3WjK"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/7VdpM",
+      "kind": "affiliate"
+    }
+  ],
+  "wo-we-h8-core-3-304": [
+    {
+      "label": "Review Video",
+      "url": "https://youtu.be/dTLfB014oGY",
+      "kind": "youtube"
+    },
+    {
+      "label": "Amazon Affiliate Link",
+      "url": "https://geni.us/JdTTN",
+      "kind": "affiliate"
+    }
+  ]
 }
