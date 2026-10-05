@@ -7562,7 +7562,7 @@
   {
     "id": "gmktec-evo-x1-pro-hx-470",
     "name": "GMKtec EVO-X1 Pro HX 470",
-    "photo": null,
+    "photo": "./images/devices/gmktec-evo-x1-pro-hx-470.webp",
     "noise": {
       "idle": 29,
       "load_default": 45,
@@ -7618,7 +7618,7 @@
   {
     "id": "minisforum-m2-air-304-core-3-304",
     "name": "Minisforum M2 Air-304 Core 3 304",
-    "photo": null,
+    "photo": "./images/devices/minisforum-m2-air-304-core-3-304.webp",
     "noise": {
       "idle": 29,
       "load_default": 39,
@@ -7674,7 +7674,7 @@
   {
     "id": "minix-n304-ai-core-3-304",
     "name": "MINIX N304-AI Core 3 304",
-    "photo": null,
+    "photo": "./images/devices/minix-n304-ai-core-3-304.webp",
     "noise": {
       "idle": 29,
       "load_default": 38,
@@ -7786,7 +7786,7 @@
   {
     "id": "gmktec-m7-6850h",
     "name": "GMKtec M7 6850H",
-    "photo": null,
+    "photo": "./images/devices/gmktec-m7-6850h.webp",
     "noise": {
       "idle": 32,
       "load_default": 39,
@@ -7842,7 +7842,7 @@
   {
     "id": "gmktec-m7-pro-6950h",
     "name": "GMKtec M7 Pro 6950H",
-    "photo": null,
+    "photo": "./images/devices/gmktec-m7-pro-6950h.webp",
     "noise": {
       "idle": 32,
       "load_default": 39,
@@ -7898,7 +7898,7 @@
   {
     "id": "minisforum-um760-7640hs",
     "name": "Minisforum UM760 7640HS",
-    "photo": null,
+    "photo": "./images/devices/minisforum-um760-7640hs.webp",
     "noise": {
       "idle": 30,
       "load_default": 44,
@@ -7954,7 +7954,7 @@
   {
     "id": "minisforum-um790-pro-7940hs",
     "name": "Minisforum UM790 Pro 7940HS",
-    "photo": null,
+    "photo": "./images/devices/minisforum-um790-pro-7940hs.webp",
     "noise": {
       "idle": 30,
       "load_default": 40,
@@ -8010,7 +8010,7 @@
   {
     "id": "gmktec-k13-ultra-7-256v",
     "name": "GMKtec K13 Ultra 7 256V",
-    "photo": null,
+    "photo": "./images/devices/gmktec-k13-ultra-7-256v.webp",
     "noise": {
       "idle": 29,
       "load_default": 36,
@@ -8066,7 +8066,7 @@
   {
     "id": "wo-we-h8-core-3-304",
     "name": "Wo-We H8 Core 3 304",
-    "photo": null,
+    "photo": "./images/devices/wo-we-h8-core-3-304.webp",
     "noise": {
       "idle": 29,
       "load_default": 49,
