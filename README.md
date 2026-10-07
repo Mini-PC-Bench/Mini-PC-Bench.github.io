@@ -292,7 +292,7 @@ Use this workflow each time you review a new device.
 - `av1_hw`: AV1 hardware encode time in seconds. Lower is better.
 - `firestrike`: 3DMark Fire Strike score. Higher is better.
 - `timespy`: 3DMark Time Spy score. Higher is better.
-- `steelnomad`: 3DMark Steel Nomad score. Higher is better.
+- `steelnomad`: 3DMark Steel Nomad Light score. Higher is better.
 - `coding`: Coding benchmark score. Higher is better.
 - `photoshop`: Photoshop benchmark score. Higher is better.
 - `premiere`: Premiere benchmark score. Higher is better.
