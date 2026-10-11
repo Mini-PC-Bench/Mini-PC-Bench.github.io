@@ -14,12 +14,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Montserrat:wght@500;600;800;900&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css?v=mini-bench-brand">
+  <link rel="stylesheet" href="./styles.css?v=wide-benchmark-layout">
 </head>
 
 <body>
 
-  <header>
+  <header class="benchmark-header">
     <div class="container">
       <div class="header-inner">
         <div class="site-brand">
@@ -51,97 +51,122 @@
     </div>
   </header>
 
-  <main class="container">
+  <main class="container benchmark-layout filters-collapsed">
 
-    <!-- ── Table View ── -->
-    <div id="table-view" class="view active">
+    <div id="table-summary" class="table-summary">
+      <p id="info-grid-caption" class="info-grid-caption" hidden></p>
       <div id="info-grid" class="info-grid"></div>
+    </div>
 
-      <div class="controls">
-        <div class="search-wrap">
-          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21-4.35-4.35" />
-          </svg>
-          <input id="search" type="search" placeholder="Filter by device name…" autocomplete="off" spellcheck="false">
-        </div>
-        <span id="count" class="count"></span>
-        <div class="table-actions">
-          <button id="column-toggle" class="column-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="column-menu">
-            Columns
+    <div class="benchmark-workspace">
+      <aside id="filter-sidebar" class="filter-sidebar" aria-label="Device filters" hidden>
+        <div class="filter-sidebar-head">
+          <h2>Filters</h2>
+          <button id="filter-sidebar-close" class="filter-toggle filter-sidebar-close" type="button" aria-label="Hide filters" title="Hide filters">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m14 7-5 5 5 5M20 4v16" /></svg>
           </button>
-          <div id="column-menu" class="column-menu" hidden>
-            <div class="column-menu-head">
-              <span>Visible columns</span>
-              <button id="column-reset" class="column-reset" type="button">Reset defaults</button>
+        </div>
+        <div id="filter-panel" class="filter-panel" hidden></div>
+      </aside>
+
+      <div class="results-content">
+        <div id="filter-toolbar" class="filter-toolbar">
+          <div class="controls">
+            <button id="filter-toggle" class="filter-toggle" type="button" aria-expanded="false" aria-controls="filter-sidebar">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16l-6 7v8l-4-2v-6z" /></svg>
+              <span id="filter-toggle-label">Show filters</span>
+            </button>
+            <div class="search-wrap">
+              <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+              </svg>
+              <input id="search" type="search" aria-label="Filter by device name" placeholder="Filter by device name…" autocomplete="off" spellcheck="false">
             </div>
-            <p class="column-hint">Rank and Device always stay visible. Other columns are saved in local storage.</p>
-            <div id="column-options" class="column-options"></div>
+            <span id="count" class="count" aria-live="polite"></span>
+            <div class="table-actions">
+              <button id="column-toggle" class="column-toggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="column-menu">
+                Columns
+              </button>
+              <div id="column-menu" class="column-menu" hidden>
+                <div class="column-menu-head">
+                  <span>Visible columns</span>
+                  <button id="column-reset" class="column-reset" type="button">Reset defaults</button>
+                </div>
+                <p class="column-hint">Rank and Device always stay visible. Other columns are saved in local storage.</p>
+                <div id="column-options" class="column-options"></div>
+              </div>
+            </div>
           </div>
+
+          <div id="filter-chips" class="filter-chips" hidden></div>
         </div>
-      </div>
 
-      <div class="table-wrap">
-        <table id="benchmark-table"></table>
-      </div>
+        <!-- ── Table View ── -->
+        <div id="table-view" class="view active">
+          <div class="table-wrap">
+            <table id="benchmark-table"></table>
+          </div>
 
-      <p class="footnote">
-        <strong>Score</strong> = average of 6 normalized CPU+GPU benchmark scores (CB R23 ×2, GB6 ×2, FireStrike, Time Spy; each normalized to dataset max = 100).
-        <strong>Eff.</strong> = Score ÷ Watts × 10.
-        <strong>H264</strong> = H264 encode time (s). <strong>Idle W</strong> = power at desktop idle.
-        <strong>Idle/Load/Perf dB</strong> = fan noise at idle, load (default), and load (performance) profiles, measured at 30 cm.
-        All <strong>↓</strong> columns: lower is better. Noise and power metrics are not included in Score.
-      </p>
-    </div>
-
-    <!-- ── Charts View ── -->
-    <div id="charts-view" class="view">
-      <div class="chart-tabs" id="chart-tabs">
-        <button class="chart-tab chart-tab-multi active" data-chart="cb23s">CB R23 · Single Core</button>
-        <button class="chart-tab chart-tab-multi" data-chart="cb23m">CB R23 · Multi Core</button>
-        <button class="chart-tab chart-tab-multi" data-chart="gb6s">GB6 · Single Core</button>
-        <button class="chart-tab chart-tab-multi" data-chart="gb6m">GB6 · Multi Core</button>
-        <button class="chart-tab chart-tab-multi" data-chart="gbai_cpu">GB AI · CPU</button>
-        <button class="chart-tab chart-tab-multi" data-chart="gbai_gpu">GB AI · GPU</button>
-        <button class="chart-tab chart-tab-multi" data-chart="firestrike">FireStrike</button>
-        <button class="chart-tab chart-tab-multi" data-chart="timespy">Time Spy</button>
-        <button class="chart-tab chart-tab-multi" data-chart="steelnomad">Steel Nomad Light</button>
-        <button class="chart-tab chart-tab-multi" data-chart="coding">Coding</button>
-        <button class="chart-tab chart-tab-multi" data-chart="photoshop">Photoshop</button>
-        <button class="chart-tab chart-tab-multi" data-chart="premiere">Premiere</button>
-        <button class="chart-tab" data-chart="storage">Storage</button>
-        <button class="chart-tab" data-chart="wireless_audio">Wireless BT Audio</button>
-        <button class="chart-tab chart-tab-multi" data-chart="h264">H264 Encoding ↓</button>
-        <button class="chart-tab chart-tab-multi" data-chart="av1">AV1 Encoding ↓</button>
-        <button class="chart-tab chart-tab-multi" data-chart="av1_hw">AV1 HW Encoding ↓</button>
-        <button class="chart-tab chart-tab-multi" data-chart="watts">Power Draw ↓</button>
-        <button class="chart-tab" data-chart="power_idle_watts">Idle Power ↓</button>
-        <button class="chart-tab chart-tab-multi" data-chart="cpu_temp">CPU Temp ↓</button>
-        <button class="chart-tab" data-chart="ssd_temp">SSD Temp ↓</button>
-        <button class="chart-tab" data-chart="volume">Volume ↓</button>
-        <button class="chart-tab chart-tab-multi" data-chart="noise">Noise ↓</button>
-      </div>
-      <div id="chart-box" class="chart-box"></div>
-    </div>
-
-    <!-- ── Compare View ── -->
-    <div id="compare-view" class="view">
-      <div class="compare-controls">
-        <div class="compare-controls-text">
-          <h2 class="compare-title">Side-by-side comparison</h2>
-          <p id="compare-subtitle" class="compare-subtitle"></p>
+          <p class="footnote">
+            <strong>Score</strong> = average of 6 normalized CPU+GPU benchmark scores (CB R23 ×2, GB6 ×2, FireStrike, Time Spy; each normalized to dataset max = 100).
+            <strong>Eff.</strong> = Score ÷ Watts × 10.
+            <strong>H264</strong> = H264 encode time (s). <strong>Idle W</strong> = power at desktop idle.
+            <strong>Idle/Load/Perf dB</strong> = fan noise at idle, load (default), and load (performance) profiles, measured at 30 cm.
+            All <strong>↓</strong> columns: lower is better. Noise and power metrics are not included in Score.
+          </p>
         </div>
-        <div class="compare-controls-actions">
-          <label class="compare-diff-toggle">
-            <input id="compare-diff-only" type="checkbox">
-            <span>Differences only</span>
-          </label>
-          <button id="compare-clear" class="compare-clear" type="button">Clear all</button>
-        </div>
-      </div>
-      <div id="compare-box" class="compare-box"></div>
-    </div>
 
+        <!-- ── Charts View ── -->
+        <div id="charts-view" class="view">
+          <div class="chart-tabs" id="chart-tabs">
+            <button class="chart-tab chart-tab-multi active" data-chart="cb23s">CB R23 · Single Core</button>
+            <button class="chart-tab chart-tab-multi" data-chart="cb23m">CB R23 · Multi Core</button>
+            <button class="chart-tab chart-tab-multi" data-chart="gb6s">GB6 · Single Core</button>
+            <button class="chart-tab chart-tab-multi" data-chart="gb6m">GB6 · Multi Core</button>
+            <button class="chart-tab chart-tab-multi" data-chart="gbai_cpu">GB AI · CPU</button>
+            <button class="chart-tab chart-tab-multi" data-chart="gbai_gpu">GB AI · GPU</button>
+            <button class="chart-tab chart-tab-multi" data-chart="firestrike">FireStrike</button>
+            <button class="chart-tab chart-tab-multi" data-chart="timespy">Time Spy</button>
+            <button class="chart-tab chart-tab-multi" data-chart="steelnomad">Steel Nomad Light</button>
+            <button class="chart-tab chart-tab-multi" data-chart="coding">Coding</button>
+            <button class="chart-tab chart-tab-multi" data-chart="photoshop">Photoshop</button>
+            <button class="chart-tab chart-tab-multi" data-chart="premiere">Premiere</button>
+            <button class="chart-tab" data-chart="storage">Storage</button>
+            <button class="chart-tab" data-chart="wireless_audio">Wireless BT Audio</button>
+            <button class="chart-tab chart-tab-multi" data-chart="h264">H264 Encoding ↓</button>
+            <button class="chart-tab chart-tab-multi" data-chart="av1">AV1 Encoding ↓</button>
+            <button class="chart-tab chart-tab-multi" data-chart="av1_hw">AV1 HW Encoding ↓</button>
+            <button class="chart-tab chart-tab-multi" data-chart="watts">Power Draw ↓</button>
+            <button class="chart-tab" data-chart="power_idle_watts">Idle Power ↓</button>
+            <button class="chart-tab chart-tab-multi" data-chart="cpu_temp">CPU Temp ↓</button>
+            <button class="chart-tab" data-chart="ssd_temp">SSD Temp ↓</button>
+            <button class="chart-tab" data-chart="volume">Volume ↓</button>
+            <button class="chart-tab chart-tab-multi" data-chart="noise">Noise ↓</button>
+          </div>
+          <div id="chart-box" class="chart-box"></div>
+        </div>
+
+        <!-- ── Compare View ── -->
+        <div id="compare-view" class="view">
+          <div class="compare-controls">
+            <div class="compare-controls-text">
+              <h2 class="compare-title">Side-by-side comparison</h2>
+              <p id="compare-subtitle" class="compare-subtitle"></p>
+            </div>
+            <div class="compare-controls-actions">
+              <label class="compare-diff-toggle">
+                <input id="compare-diff-only" type="checkbox">
+                <span>Differences only</span>
+              </label>
+              <button id="compare-clear" class="compare-clear" type="button">Clear all</button>
+            </div>
+          </div>
+          <div id="compare-box" class="compare-box"></div>
+        </div>
+
+      </div>
+    </div>
   </main>
 
   <footer class="site-footer">

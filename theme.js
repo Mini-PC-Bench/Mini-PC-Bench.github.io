@@ -46,6 +46,6 @@ function updateHeaderOffset() {
 
 if (themeHeaderEl) {
   updateHeaderOffset();
-  window.addEventListener('resize', updateHeaderOffset);
+  new ResizeObserver(updateHeaderOffset).observe(themeHeaderEl);
   window.addEventListener('load', updateHeaderOffset);
 }

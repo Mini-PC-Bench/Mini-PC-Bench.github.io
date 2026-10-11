@@ -2,11 +2,32 @@ const DATA_URL = './devices.json';
 const LINKS_URL = './device-links.json';
 const DEVICE_QUERY_PARAM = 'device';
 const COMPARE_QUERY_PARAM = 'compare';
+const QUERY_TEXT_PARAM = 'q';
+const INCLUDE_UNKNOWN_PARAM = 'unknown';
+const FILTER_PANEL_STORAGE_KEY = 'minipc-benchmarks.filters-open';
 const COLUMN_STORAGE_KEY = 'minipc-benchmarks.visible-columns';
 const COMPARE_STORAGE_KEY = 'minipc-benchmarks.compare-selection';
 const COMPARE_DIFF_STORAGE_KEY = 'minipc-benchmarks.compare-diff-only';
 const COMPARE_MAX = 4;
 const META_SUFFIX = 'Cinebench R23 &nbsp;·&nbsp; Geekbench 6 &nbsp;·&nbsp; 3DMark &nbsp;·&nbsp; H264 &nbsp;·&nbsp; Power draw &nbsp;·&nbsp; Efficiency score';
+
+// Numeric range filters offered in the filter panel. Extend this list to add more filters;
+// coverage for a new field should be checked first with scripts/devices/report-field-coverage.ps1.
+const FILTER_GROUPS = [
+  { id: 'benchmarks', label: 'Benchmarks' },
+  { id: 'power', label: 'Power' },
+  { id: 'physical', label: 'Physical' },
+  { id: 'noise', label: 'Noise' }
+];
+const FILTER_DEFS = [
+  { id: 'watts', group: 'power', label: 'Max power draw', unit: 'W', mode: 'max', step: 5 },
+  { id: 'power_idle_watts', group: 'power', label: 'Max idle power', unit: 'W', mode: 'max', step: 1 },
+  { id: 'volume', group: 'physical', label: 'Max volume', unit: 'L', mode: 'max', step: 0.1 },
+  { id: 'noise_idle', group: 'noise', label: 'Max idle noise', unit: 'dB', mode: 'max', step: 1 },
+  { id: 'noise_load', group: 'noise', label: 'Max load noise', unit: 'dB', mode: 'max', step: 1 },
+  { id: 'cb23s', group: 'benchmarks', label: 'Min Cinebench R23 single-core', unit: 'pts', mode: 'min', step: 50 },
+  { id: 'cb23m', group: 'benchmarks', label: 'Min Cinebench R23 multi-core', unit: 'pts', mode: 'min', step: 500 }
+];
 
 // Edit this list to define which optional columns are enabled for first-time visitors.
 const DEFAULT_VISIBLE_COLUMNS = [
@@ -281,10 +302,18 @@ const DETAIL_METRICS = {
 let DEVICES = [];
 let MAX_H = {};
 let MIN_L = {};
+let FILTER_BOUNDS = {};
 let visibleColumns = new Set();
 let sortCol = 'composite';
 let sortDir = -1;
-let filterQ = '';
+let filterState = {
+  q: '',
+  ranges: {},
+  includeUnknown: false
+};
+let filterUrlDebounceTimer = null;
+let filterRenderFrame = null;
+let tableLayoutDeviceIds = new Set();
 let activeChart = 'cb23s';
 let activeDeviceId = null;
 let linksLoaded = false;
@@ -298,6 +327,15 @@ const infoGrid = document.getElementById('info-grid');
 const countEl = document.getElementById('count');
 const siteMetaEl = document.getElementById('site-meta');
 const chartBox = document.getElementById('chart-box');
+const infoGridCaptionEl = document.getElementById('info-grid-caption');
+const searchInputEl = document.getElementById('search');
+const filterToolbarEl = document.getElementById('filter-toolbar');
+const filterToggleBtn = document.getElementById('filter-toggle');
+const filterSidebarEl = document.getElementById('filter-sidebar');
+const benchmarkLayoutEl = document.querySelector('main.benchmark-layout');
+const filterPanelEl = document.getElementById('filter-panel');
+let filterPanelPreference = loadFilterPanelPreference();
+const filterChipsEl = document.getElementById('filter-chips');
 const columnToggleBtn = document.getElementById('column-toggle');
 const columnMenuEl = document.getElementById('column-menu');
 const columnOptionsEl = document.getElementById('column-options');
@@ -319,15 +357,18 @@ let floatingTableHeader = null;
 const fmt = v => v == null ? '—' : v.toLocaleString();
 const fmtD = (v, d = 1) => v == null ? '—' : v.toFixed(d);
 const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
 function syncFloatingTableHeader() {
   if (!floatingTableHeader) return;
   const tableRect = benchmarkTable.getBoundingClientRect();
   const wrapRect = tableWrap.getBoundingClientRect();
   const headerHeight = siteHeader?.getBoundingClientRect().height ?? 0;
+  const toolbarBottom = filterToolbarEl.hidden ? headerHeight : filterToolbarEl.getBoundingClientRect().bottom;
+  const stickyTop = Math.max(headerHeight, toolbarBottom);
   const sourceHeaders = benchmarkTable.querySelectorAll('thead th');
   const floatingHeaders = floatingTableHeader.querySelectorAll('thead th');
-  const shouldShow = tableRect.top < headerHeight && tableRect.bottom > headerHeight;
+  const shouldShow = tableRect.top < stickyTop && tableRect.bottom > stickyTop;
 
   floatingTableHeader.style.display = shouldShow ? 'block' : 'none';
   if (!shouldShow) return;
@@ -340,7 +381,7 @@ function syncFloatingTableHeader() {
     }
   });
   floatingTableHeader.style.left = `${wrapRect.left}px`;
-  floatingTableHeader.style.top = `${headerHeight}px`;
+  floatingTableHeader.style.top = `${stickyTop}px`;
   floatingTableHeader.style.width = `${wrapRect.width}px`;
   floatingTableHeader.firstElementChild.style.transform = `translateX(-${tableWrap.scrollLeft}px)`;
 }
@@ -395,23 +436,88 @@ function findDeviceById(id) {
   return DEVICES.find(device => device.id === id) ?? null;
 }
 
-function getDeviceIdFromUrl() {
+function getUrlParam(key) {
   const params = new URLSearchParams(window.location.search);
-  const raw = params.get(DEVICE_QUERY_PARAM);
+  const raw = params.get(key);
   return raw && raw.trim() ? raw.trim() : null;
 }
 
-function setDeviceIdInUrl(deviceId, { replace = false } = {}) {
+// Single writer for every URL param (device id today; filter params join it in a later phase).
+function writeUrlState(updates, { replace = false } = {}) {
   const url = new URL(window.location.href);
 
-  if (deviceId) {
-    url.searchParams.set(DEVICE_QUERY_PARAM, deviceId);
-  } else {
-    url.searchParams.delete(DEVICE_QUERY_PARAM);
-  }
+  Object.entries(updates).forEach(([key, value]) => {
+    if (value === null || value === undefined || value === '') {
+      url.searchParams.delete(key);
+    } else {
+      url.searchParams.set(key, value);
+    }
+  });
 
   const method = replace ? 'replaceState' : 'pushState';
   window.history[method]({}, '', url);
+}
+
+function getDeviceIdFromUrl() {
+  return getUrlParam(DEVICE_QUERY_PARAM);
+}
+
+function setDeviceIdInUrl(deviceId, { replace = false } = {}) {
+  writeUrlState({ [DEVICE_QUERY_PARAM]: deviceId }, { replace });
+}
+
+function urlParamNameForFilter(def) {
+  return `${def.id}_${def.mode}`;
+}
+
+function readFiltersFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const ranges = {};
+
+  FILTER_DEFS.forEach(def => {
+    const raw = params.get(urlParamNameForFilter(def));
+    if (raw == null) return;
+    const bounds = FILTER_BOUNDS[def.id];
+    const num = Number(raw);
+    if (!bounds || !Number.isFinite(num)) return;
+    ranges[def.id] = clamp(num, bounds.min, bounds.max);
+  });
+
+  return {
+    q: getUrlParam(QUERY_TEXT_PARAM) ?? '',
+    ranges,
+    includeUnknown: params.get(INCLUDE_UNKNOWN_PARAM) === '1'
+  };
+}
+
+function writeFilterStateToUrl({ replace = true } = {}) {
+  const updates = { [QUERY_TEXT_PARAM]: filterState.q.trim() || null };
+
+  FILTER_DEFS.forEach(def => {
+    const value = filterState.ranges[def.id];
+    updates[urlParamNameForFilter(def)] = value == null ? null : String(value);
+  });
+
+  updates[INCLUDE_UNKNOWN_PARAM] = filterState.includeUnknown ? '1' : null;
+  writeUrlState(updates, { replace });
+}
+
+function scheduleFilterUrlWrite() {
+  clearTimeout(filterUrlDebounceTimer);
+  filterUrlDebounceTimer = setTimeout(() => writeFilterStateToUrl({ replace: true }), 250);
+}
+
+// Applies filter state from the current URL to filterState and the filter UI; used on
+// initial load and on popstate (browser back/forward).
+function applyFiltersFromUrl() {
+  const parsed = readFiltersFromUrl();
+  filterState.q = parsed.q;
+  filterState.ranges = parsed.ranges;
+  filterState.includeUnknown = parsed.includeUnknown;
+
+  searchInputEl.value = filterState.q;
+  renderFilterPanel();
+  renderFilterChips();
 }
 
 function slugifyDeviceName(name) {
@@ -904,12 +1010,22 @@ function renderCompareUi() {
 }
 
 function showView(viewName) {
+  cancelAnimationFrame(filterRenderFrame);
+  filterRenderFrame = null;
   document.querySelectorAll('.tab-btn[data-view]').forEach(item => {
     item.classList.toggle('active', item.dataset.view === viewName);
   });
   document.querySelectorAll('.view').forEach(panel => {
     panel.classList.toggle('active', panel.id === `${viewName}-view`);
   });
+  document.getElementById('table-summary').hidden = viewName !== 'table';
+  filterToolbarEl.hidden = viewName === 'compare';
+  filterSidebarEl.hidden = viewName === 'compare' || filterPanelEl.hidden;
+  filterToggleBtn.hidden = viewName === 'compare';
+  benchmarkLayoutEl.classList.toggle('comparison-layout', viewName === 'compare');
+  columnToggleBtn.hidden = viewName !== 'table';
+  setColumnMenuOpen(false);
+  if (viewName === 'table') renderTable();
   if (viewName === 'charts') renderChart();
   if (viewName === 'compare') renderCompareView();
 }
@@ -1087,6 +1203,14 @@ function normalizeDevices(data) {
     const performanceWatts = device.watts_perf ?? device.watts;
     device.efficiency_perf = performanceWatts ? (device.composite_perf / performanceWatts) * 10 : 0;
   });
+
+  FILTER_BOUNDS = {};
+  FILTER_DEFS.forEach(def => {
+    const values = DEVICES.map(device => device[def.id]).filter(value => value != null);
+    FILTER_BOUNDS[def.id] = values.length
+      ? { min: Math.min(...values), max: Math.max(...values), present: values.length }
+      : { min: 0, max: 0, present: 0 };
+  });
 }
 
 function applyDeviceLinks(linksByDeviceId) {
@@ -1144,6 +1268,8 @@ function renderInfoCards() {
     { label: 'Lowest Max Power Draw', value: `${fmt(byWatts[0].watts)}W`, device: byWatts[0].name, cls: 'blue' }
   ];
 
+  infoGridCaptionEl.textContent = `Best across all ${DEVICES.length} devices`;
+  infoGridCaptionEl.hidden = false;
   infoGrid.innerHTML = cards.map(card => `
     <div class="info-card ${card.cls}">
       <div class="info-label">${card.label}</div>
@@ -1152,9 +1278,266 @@ function renderInfoCards() {
     </div>`).join('');
 }
 
+// Pure: reads only its arguments plus FILTER_DEFS, so it never depends on render state.
+function deviceMatchesFilters(device, state) {
+  const q = state.q.trim().toLowerCase();
+  if (q && !device.name.toLowerCase().includes(q)) return false;
+
+  for (const def of FILTER_DEFS) {
+    const limit = state.ranges[def.id];
+    if (limit == null) continue;
+
+    const value = device[def.id];
+    if (value == null) {
+      if (state.includeUnknown) continue;
+      return false;
+    }
+
+    if (def.mode === 'max' && value > limit) return false;
+    if (def.mode === 'min' && value < limit) return false;
+  }
+
+  return true;
+}
+
 function getFiltered() {
-  const q = filterQ.trim().toLowerCase();
-  return q ? DEVICES.filter(device => device.name.toLowerCase().includes(q)) : [...DEVICES];
+  return DEVICES.filter(device => deviceMatchesFilters(device, filterState));
+}
+
+function isAnyFilterActive() {
+  return filterState.q.trim().length > 0 || Object.keys(filterState.ranges).length > 0;
+}
+
+function formatDeviceCountLabel(shownCount) {
+  return isAnyFilterActive()
+    ? `Showing ${shownCount} of ${DEVICES.length} devices`
+    : `${shownCount} devices`;
+}
+
+function loadFilterPanelPreference() {
+  try {
+    const saved = localStorage.getItem(FILTER_PANEL_STORAGE_KEY);
+    return saved === 'true' ? true : saved === 'false' ? false : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveFilterPanelPreference(isOpen) {
+  filterPanelPreference = isOpen;
+  try {
+    localStorage.setItem(FILTER_PANEL_STORAGE_KEY, String(isOpen));
+  } catch {
+    // Ignore storage failures.
+  }
+}
+
+function setFilterPanelOpen(isOpen, { restoreFocus = false, focus = true, save = false } = {}) {
+  const wasOpen = !filterPanelEl.hidden;
+  filterPanelEl.hidden = !isOpen;
+  filterSidebarEl.hidden = !isOpen || benchmarkLayoutEl.classList.contains('comparison-layout');
+  benchmarkLayoutEl.classList.toggle('filters-collapsed', !isOpen);
+  filterToggleBtn.setAttribute('aria-expanded', String(isOpen));
+  document.getElementById('filter-toggle-label').textContent = isOpen ? 'Hide filters' : 'Show filters';
+  if (isOpen && focus) filterPanelEl.querySelector('details[open] input')?.focus({ preventScroll: true });
+  else if (restoreFocus && wasOpen) filterToggleBtn.focus({ preventScroll: true });
+  if (save) saveFilterPanelPreference(isOpen);
+  requestAnimationFrame(syncFloatingTableHeader);
+}
+
+function onFilterStateChanged() {
+  renderFilterChips();
+  scheduleFilterResults();
+  scheduleFilterUrlWrite();
+}
+
+function scheduleFilterResults() {
+  if (filterRenderFrame != null) return;
+  filterRenderFrame = requestAnimationFrame(() => {
+    filterRenderFrame = null;
+    countEl.textContent = formatDeviceCountLabel(getFiltered().length);
+    if (document.getElementById('table-view').classList.contains('active')) {
+      renderTable({ reuseRows: true });
+    } else if (document.getElementById('charts-view').classList.contains('active')) {
+      renderChart();
+    }
+  });
+}
+
+function syncFilterControlValue(fieldId, { syncNumber = true } = {}) {
+  const def = FILTER_DEFS.find(item => item.id === fieldId);
+  const bounds = FILTER_BOUNDS[fieldId];
+  const active = filterState.ranges[fieldId];
+  const value = active ?? (def.mode === 'min' ? bounds?.min : bounds?.max) ?? 0;
+  const range = document.getElementById(`filter-${fieldId}-range`);
+  const number = document.getElementById(`filter-${fieldId}-value`);
+  if (range) range.value = value;
+  if (number && syncNumber) number.value = active ?? '';
+  const row = filterPanelEl.querySelector(`[data-filter-row="${fieldId}"]`);
+  if (row) row.dataset.active = String(active != null);
+
+  const clearBtn = filterPanelEl.querySelector(`.filter-row-clear[data-filter="${fieldId}"]`);
+  if (clearBtn) clearBtn.hidden = active == null;
+}
+
+function setFilterRange(fieldId, value, options) {
+  const changed = filterState.ranges[fieldId] !== value;
+  filterState.ranges[fieldId] = value;
+  syncFilterControlValue(fieldId, options);
+  if (changed) onFilterStateChanged();
+}
+
+function clearFilterRange(fieldId) {
+  const changed = filterState.ranges[fieldId] != null;
+  delete filterState.ranges[fieldId];
+  syncFilterControlValue(fieldId);
+  if (changed) onFilterStateChanged();
+}
+
+function clearAllFilters() {
+  filterState.q = '';
+  searchInputEl.value = '';
+  filterState.ranges = {};
+  filterState.includeUnknown = false;
+  FILTER_DEFS.forEach(def => syncFilterControlValue(def.id));
+  const unknownCheckbox = document.getElementById('filter-include-unknown');
+  if (unknownCheckbox) unknownCheckbox.checked = false;
+  updateFilterClearVisibility();
+  onFilterStateChanged();
+}
+
+function updateFilterClearVisibility() {
+  const clearBtn = document.getElementById('filter-clear');
+  if (!clearBtn) return;
+  clearBtn.hidden = !isAnyFilterActive() && !filterState.includeUnknown;
+}
+
+function renderFilterChips() {
+  const active = FILTER_DEFS.filter(def => filterState.ranges[def.id] != null);
+  updateFilterClearVisibility();
+
+  if (!active.length && !filterState.includeUnknown) {
+    filterChipsEl.innerHTML = '';
+    filterChipsEl.hidden = true;
+    return;
+  }
+
+  filterChipsEl.hidden = false;
+  filterChipsEl.innerHTML = active.map(def => {
+    const value = filterState.ranges[def.id];
+    const symbol = def.mode === 'max' ? '\u2264' : '\u2265';
+    return `<span class="filter-chip" data-filter="${def.id}">
+      ${escapeHtml(def.label)}: ${symbol} ${fmt(value)}${def.unit}
+      <button type="button" class="filter-chip-remove" data-filter="${def.id}" aria-label="Remove ${escapeHtml(def.label)} filter">&times;</button>
+    </span>`;
+  }).join('') + (filterState.includeUnknown ? `
+    <span class="filter-chip" data-filter="unknown">
+      Including missing data
+      <button type="button" class="filter-chip-remove" data-filter="unknown" aria-label="Exclude devices with missing data">&times;</button>
+    </span>` : '');
+
+  filterChipsEl.querySelectorAll('.filter-chip-remove').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.filter !== 'unknown') {
+        clearFilterRange(btn.dataset.filter);
+        return;
+      }
+      filterState.includeUnknown = false;
+      document.getElementById('filter-include-unknown').checked = false;
+      onFilterStateChanged();
+    });
+  });
+}
+
+function renderFilterPanel() {
+  const openGroups = new Set(Array.from(filterPanelEl.querySelectorAll('details[open]'), section => section.dataset.filterGroup));
+  const firstRender = !filterPanelEl.childElementCount;
+  const rows = new Map(FILTER_DEFS.map(def => {
+    const bounds = FILTER_BOUNDS[def.id] ?? { min: 0, max: 0, present: 0 };
+    const active = filterState.ranges[def.id];
+    const value = active ?? (def.mode === 'min' ? bounds.min : bounds.max);
+    return [def.id, `
+      <div class="filter-row" data-filter-row="${def.id}" data-active="${active != null}">
+        <label class="filter-label" for="filter-${def.id}-value">${escapeHtml(def.label)}</label>
+        <p id="filter-${def.id}-coverage" class="filter-coverage">Data for ${bounds.present} of ${DEVICES.length} devices (${DEVICES.length ? Math.round(bounds.present / DEVICES.length * 100) : 0}%)</p>
+        <div class="filter-controls">
+          <input type="range" id="filter-${def.id}-range" aria-label="${escapeHtml(def.label)} (${escapeHtml(def.unit)})" aria-describedby="filter-${def.id}-coverage" min="${bounds.min}" max="${bounds.max}" step="any" value="${value}">
+          <input type="number" id="filter-${def.id}-value" aria-label="${escapeHtml(def.label)} (${escapeHtml(def.unit)})" aria-describedby="filter-${def.id}-coverage" min="${bounds.min}" max="${bounds.max}" step="any" placeholder="Any" value="${active ?? ''}">
+          <span class="filter-unit">${escapeHtml(def.unit)}</span>
+          <button type="button" class="filter-row-clear" data-filter="${def.id}" aria-label="Clear ${escapeHtml(def.label)} filter" ${active == null ? 'hidden' : ''}>&times;</button>
+        </div>
+      </div>`];
+  }));
+
+  filterPanelEl.innerHTML = `
+    ${FILTER_GROUPS.map(group => `
+      <details class="filter-section" data-filter-group="${group.id}" ${firstRender || openGroups.has(group.id) || FILTER_DEFS.some(def => def.group === group.id && filterState.ranges[def.id] != null) ? 'open' : ''}>
+        <summary>${escapeHtml(group.label)}</summary>
+        <div class="filter-section-body">${FILTER_DEFS.filter(def => def.group === group.id).map(def => rows.get(def.id)).join('')}</div>
+      </details>`).join('')}
+    <div class="filter-row filter-row-unknown">
+      <label class="filter-checkbox-label">
+        <input type="checkbox" id="filter-include-unknown" ${filterState.includeUnknown ? 'checked' : ''}>
+        <span>Include devices with missing data</span>
+      </label>
+    </div>
+    <div class="filter-actions">
+      <button type="button" id="filter-clear" class="filter-clear" hidden>Clear all filters</button>
+    </div>`;
+
+  FILTER_DEFS.forEach(def => {
+    const range = document.getElementById(`filter-${def.id}-range`);
+    const number = document.getElementById(`filter-${def.id}-value`);
+    const clearBtn = filterPanelEl.querySelector(`.filter-row-clear[data-filter="${def.id}"]`);
+
+    const applyValue = raw => {
+      const fieldBounds = FILTER_BOUNDS[def.id];
+      if (!fieldBounds) return;
+      const num = clamp(Number(raw), fieldBounds.min, fieldBounds.max);
+      if (!Number.isFinite(num)) return;
+      setFilterRange(def.id, num);
+    };
+
+    // Let the slider represent exact typed limits; snap pointer input to useful
+    // increments from zero rather than increments from the dataset minimum.
+    range?.addEventListener('input', event => {
+      const stepped = Math.round(Number(event.target.value) / def.step) * def.step;
+      applyValue(Number(stepped.toFixed(10)));
+    });
+    range?.addEventListener('keydown', event => {
+      const direction = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 }[event.key];
+      if (!direction) return;
+      event.preventDefault();
+      applyValue(Number((Number(range.value) + direction * def.step).toFixed(10)));
+    });
+    number?.addEventListener('input', event => {
+      const raw = event.target.value;
+      const num = Number(raw);
+      const bounds = FILTER_BOUNDS[def.id];
+      if (!raw || !Number.isFinite(num) || num < bounds.min || num > bounds.max) return;
+      setFilterRange(def.id, num, { syncNumber: false });
+    });
+    number?.addEventListener('blur', event => {
+      if (event.target.value) applyValue(event.target.value);
+      else clearFilterRange(def.id);
+    });
+    number?.addEventListener('keydown', event => {
+      if (event.key === 'Enter') event.target.blur();
+    });
+    clearBtn?.addEventListener('click', () => clearFilterRange(def.id));
+  });
+
+  document.getElementById('filter-include-unknown')?.addEventListener('change', event => {
+    filterState.includeUnknown = event.target.checked;
+    updateFilterClearVisibility();
+    onFilterStateChanged();
+  });
+
+  document.getElementById('filter-clear')?.addEventListener('click', () => {
+    clearAllFilters();
+  });
+
+  updateFilterClearVisibility();
 }
 
 function ensureValidSortColumn() {
@@ -1256,7 +1639,7 @@ function renderTableCell(column, device, metrics) {
   return `<td${classAttr}>${fmt(device[column.id])}</td>`;
 }
 
-function renderTable() {
+function renderTable({ reuseRows = false } = {}) {
   if (!DEVICES.length) {
     countEl.textContent = '';
     renderTableMessage('No devices available.');
@@ -1274,9 +1657,7 @@ function renderTable() {
     maxEfficiencyPerf: Math.max(...DEVICES.map(device => device.efficiency_perf), 0)
   };
 
-  countEl.textContent = filterQ.trim()
-    ? `Showing ${filtered.length} of ${DEVICES.length} devices`
-    : `${DEVICES.length} devices`;
+  countEl.textContent = formatDeviceCountLabel(filtered.length);
 
   const headerHtml = visible.map(column => {
     const active = column.id === sortCol;
@@ -1288,15 +1669,61 @@ function renderTable() {
     return `<th data-col="${column.id}"${classAttr} title="${escapeHtml(column.title)}">${column.label} <span class="sort-ind">${sortIndicatorFor(column)}</span></th>`;
   }).join('');
 
-  const bodyHtml = devices.map((device, index) => {
+  const rankHtml = rank => rank <= 3
+    ? `<span class="rank-badge rank-${rank}">${rank}</span>`
+    : `<span style="color:var(--muted);font-size:0.72rem">${rank}</span>`;
+  const renderRow = (device, index) => {
     const rank = index + 1;
-    const rankHtml = rank <= 3
-      ? `<span class="rank-badge rank-${rank}">${rank}</span>`
-      : `<span style="color:var(--muted);font-size:0.72rem">${rank}</span>`;
     const cells = visible.map(column => renderTableCell(column, device, metrics)).join('');
-    return `<tr><td>${rankHtml}</td>${cells}</tr>`;
-  }).join('');
+    return `<tr data-row-id="${escapeHtml(device.id)}" data-rank="${rank}"><td>${rankHtml(rank)}</td>${cells}</tr>`;
+  };
 
+  // Filtering changes membership and ranks, while the retained devices' cells
+  // and column headers stay the same. Preserve those nodes and their layout.
+  const tbody = benchmarkTable.tBodies[0];
+  if (reuseRows && tbody && benchmarkTable.tHead && devices.every(device => tableLayoutDeviceIds.has(device.id))) {
+    // Keep established column widths while filtering so removing a row does
+    // not require measuring every remaining cell for automatic table layout.
+    if (!benchmarkTable.querySelector('colgroup')) {
+      const columns = document.createElement('colgroup');
+      const width = benchmarkTable.getBoundingClientRect().width;
+      benchmarkTable.querySelectorAll('thead th').forEach(header => {
+        const column = document.createElement('col');
+        column.style.width = `${header.getBoundingClientRect().width}px`;
+        columns.append(column);
+      });
+      benchmarkTable.prepend(columns);
+      benchmarkTable.style.minWidth = `${width}px`;
+      benchmarkTable.style.tableLayout = 'fixed';
+    }
+    const rows = new Map(Array.from(tbody.rows, row => [row.dataset.rowId, row]));
+    const ids = new Set(devices.map(device => device.id));
+    rows.forEach((row, id) => { if (!ids.has(id)) row.remove(); });
+    let cursor = tbody.firstElementChild;
+    devices.forEach((device, index) => {
+      let row = rows.get(device.id);
+      if (!row) {
+        tbody.insertAdjacentHTML('beforeend', renderRow(device, index));
+        row = tbody.lastElementChild;
+      }
+      const rank = String(index + 1);
+      if (row.dataset.rank !== rank) {
+        row.cells[0].innerHTML = rankHtml(index + 1);
+        row.dataset.rank = rank;
+      }
+      if (row !== cursor) tbody.insertBefore(row, cursor);
+      cursor = row.nextElementSibling;
+    });
+    if (!devices.length) tbody.innerHTML = '<tr><td class="table-message">No matching devices.</td></tr>';
+    requestAnimationFrame(syncFloatingTableHeader);
+    return;
+  }
+
+  const bodyHtml = devices.map(renderRow).join('');
+
+  benchmarkTable.style.minWidth = '';
+  benchmarkTable.style.tableLayout = '';
+  tableLayoutDeviceIds = new Set(devices.map(device => device.id));
   benchmarkTable.innerHTML = `
     <thead>
       <tr>
@@ -1307,31 +1734,6 @@ function renderTable() {
     <tbody>
       ${bodyHtml || '<tr><td class="table-message">No matching devices.</td></tr>'}
     </tbody>`;
-
-  benchmarkTable.querySelectorAll('thead th[data-col]').forEach(th => {
-    th.addEventListener('click', () => {
-      const columnId = th.dataset.col;
-      const column = getColumnById(columnId);
-      if (!column) return;
-      if (columnId === sortCol) {
-        sortDir *= -1;
-      } else {
-        sortCol = columnId;
-        sortDir = column.sortDefaultDir ?? -1;
-      }
-      renderTable();
-    });
-  });
-
-  benchmarkTable.querySelectorAll('.device-name-trigger').forEach(button => {
-    button.addEventListener('click', () => {
-      openDeviceDetail(button.dataset.deviceId);
-    });
-  });
-
-  benchmarkTable.querySelectorAll('.compare-checkbox').forEach(input => {
-    input.addEventListener('change', () => toggleCompare(input.dataset.deviceId));
-  });
 
   renderFloatingTableHeader();
 }
@@ -1438,7 +1840,7 @@ function renderChartMultiSeries(meta) {
   const state = getMultiSeriesState(meta);
   const enabledSeries = meta.series.filter(series => state.visible.has(series.key));
   const enabledMeta = { ...meta, series: enabledSeries };
-  const devices = DEVICES.filter(device => enabledSeries.some(series => device[series.key] != null));
+  const devices = getFiltered().filter(device => enabledSeries.some(series => device[series.key] != null));
 
   if (!devices.length) {
     renderChartMessage(meta.emptyMessage ?? 'No chart data available.');
@@ -1513,7 +1915,7 @@ function renderChartMultiSeries(meta) {
       <div class="chart-head-row">
         <div>
           <div class="chart-title">${meta.title}</div>
-          <div class="chart-desc">${meta.desc} &nbsp;·&nbsp; ${sorted.length} devices</div>
+          <div class="chart-desc">${meta.desc} &nbsp;·&nbsp; ${formatDeviceCountLabel(sorted.length)}</div>
         </div>
         <div class="chart-multi-controls">
           <span class="chart-control-label">Sort by</span>
@@ -1592,7 +1994,7 @@ function renderChart() {
   }
 
   const isLower = meta.lowerBetter;
-  const allDevices = DEVICES.filter(device => device[activeChart] != null);
+  const allDevices = getFiltered().filter(device => device[activeChart] != null);
   if (!allDevices.length) {
     renderChartMessage('No data available for this metric yet.');
     return;
@@ -1622,7 +2024,7 @@ function renderChart() {
   chartBox.innerHTML = `
     <div class="chart-head">
       <div class="chart-title">${meta.title}</div>
-      <div class="chart-desc">${meta.desc} &nbsp;·&nbsp; ${sorted.length} devices</div>
+      <div class="chart-desc">${meta.desc} &nbsp;·&nbsp; ${formatDeviceCountLabel(sorted.length)}</div>
     </div>
     ${rows}`;
 
@@ -1665,6 +2067,7 @@ async function loadData() {
     const data = await response.json();
     normalizeDevices(data);
     compareSelection = loadCompareSelection();
+    applyFiltersFromUrl();
     updateSiteMeta();
     renderInfoCards();
     renderTable();
@@ -1708,9 +2111,33 @@ document.querySelectorAll('.tab-btn[data-view]').forEach(btn => {
   });
 });
 
-document.getElementById('search').addEventListener('input', event => {
-  filterQ = event.target.value;
+searchInputEl.addEventListener('input', event => {
+  filterState.q = event.target.value;
+  updateFilterClearVisibility();
+  scheduleFilterResults();
+  scheduleFilterUrlWrite();
+});
+
+benchmarkTable.addEventListener('click', event => {
+  const button = event.target.closest('.device-name-trigger');
+  if (button) {
+    openDeviceDetail(button.dataset.deviceId);
+    return;
+  }
+  const header = event.target.closest('thead th[data-col]');
+  if (!header) return;
+  const column = getColumnById(header.dataset.col);
+  if (!column) return;
+  if (column.id === sortCol) sortDir *= -1;
+  else {
+    sortCol = column.id;
+    sortDir = column.sortDefaultDir ?? -1;
+  }
   renderTable();
+});
+
+benchmarkTable.addEventListener('change', event => {
+  if (event.target.matches('.compare-checkbox')) toggleCompare(event.target.dataset.deviceId);
 });
 
 document.querySelectorAll('.chart-tab').forEach(btn => {
@@ -1723,6 +2150,15 @@ document.querySelectorAll('.chart-tab').forEach(btn => {
 
 columnToggleBtn.addEventListener('click', () => {
   setColumnMenuOpen(columnMenuEl.hidden);
+});
+
+setFilterPanelOpen(filterPanelPreference ?? false, { focus: false });
+
+filterToggleBtn.addEventListener('click', () => {
+  setFilterPanelOpen(filterPanelEl.hidden, { save: true });
+});
+document.getElementById('filter-sidebar-close').addEventListener('click', () => {
+  setFilterPanelOpen(false, { restoreFocus: true, save: true });
 });
 
 document.getElementById('column-reset').addEventListener('click', () => {
@@ -1742,6 +2178,9 @@ document.addEventListener('click', event => {
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape') {
     setColumnMenuOpen(false);
+    if (filterSidebarEl.contains(document.activeElement) || document.activeElement === filterToggleBtn) {
+      setFilterPanelOpen(false, { restoreFocus: true, save: true });
+    }
     if (!deviceDetailOverlay.hidden) closeDeviceDetail();
   }
 });
@@ -1754,12 +2193,17 @@ deviceDetailOverlay.addEventListener('click', event => {
   if (event.target === deviceDetailOverlay) closeDeviceDetail();
 });
 
+new ResizeObserver(() => requestAnimationFrame(syncFloatingTableHeader)).observe(filterToolbarEl);
 window.addEventListener('scroll', syncFloatingTableHeader, { passive: true });
 window.addEventListener('resize', syncFloatingTableHeader);
 tableWrap.addEventListener('scroll', syncFloatingTableHeader, { passive: true });
 
 window.addEventListener('popstate', () => {
   if (!DEVICES.length) return;
+  applyFiltersFromUrl();
+  ensureValidSortColumn();
+  renderTable();
+  renderChart();
   syncDeviceDetailFromUrl();
   syncCompareFromUrl();
 });
