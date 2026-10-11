@@ -2,6 +2,27 @@
 
 All notable changes to this project are documented here.
 
+## 2026-10-11
+
+- Added advanced filters for Cinebench R23 scores, power draw, device volume, and noise
+- Added shareable filter links, active filter chips, and a collapsible filter sidebar.
+- Widened the comparison layout and improved responsive navigation and sticky table controls.
+
+## 2026-10-07
+
+- Shortened Cinebench R23 and Geekbench 6 table headings to make benchmark columns more compact.
+- Corrected the graphics benchmark label to **Steel Nomad Light**.
+
+## 2026-10-05
+
+- Added device photos for nine more mini PCs in the details view.
+- Updated device store and review links.
+
+## 2026-10-01
+
+- Added benchmark results for two additional mini PCs.
+- Fixed scaling in stacked performance-mode charts and improved segment separators and animations.
+
 ## 2026-09-27
 
 - Added benchmark results for additional mini PCs and updated performance metrics for existing devices.

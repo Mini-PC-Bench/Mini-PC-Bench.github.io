@@ -605,6 +605,116 @@ main.benchmark-layout {
   color: var(--accent);
 }
 
+.changelog-layout .changelog-body {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 2.5rem 0 4rem;
+}
+
+.changelog-intro {
+  margin-bottom: 2rem;
+}
+
+.changelog-intro h2 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.8rem;
+  margin-bottom: 0.35rem;
+}
+
+.changelog-intro p {
+  margin: 0;
+}
+
+.changelog-month {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  margin-bottom: 1rem;
+}
+
+.changelog-month summary {
+  cursor: pointer;
+  padding: 1.25rem 1.5rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.changelog-month summary::marker {
+  color: var(--accent);
+}
+
+.changelog-month summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+
+.changelog-month-count {
+  float: right;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 400;
+  padding-top: 0.2rem;
+}
+
+.changelog-month-entries {
+  padding: 0 1.5rem;
+}
+
+.changelog-release {
+  display: grid;
+  grid-template-columns: 175px minmax(0, 1fr);
+  gap: 1.5rem;
+  border-top: 1px solid var(--border);
+  padding: 1.3rem 0;
+}
+
+.changelog-release h2.changelog-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.changelog-release-content ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.changelog-release-content li {
+  margin: 0 0 0.55rem;
+  padding-left: 0.15rem;
+}
+
+.changelog-release-content li:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 640px) {
+  .changelog-layout .changelog-body {
+    padding-top: 1.5rem;
+  }
+
+  .changelog-intro {
+    margin-bottom: 1.5rem;
+  }
+
+  .changelog-month summary {
+    padding: 1rem;
+  }
+
+  .changelog-month-entries {
+    padding: 0 1rem;
+  }
+
+  .changelog-release {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+  }
+}
+
 .info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));

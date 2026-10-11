@@ -68,6 +68,40 @@ function Convert-MarkdownToHtml {
   return $html.ToString()
 }
 
+function Group-ChangelogByMonth {
+  param([string]$Html)
+
+  $entries = [regex]::Matches($Html, '(?s)<h2 class="changelog-date" id="(?<date>\d{4}-\d{2})[^\"]*">.*?</h2>.*?(?=<h2|\z)')
+  if ($entries.Count -eq 0) { return $Html }
+
+  $result = New-Object System.Text.StringBuilder
+  [void]$result.AppendLine('<div class="changelog-intro"><h2>Changelog</h2>')
+  [void]$result.AppendLine($Html.Substring(0, $entries[0].Index).Trim())
+  [void]$result.AppendLine('</div>')
+  $months = [ordered]@{}
+  foreach ($entry in $entries) {
+    $month = $entry.Groups['date'].Value
+    if (-not $months.Contains($month)) { $months[$month] = @() }
+    $months[$month] += $entry.Value.Trim()
+  }
+
+  $index = 0
+  foreach ($month in $months.Keys) {
+    $label = [datetime]::ParseExact($month, 'yyyy-MM', [cultureinfo]::InvariantCulture).ToString('MMMM yyyy', [cultureinfo]::InvariantCulture)
+    $open = if ($index -lt 2) { ' open' } else { '' }
+    $count = $months[$month].Count
+    $unit = if ($count -eq 1) { 'update' } else { 'updates' }
+    [void]$result.AppendLine("<details class=`"changelog-month`"$open><summary><span>$label</span><span class=`"changelog-month-count`">$count $unit</span></summary><div class=`"changelog-month-entries`">")
+    foreach ($entry in $months[$month]) {
+      $entry = [regex]::Replace($entry, '(?s)(</h2>)(.*)', '$1<div class="changelog-release-content">$2</div>')
+      [void]$result.AppendLine("<section class=`"changelog-release`">$entry</section>")
+    }
+    [void]$result.AppendLine('</div></details>')
+    $index++
+  }
+  return $result.ToString()
+}
+
 if (-not (Test-Path -LiteralPath $SourcePath)) {
   throw "Changelog source not found: $SourcePath"
 }
@@ -78,6 +112,7 @@ if (-not (Test-Path -LiteralPath $TemplatePath)) {
 
 $lines = Get-Content -LiteralPath $SourcePath
 $body = Convert-MarkdownToHtml -Lines $lines
+$body = Group-ChangelogByMonth -Html $body
 
 $template = Get-Content -LiteralPath $TemplatePath -Raw
 $contentToken = '{{CHANGELOG_CONTENT}}'

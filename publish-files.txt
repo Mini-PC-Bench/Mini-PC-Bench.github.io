@@ -6,6 +6,7 @@ robots.txt
 styles.css
 app.js
 theme.js
+changelog.js
 devices.json
 device-links.json
 images

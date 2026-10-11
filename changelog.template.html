@@ -11,12 +11,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Montserrat:wght@500;600;800;900&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css?v=mini-bench-brand">
+  <link rel="stylesheet" href="./styles.css?v=monthly-changelog">
 </head>
 
 <body>
 
-  <header>
+  <header class="benchmark-header">
     <div class="container">
       <div class="header-inner">
         <div class="site-brand">
@@ -46,7 +46,7 @@
     </div>
   </header>
 
-  <main class="container">
+  <main class="container changelog-layout">
     <div class="changelog-body">
 {{CHANGELOG_CONTENT}}
     </div>
@@ -59,6 +59,7 @@
   </footer>
 
   <script src="./theme.js" defer></script>
+  <script src="./changelog.js" defer></script>
 </body>
 
 </html>
