@@ -316,6 +316,22 @@ Use this workflow each time you review a new device.
 
 ## Source Data Workflow
 
+### Field Coverage Reports
+
+Use `scripts/devices/report-field-coverage.ps1` to inspect the current dataset before choosing new filters. It discovers all stored leaf fields, including nested paths, and reports present/missing counts, coverage percentage, value types, numeric counts and ranges, and distinct value counts.
+
+`null`, absent, and blank values count as missing; zero counts as present.
+
+```powershell
+./scripts/devices/report-field-coverage.ps1
+./scripts/devices/report-field-coverage.ps1 -Fields cb23s,cb23m,noise.idle -IncludeMissingDevices
+./scripts/devices/report-field-coverage.ps1 -ReportPath ./field-coverage.md
+./scripts/devices/report-field-coverage.ps1 -Fields cb23s,cb23m -PassThru | Select-Object Field,Present,Missing,CoveragePct,Min,Max | Export-Csv ./field-coverage.csv -NoTypeInformation
+```
+
+- use `-DevicesPath` to inspect another JSON dataset.
+- use `-IncludeMissingDevices:$false` for a summary only.
+
 There are two PowerShell scripts for working with the raw CSV files in `source`:
 
 - `./scripts/source/process-source.ps1` updates `devices.json` by resolving source labels to canonical device names.
