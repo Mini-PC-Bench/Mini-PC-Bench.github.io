@@ -1086,6 +1086,8 @@ function renderTableMessage(message) {
 
 function renderLoadingInfoCards() {
   const cards = ['blue', 'green', 'amber', 'green', 'green', 'blue'];
+  infoGridCaptionEl.innerHTML = '<span class="loading-skeleton loading-skeleton-caption" aria-hidden="true"></span>';
+  infoGridCaptionEl.hidden = false;
   infoGrid.setAttribute('aria-busy', 'true');
   infoGrid.setAttribute('aria-label', 'Loading top benchmark values');
   infoGrid.innerHTML = cards.map(cls => `
@@ -1255,6 +1257,7 @@ function renderInfoCards() {
   const hasCoreMetrics = byScore.length && byEff.length && byGpu.length;
   const hasPowerMetrics = byQuiet.length && byIdle.length && byWatts.length;
   if (!hasCoreMetrics || !hasPowerMetrics) {
+    infoGridCaptionEl.hidden = true;
     infoGrid.innerHTML = '';
     return;
   }
@@ -2052,6 +2055,7 @@ function setLoadingState() {
 function setErrorState(message) {
   siteMetaEl.textContent = 'Unable to load benchmark data';
   countEl.textContent = 'Load failed';
+  infoGridCaptionEl.hidden = true;
   infoGrid.innerHTML = '';
   renderTableMessage(message);
   renderChartMessage(message);

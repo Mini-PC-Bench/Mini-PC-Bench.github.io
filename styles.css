@@ -785,27 +785,23 @@ main.benchmark-layout {
 }
 
 .loading-info-card {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  min-height: 6.35rem;
+  min-width: 0;
 }
 
-.loading-skeleton-label {
-  width: 7.5rem;
-  height: 0.55rem;
-  margin: 0.1rem 0 0.7rem;
+.loading-info-card .loading-skeleton-label {
+  width: min(7.5rem, 100%);
+  height: 1.08rem;
 }
 
-.loading-skeleton-info-value {
-  width: 4.6rem;
-  height: 1.35rem;
+.loading-info-card .loading-skeleton-info-value {
+  width: 3.2rem;
+  height: 1.13rem;
 }
 
-.loading-skeleton-device {
-  width: 8.5rem;
-  height: 0.55rem;
-  margin-top: 0.55rem;
+.loading-info-card .loading-skeleton-device {
+  grid-column: 1 / -1;
+  width: min(8.5rem, 100%);
+  height: 1.125rem;
 }
 
 .controls {
@@ -1358,6 +1354,12 @@ td.table-message {
 .loading-skeleton-rank {
   width: 1.1rem;
   height: 1.1rem;
+}
+
+.loading-skeleton-caption {
+  display: block;
+  width: min(10rem, 100%);
+  height: 1lh;
 }
 
 .loading-skeleton-value {
