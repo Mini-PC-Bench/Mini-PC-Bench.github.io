@@ -15,3 +15,12 @@ function revealChangelogDate() {
 
 window.addEventListener('hashchange', revealChangelogDate);
 window.addEventListener('load', revealChangelogDate);
+
+const returnView = new URLSearchParams(window.location.search).get('from');
+const returnLink = [...document.querySelectorAll('[data-return-view]')]
+  .find(link => link.dataset.returnView === returnView);
+if (returnLink) {
+  const label = returnLink.textContent.trim();
+  returnLink.textContent = `← Back to ${label}`;
+  returnLink.classList.add('page-link-return');
+}

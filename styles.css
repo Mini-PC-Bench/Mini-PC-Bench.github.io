@@ -290,6 +290,7 @@ a.tab-btn:last-child {
 
 .page-link:hover,
 .page-link:visited:hover,
+.page-link-return,
 .page-link-current,
 .page-link-current:visited {
   color: var(--accent);

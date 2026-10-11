@@ -319,6 +319,7 @@ let activeDeviceId = null;
 let linksLoaded = false;
 let compareSelection = [];
 let compareDiffOnly = false;
+let activeView = 'table';
 
 const multiSeriesState = new Map();
 
@@ -1010,6 +1011,7 @@ function renderCompareUi() {
 }
 
 function showView(viewName) {
+  activeView = viewName;
   cancelAnimationFrame(filterRenderFrame);
   filterRenderFrame = null;
   document.querySelectorAll('.tab-btn[data-view]').forEach(item => {
@@ -2078,6 +2080,8 @@ async function loadData() {
     renderChart();
     syncDeviceDetailFromUrl();
     syncCompareFromUrl();
+    const requestedView = new URLSearchParams(window.location.search).get('view');
+    if (['table', 'charts', 'compare'].includes(requestedView)) showView(requestedView);
     loadLinks();
   } catch (error) {
     console.error(error);
@@ -2113,6 +2117,11 @@ document.querySelectorAll('.tab-btn[data-view]').forEach(btn => {
   btn.addEventListener('click', () => {
     showView(btn.dataset.view);
   });
+});
+
+document.getElementById('changelog-link').addEventListener('click', event => {
+  event.preventDefault();
+  window.location.href = `./changelog.html?from=${encodeURIComponent(activeView)}`;
 });
 
 searchInputEl.addEventListener('input', event => {

@@ -32,7 +32,11 @@ test('reveals archived dates from shared links and hash changes', async ({ page 
 test('keeps monthly releases readable on mobile in both themes', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/changelog.html');
-  await expect(page.locator('nav')).toHaveText(/Changelog\s+← Back to comparison/);
+  const navigation = page.locator('.view-tabs');
+  await expect(navigation.locator('[data-return-view="table"]')).toHaveText('Table View');
+  await expect(navigation.locator('[data-return-view="charts"]')).toHaveText('Charts');
+  await expect(navigation.locator('[data-return-view="compare"]')).toHaveText('Compare');
+  await expect(navigation.locator('.page-link-current')).toHaveText('Changelog');
   for (const theme of ['light', 'dark']) {
     await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
