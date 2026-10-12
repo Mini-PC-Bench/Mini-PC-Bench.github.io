@@ -9,6 +9,7 @@ theme.js
 changelog.js
 devices.json
 device-links.json
+recommendations.json
 images
 favicon.ico
 favicon.svg

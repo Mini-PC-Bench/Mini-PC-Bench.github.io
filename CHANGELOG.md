@@ -2,6 +2,10 @@
 
 All notable changes to this project are documented here.
 
+## 2026-10-12
+
+- Added a Recommendations tab with Robtech's Top Mini PC Lists, grouped by year.
+
 ## 2026-10-11
 
 - Added advanced filters for Cinebench R23 scores, power draw, device volume, and noise

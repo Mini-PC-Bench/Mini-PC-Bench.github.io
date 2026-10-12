@@ -11,6 +11,8 @@ Static benchmark comparison page for mini PCs, designed to be hosted on GitHub P
 - `assets/mini-bench-logo.webp` - Mini Bench brand logo used in the site header
 - `devices.json` - benchmark dataset consumed by the page
 - `device-links.json` - editorial links keyed by device id
+- `recommendations.json` - playlist ID and video records rendered in the Recommendations grid
+- `scripts/source/update-recommendations.ps1` - refreshes recommendation records from the YouTube playlist
 - `source-device-map.json` - reviewed raw source-label ownership mappings used by the importer
 - `scripts/devices/sync-device-links.ps1` - adds missing empty link entries from `devices.json`
 - `scripts/devices/validate-device-links.ps1` - resolves and sanity-checks YouTube and Amazon device links
@@ -29,6 +31,34 @@ Static benchmark comparison page for mini PCs, designed to be hosted on GitHub P
 - `license.html` - generated static license page, linked from the site footer
 - `robots.txt` - disallows known AI/scraper crawlers and direct crawling of the JSON datasets
 - `publish-files.txt` - allowlist of files and directories included in the GitHub Pages deployment
+
+## Recommendations
+
+The Recommendations tab links to Robtech’s mini PC recommendation lists from the [Top Mini PC Lists playlist](https://www.youtube.com/playlist?list=PLAAdXZQ2dtYrz-IRs-_in4AYt34EWJj2R). Videos are grouped by the year covered by the list (or publication year when the title has no year), newest first. Reasons-to-buy and reasons-not-to-buy videos are excluded.
+
+The tab renders `recommendations.json` as a responsive thumbnail grid using the same wide layout as the dashboard. Each video has `id`, `title`, `year`, and `publishedAt` (`YYYY-MM-DD`); optional `startSeconds` preserves a link’s timestamp.
+
+To refresh the model, enable [YouTube Data API v3](https://developers.google.com/youtube/v3/getting-started) and set `YOUTUBE_API_KEY` in your environment (or pass `-ApiKey`). Run directly with PowerShell 7.4 or newer:
+
+```bash
+pwsh ./scripts/source/update-recommendations.ps1
+```
+
+The updater uses the [playlistItems API](https://developers.google.com/youtube/v3/docs/playlistItems/list), follows every results page, includes TOP-N mini PC lists and the "Which Mini PC Should You Buy?" roundup, and excludes reasons-to-buy/not-to-buy and unrelated entries.
+
+Run the updater’s offline check without an API key:
+
+```bash
+pwsh ./scripts/source/update-recommendations.ps1 -SelfTest
+```
+
+### Monthly recommendation check
+
+The separate `Check monthly recommendations` workflow runs on the first day of each month at 08:17 UTC (09:17 in Warsaw in winter, 10:17 in summer). It refreshes `recommendations.json` in the runner checkout and fails if `git diff` detects changes, showing the diff in the logs. API/key errors also fail the workflow. It has read-only repository permissions and does not commit or deploy updates.
+
+Store the API key in the repository’s **Settings → Secrets and variables → Actions → New repository secret**, with the name `YOUTUBE_API_KEY` and the key as its value. Enable YouTube Data API v3 for the key’s Google Cloud project. The workflow passes the secret to the updater through its environment; do not put the key in the workflow file or JSON. See [GitHub’s repository secret instructions](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets).
+
+In your [GitHub notification settings](https://github.com/settings/notifications), under **System → Actions**, enable **Email** and **Only notify for failed workflows**, then save. Watch this repository. Scheduled workflow notifications go to the user who created the workflow or most recently changed its cron schedule, so commit the workflow under your own account. See [Actions notification settings](https://docs.github.com/en/subscriptions-and-notifications/how-tos/managing-github-actions-notifications) and [scheduled workflow recipients](https://docs.github.com/en/actions/concepts/workflows-and-actions/notifications-for-workflow-runs).
 
 ## Link Validation
 
@@ -55,7 +85,7 @@ The report is written to `device-links-report.md`. To check one device, use:
 3. Set the source to deploy from your default branch.
 4. Open the published URL after Pages finishes building.
 
-The page fetches `devices.json` and `device-links.json` at runtime, so it should be served over HTTP or HTTPS. Opening the HTML directly with `file://` will usually fail because browsers block local `fetch()` requests.
+The page fetches `devices.json`, `device-links.json`, and `recommendations.json` at runtime, so it should be served over HTTP or HTTPS. Opening the HTML directly with `file://` will usually fail because browsers block local `fetch()` requests.
 
 ## Local Preview
 

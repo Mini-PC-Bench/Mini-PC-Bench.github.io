@@ -191,8 +191,7 @@ header {
 }
 
 .site-footer a {
-  color: var(--muted);
-  text-decoration: underline;
+  font-weight: 500;
 }
 
 .theme-toggle {
@@ -242,6 +241,7 @@ header {
 
 .view-tabs {
   display: flex;
+  flex-wrap: wrap;
   border-top: 1px solid var(--border);
   margin-top: 0.75rem;
 }
@@ -373,6 +373,197 @@ a.tab-btn:last-child {
 
 .view.active {
   display: block;
+}
+
+#recommendations-view {
+  padding-top: 1rem;
+}
+
+.recommendations-intro {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2.25rem;
+}
+
+.recommendations-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0.4rem 0;
+}
+
+.recommendations-intro p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.recommendations-eyebrow,
+.recommendation-source {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.07em;
+}
+
+.recommendations-playlist {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  background: var(--surface);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.recommendations-playlist:hover,
+.recommendations-playlist:focus-visible {
+  border-color: var(--accent);
+  color: var(--bar1);
+  background: var(--accent-dim);
+}
+
+.recommendations-year + .recommendations-year {
+  margin-top: 2.5rem;
+}
+
+.recommendations-year-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.recommendations-year h3 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.recommendations-year-head span {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.recommendations-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  list-style: none;
+}
+
+.recommendation-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: var(--text);
+  text-decoration: none;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+  transition: border-color 0.15s;
+}
+
+.recommendation-card:hover,
+.recommendation-card:focus-visible {
+  border-color: var(--accent);
+  color: var(--bar1);
+}
+
+.recommendation-card:focus-visible,
+.recommendations-playlist:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.recommendation-thumbnail {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  background: var(--border);
+}
+
+.recommendation-thumbnail img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.recommendation-play {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  width: 42px;
+  height: 42px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  color: #FFFFFF;
+  background: rgba(11, 18, 32, 0.88);
+}
+
+.recommendation-copy {
+  padding: 1.15rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  flex: 1;
+}
+
+.recommendation-source {
+  color: var(--muted);
+}
+
+.recommendation-copy h4 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  margin: 0.5rem 0 1rem;
+}
+
+.recommendation-watch {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: auto;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.recommendation-card:is(:hover, :focus-visible, :active) .recommendation-watch {
+  color: inherit;
+}
+
+@media (max-width: 1100px) {
+  .recommendations-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .recommendations-intro {
+    align-items: start;
+    flex-direction: column;
+    margin-bottom: 1.75rem;
+    gap: 1rem;
+  }
+
+  .recommendations-title {
+    font-size: 1.6rem;
+  }
+
+  .recommendations-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 main.benchmark-layout {
@@ -1426,27 +1617,15 @@ td.table-message {
 a {
   color: var(--accent);
   text-decoration: none;
-  transition: color .15s, text-decoration .15s;
-  border-bottom: 1px solid transparent;
+  transition: color .15s;
 }
 
 a:hover {
-  color: #1D4ED8;
-  text-decoration: underline;
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 2px;
-}
-
-a:visited {
-  color: #7C3AED;
-}
-
-a:visited:hover {
-  color: #6D28D9;
+  color: var(--bar1);
 }
 
 a:focus-visible {
-  outline: 2px solid rgba(37, 99, 235, .25);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
   border-radius: 2px;
 }
@@ -1617,8 +1796,16 @@ a:focus-visible {
 }
 
 .detail-link-card:hover {
-  color: var(--accent);
+  color: var(--bar1);
   text-decoration: none;
+}
+
+.recommendation-card:active,
+.recommendations-playlist:active,
+.detail-link-card:active {
+  color: var(--bar1);
+  border-color: var(--bar1);
+  background: var(--accent-dim);
 }
 
 .detail-link-head {
@@ -2050,7 +2237,6 @@ a:focus-visible {
 .chart-label:hover,
 .chart-label:focus-visible {
   color: var(--accent);
-  text-decoration: underline;
 }
 
 .chart-label.top {
@@ -2642,11 +2828,6 @@ body.has-compare-tray {
 :root[data-theme="dark"] .rank-3 {
   background: #4A2B16;
   color: #FED7AA;
-}
-
-:root[data-theme="dark"] a:visited,
-:root[data-theme="dark"] a:visited:hover {
-  color: #C4B5FD;
 }
 
 @media (min-width: 1001px) {

@@ -1,0 +1,31 @@
+name: Check monthly recommendations
+
+on:
+  schedule:
+    # First day of each month at 08:17 UTC (09:17 winter / 10:17 summer in Warsaw).
+    - cron: '17 8 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Refresh recommendations
+        shell: pwsh
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: ./scripts/source/update-recommendations.ps1
+
+      - name: Fail if recommendations changed
+        shell: pwsh
+        run: |
+          git diff --exit-code -- recommendations.json
+          if ($LASTEXITCODE -eq 1) { throw 'Recommendations have changed. Review the diff above and refresh recommendations.json locally.' }
+          if ($LASTEXITCODE -ne 0) { throw 'Could not compare recommendations.json.' }

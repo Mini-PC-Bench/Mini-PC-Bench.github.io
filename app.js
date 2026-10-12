@@ -1,5 +1,6 @@
 const DATA_URL = './devices.json';
 const LINKS_URL = './device-links.json';
+const RECOMMENDATIONS_URL = './recommendations.json';
 const DEVICE_QUERY_PARAM = 'device';
 const COMPARE_QUERY_PARAM = 'compare';
 const QUERY_TEXT_PARAM = 'q';
@@ -317,6 +318,7 @@ let tableLayoutDeviceIds = new Set();
 let activeChart = 'cb23s';
 let activeDeviceId = null;
 let linksLoaded = false;
+let recommendationsRequested = false;
 let compareSelection = [];
 let compareDiffOnly = false;
 let activeView = 'table';
@@ -346,6 +348,7 @@ const deviceDetailTitle = document.getElementById('device-detail-title');
 const deviceDetailSummary = document.getElementById('device-detail-summary');
 const deviceDetailBody = document.getElementById('device-detail-body');
 const compareBox = document.getElementById('compare-box');
+const recommendationsBox = document.getElementById('recommendations-box');
 const compareSubtitleEl = document.getElementById('compare-subtitle');
 const compareTabCountEl = document.getElementById('compare-tab-count');
 const compareTrayEl = document.getElementById('compare-tray');
@@ -1021,15 +1024,56 @@ function showView(viewName) {
     panel.classList.toggle('active', panel.id === `${viewName}-view`);
   });
   document.getElementById('table-summary').hidden = viewName !== 'table';
-  filterToolbarEl.hidden = viewName === 'compare';
-  filterSidebarEl.hidden = viewName === 'compare' || filterPanelEl.hidden;
-  filterToggleBtn.hidden = viewName === 'compare';
-  benchmarkLayoutEl.classList.toggle('comparison-layout', viewName === 'compare');
+  const hideFilters = viewName === 'compare' || viewName === 'recommendations';
+  filterToolbarEl.hidden = hideFilters;
+  filterSidebarEl.hidden = hideFilters || filterPanelEl.hidden;
+  filterToggleBtn.hidden = hideFilters;
+  benchmarkLayoutEl.classList.toggle('comparison-layout', hideFilters);
   columnToggleBtn.hidden = viewName !== 'table';
   setColumnMenuOpen(false);
   if (viewName === 'table') renderTable();
   if (viewName === 'charts') renderChart();
   if (viewName === 'compare') renderCompareView();
+  if (viewName === 'recommendations' && !recommendationsRequested) loadRecommendations();
+}
+
+async function loadRecommendations() {
+  recommendationsRequested = true;
+  recommendationsBox.innerHTML = '<p role="status">Loading recommendations…</p>';
+  try {
+    const response = await fetch(RECOMMENDATIONS_URL, { cache: 'no-store' });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    if (!/^PL[\w-]+$/.test(data.playlistId) || !Array.isArray(data.videos) || !data.videos.every(video =>
+      typeof video.id === 'string' && /^[\w-]{11}$/.test(video.id) && typeof video.title === 'string' && video.title.trim() &&
+      Number.isInteger(video.year) && video.year >= 2000 && video.year <= 9999 &&
+      /^\d{4}-\d{2}-\d{2}$/.test(video.publishedAt) && !Number.isNaN(Date.parse(video.publishedAt)) &&
+      (video.startSeconds == null || (Number.isSafeInteger(video.startSeconds) && video.startSeconds >= 0))
+    ) || new Set(data.videos.map(video => video.id)).size !== data.videos.length) {
+      throw new Error('Invalid recommendations data');
+    }
+    document.getElementById('recommendations-playlist').href = `https://www.youtube.com/playlist?list=${data.playlistId}`;
+    const externalIcon = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3h7v7m0-7L10 14"/><path d="M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"/></svg>';
+    const years = [...new Set(data.videos.map(video => video.year))].sort((a, b) => b - a);
+    recommendationsBox.innerHTML = years.map(year => {
+      const videos = data.videos.filter(video => video.year === year).sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+      return `<section class="recommendations-year" aria-labelledby="recommendations-${year}">
+        <div class="recommendations-year-head"><h3 id="recommendations-${year}">${year}</h3><span>${videos.length} ${videos.length === 1 ? 'video' : 'videos'}</span></div>
+        <ul class="recommendations-list">${videos.map(video => `
+          <li><a class="recommendation-card" href="https://www.youtube.com/watch?v=${video.id}${video.startSeconds ? `&amp;t=${video.startSeconds}s` : ''}" target="_blank" rel="noopener noreferrer">
+            <div class="recommendation-thumbnail">
+              <img src="https://i.ytimg.com/vi/${video.id}/hqdefault.jpg" alt="" loading="lazy" width="480" height="360">
+              <span class="recommendation-play"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 11 7-11 7z"/></svg></span>
+            </div>
+            <div class="recommendation-copy"><p class="recommendation-source">ROBTECH</p><h4>${escapeHtml(video.title)}</h4><span class="recommendation-watch">Watch on YouTube ${externalIcon}</span></div>
+          </a></li>`).join('')}</ul>
+      </section>`;
+    }).join('') || '<p>No recommendation videos available yet.</p>';
+  } catch (error) {
+    console.error(error);
+    recommendationsRequested = false;
+    recommendationsBox.innerHTML = '<p role="alert">Unable to load recommendations. Reopen this tab to try again.</p>';
+  }
 }
 
 function getColumnById(id) {
