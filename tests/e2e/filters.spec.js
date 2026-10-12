@@ -16,7 +16,7 @@ async function loadWattsFixture(page) {
   const underThreshold = withWatts.filter(d => d.watts <= WATTS_THRESHOLD).length;
   const missingWatts = total - withWatts.length;
 
-  return { total, underThreshold, missingWatts };
+  return { devices, total, underThreshold, missingWatts };
 }
 
 test('max-watts filter reduces row count and updates the count label', async ({ page }) => {
@@ -355,10 +355,11 @@ test('include-unknown checkbox restores devices missing the filtered field', asy
 
 test('filter coverage and the missing-data chip explain and control unknown values', async ({ page }) => {
   await page.goto('/?watts_max=60&unknown=1');
-  const { total, missingWatts, underThreshold } = await loadWattsFixture(page);
+  const { devices, total, missingWatts, underThreshold } = await loadWattsFixture(page);
   const present = total - missingWatts;
+  const cb23sPresent = devices.filter(device => device.cb23s != null).length;
   await expect(page.locator('#filter-watts-coverage')).toHaveText(`Data for ${present} of ${total} devices (${Math.round(present / total * 100)}%)`);
-  await expect(page.locator('#filter-cb23s-coverage')).toHaveText(`Data for ${total} of ${total} devices (100%)`);
+  await expect(page.locator('#filter-cb23s-coverage')).toHaveText(`Data for ${cb23sPresent} of ${total} devices (${Math.round(cb23sPresent / total * 100)}%)`);
   await expect(page.locator('.filter-chip[data-filter="unknown"]')).toContainText('Including missing data');
   await page.locator('.tab-btn[data-view="charts"]').click();
   await expect(page.locator('.filter-chip[data-filter="unknown"]')).toBeVisible();
@@ -442,13 +443,14 @@ test('rapid filter updates refresh the active view and switching restores curren
   const response = await page.request.get('/devices.json');
   const devices = await response.json();
   const expectedCount = limit => devices.filter(device => device.watts != null && device.watts <= limit).length;
+  const expectedChartCount = limit => devices.filter(device => device.watts != null && device.watts <= limit && device.cb23s != null).length;
   await page.locator('#chart-box .chart-row').first().evaluate(element => { window.hiddenChartRow = element; });
   await page.locator('#filter-watts-value').fill('60');
   await expect(page.locator('#benchmark-table tbody .device-name-trigger')).toHaveCount(expectedCount(60));
   expect(await page.locator('#chart-box .chart-row').first().evaluate(element => element === window.hiddenChartRow)).toBe(true);
 
   await page.locator('.tab-btn[data-view="charts"]').click();
-  await expect(page.locator('#chart-box .chart-row')).toHaveCount(expectedCount(60));
+  await expect(page.locator('#chart-box .chart-row')).toHaveCount(expectedChartCount(60));
   await page.locator('#benchmark-table tbody tr').first().evaluate(element => { window.hiddenTableRow = element; });
   await page.locator('#filter-watts-range').evaluate(slider => {
     for (const value of [100, 80, 70, 65, 55]) {
@@ -457,7 +459,7 @@ test('rapid filter updates refresh the active view and switching restores curren
     }
   });
   await expect(page.locator('#filter-watts-value')).toHaveValue('55');
-  await expect(page.locator('#chart-box .chart-row')).toHaveCount(expectedCount(55));
+  await expect(page.locator('#chart-box .chart-row')).toHaveCount(expectedChartCount(55));
   expect(await page.locator('#benchmark-table tbody tr').first().evaluate(element => element === window.hiddenTableRow)).toBe(true);
   await page.locator('.tab-btn[data-view="table"]').click();
   await expect(page.locator('#benchmark-table tbody .device-name-trigger')).toHaveCount(expectedCount(55));

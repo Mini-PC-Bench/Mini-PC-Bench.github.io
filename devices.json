@@ -308,7 +308,7 @@
     "coding": null,
     "photoshop": null,
     "premiere": null,
-    "h264": null,
+    "h264": 81,
     "av1": null,
     "av1_hw": null,
     "watts": 90,
@@ -324,16 +324,16 @@
     "coding_perf": null,
     "photoshop_perf": null,
     "premiere_perf": null,
-    "h264_perf": null,
+    "h264_perf": 77,
     "av1_perf": null,
     "av1_hw_perf": null,
     "watts_perf": null,
-    "cpu_temp_perf": null,
+    "cpu_temp_perf": 85,
     "power_idle_watts": 8,
-    "cpu_temp": null,
+    "cpu_temp": 81,
     "ssd_temp": null,
-    "volume": null,
-    "wireless_audio": null
+    "volume": 0.82,
+    "wireless_audio": 6.7
   },
   {
     "id": "acemagic-f5a-hx-370",
@@ -1618,9 +1618,9 @@
     "watts_perf": null,
     "cpu_temp_perf": null,
     "power_idle_watts": 9,
-    "cpu_temp": null,
+    "cpu_temp": 90,
     "ssd_temp": null,
-    "volume": null,
+    "volume": 0.49,
     "wireless_audio": 4
   },
   {
@@ -1957,7 +1957,7 @@
     "cpu_temp": 100,
     "ssd_temp": 51,
     "volume": 0.6,
-    "wireless_audio": null
+    "wireless_audio": 7.5
   },
   {
     "id": "asus-nuc-16-pro-x7-358h",
@@ -2068,7 +2068,7 @@
     "power_idle_watts": 10,
     "cpu_temp": 88,
     "ssd_temp": 39,
-    "volume": null,
+    "volume": 1.1,
     "wireless_audio": 4
   },
   {
@@ -2962,10 +2962,10 @@
     "watts_perf": null,
     "cpu_temp_perf": null,
     "power_idle_watts": 9,
-    "cpu_temp": null,
+    "cpu_temp": 72,
     "ssd_temp": null,
     "volume": 0.35,
-    "wireless_audio": null
+    "wireless_audio": 2.8
   },
   {
     "id": "aiffro-k100-n100",
@@ -3077,7 +3077,7 @@
     "cpu_temp": 77,
     "ssd_temp": null,
     "volume": 0.34,
-    "wireless_audio": null
+    "wireless_audio": 3.2
   },
   {
     "id": "beelink-eq12-n100",
@@ -3188,7 +3188,7 @@
     "power_idle_watts": 11,
     "cpu_temp": 87,
     "ssd_temp": 46,
-    "volume": null,
+    "volume": 0.55,
     "wireless_audio": null
   },
   {
@@ -3245,7 +3245,7 @@
     "cpu_temp": 76,
     "ssd_temp": 32,
     "volume": 0.63,
-    "wireless_audio": null
+    "wireless_audio": 5
   },
   {
     "id": "beelink-eq14-n150",
@@ -3301,7 +3301,7 @@
     "cpu_temp": 71,
     "ssd_temp": 37,
     "volume": 0.63,
-    "wireless_audio": null
+    "wireless_audio": 5
   },
   {
     "id": "beelink-s12-pro-n100",
@@ -3357,7 +3357,7 @@
     "cpu_temp": 80,
     "ssd_temp": null,
     "volume": 0.45,
-    "wireless_audio": null
+    "wireless_audio": 6
   },
   {
     "id": "blackview-mp60-n150",
@@ -3413,7 +3413,7 @@
     "cpu_temp": 84,
     "ssd_temp": null,
     "volume": 0.92,
-    "wireless_audio": null
+    "wireless_audio": 6.5
   },
   {
     "id": "blackview-mp80-n97",
@@ -3525,7 +3525,7 @@
     "cpu_temp": 88,
     "ssd_temp": null,
     "volume": 0.78,
-    "wireless_audio": null
+    "wireless_audio": 5.5
   },
   {
     "id": "geekom-mini-air12-lite-n100",
@@ -3581,7 +3581,7 @@
     "cpu_temp": 73,
     "ssd_temp": 25,
     "volume": 0.56,
-    "wireless_audio": null
+    "wireless_audio": 3.2
   },
   {
     "id": "geekom-miniair12-n100",
@@ -3693,7 +3693,7 @@
     "cpu_temp": 79,
     "ssd_temp": null,
     "volume": 0.39,
-    "wireless_audio": null
+    "wireless_audio": 5.2
   },
   {
     "id": "gmktec-g2-plus-n150",
@@ -3749,7 +3749,7 @@
     "cpu_temp": 96,
     "ssd_temp": null,
     "volume": 0.3,
-    "wireless_audio": null
+    "wireless_audio": 5.2
   },
   {
     "id": "gmktec-g3-n100",
@@ -3917,7 +3917,7 @@
     "cpu_temp": 80,
     "ssd_temp": null,
     "volume": 0.92,
-    "wireless_audio": null
+    "wireless_audio": 6.8
   },
   {
     "id": "mele-overclock-4c-n95",
@@ -4085,7 +4085,7 @@
     "cpu_temp": 75,
     "ssd_temp": 58,
     "volume": 0.71,
-    "wireless_audio": null
+    "wireless_audio": 5.5
   },
   {
     "id": "minix-neo-z97-n97",
@@ -4141,7 +4141,7 @@
     "cpu_temp": 75,
     "ssd_temp": 43,
     "volume": 0.28,
-    "wireless_audio": null
+    "wireless_audio": 5.5
   },
   {
     "id": "minix-z100-0db-n100",
@@ -4253,7 +4253,7 @@
     "cpu_temp": 84,
     "ssd_temp": 61,
     "volume": 0.64,
-    "wireless_audio": null
+    "wireless_audio": 7.5
   },
   {
     "id": "minix-z300-0db-i3-n300",
@@ -4309,7 +4309,7 @@
     "cpu_temp": 98,
     "ssd_temp": 60,
     "volume": 0.64,
-    "wireless_audio": null
+    "wireless_audio": 9
   },
   {
     "id": "morefine-m6-n200",
@@ -4477,7 +4477,7 @@
     "cpu_temp": 72,
     "ssd_temp": null,
     "volume": 0.55,
-    "wireless_audio": null
+    "wireless_audio": 14
   },
   {
     "id": "peladn-wi6-n150",
@@ -4533,7 +4533,7 @@
     "cpu_temp": 84,
     "ssd_temp": null,
     "volume": 0.44,
-    "wireless_audio": null
+    "wireless_audio": 3.2
   },
   {
     "id": "peladn-wo4-5600h",
@@ -4589,7 +4589,7 @@
     "cpu_temp": 76,
     "ssd_temp": null,
     "volume": 0.84,
-    "wireless_audio": null
+    "wireless_audio": 10
   },
   {
     "id": "peladn-wo4-r5-5500u",
@@ -4756,7 +4756,7 @@
     "power_idle_watts": 11,
     "cpu_temp": 93,
     "ssd_temp": 40,
-    "volume": null,
+    "volume": 1.03,
     "wireless_audio": 5.5
   },
   {
@@ -5036,7 +5036,7 @@
     "power_idle_watts": 8,
     "cpu_temp": 104,
     "ssd_temp": 49,
-    "volume": null,
+    "volume": 0.66,
     "wireless_audio": null
   },
   {
@@ -5230,7 +5230,7 @@
     "gbai_gpu_single": null,
     "gbai_gpu_quantised": null,
     "firestrike": 1420,
-    "timespy": null,
+    "timespy": 414,
     "steelnomad": 312,
     "storage": null,
     "coding": null,
@@ -5258,10 +5258,10 @@
     "watts_perf": null,
     "cpu_temp_perf": null,
     "power_idle_watts": 10,
-    "cpu_temp": null,
+    "cpu_temp": 88,
     "ssd_temp": null,
     "volume": 0.78,
-    "wireless_audio": null
+    "wireless_audio": 5.5
   },
   {
     "id": "gmktec-nucbox-g9-n150",
@@ -5286,7 +5286,7 @@
     "gbai_gpu_single": null,
     "gbai_gpu_quantised": null,
     "firestrike": 1522,
-    "timespy": null,
+    "timespy": 429,
     "steelnomad": null,
     "storage": null,
     "coding": null,
@@ -5295,7 +5295,7 @@
     "h264": 582,
     "av1": null,
     "av1_hw": null,
-    "watts": null,
+    "watts": 29,
     "cb23s_perf": null,
     "cb23m_perf": null,
     "gb6s_perf": null,
@@ -5311,13 +5311,13 @@
     "h264_perf": null,
     "av1_perf": null,
     "av1_hw_perf": null,
-    "watts_perf": null,
+    "watts_perf": 36,
     "cpu_temp_perf": null,
-    "power_idle_watts": null,
+    "power_idle_watts": 11,
     "cpu_temp": 91,
     "ssd_temp": null,
     "volume": 0.55,
-    "wireless_audio": null
+    "wireless_audio": 6
   },
   {
     "id": "morefine-m8s-plus-n150",
@@ -5373,7 +5373,7 @@
     "cpu_temp": 85,
     "ssd_temp": null,
     "volume": 0.28,
-    "wireless_audio": null
+    "wireless_audio": 7.1
   },
   {
     "id": "wo-we-p5-3500u",
@@ -5429,7 +5429,7 @@
     "cpu_temp": 85,
     "ssd_temp": null,
     "volume": 0.62,
-    "wireless_audio": null
+    "wireless_audio": 8.8
   },
   {
     "id": "acemagic-kron-k5-core-5-320",
@@ -5708,7 +5708,7 @@
     "power_idle_watts": 10,
     "cpu_temp": 100,
     "ssd_temp": null,
-    "volume": null,
+    "volume": 0.7,
     "wireless_audio": null
   },
   {
@@ -5764,7 +5764,7 @@
     "power_idle_watts": 9,
     "cpu_temp": 97,
     "ssd_temp": null,
-    "volume": null,
+    "volume": 0.9,
     "wireless_audio": null
   },
   {
@@ -5820,7 +5820,7 @@
     "power_idle_watts": 14,
     "cpu_temp": 90,
     "ssd_temp": null,
-    "volume": null,
+    "volume": 0.6,
     "wireless_audio": null
   },
   {
@@ -5932,7 +5932,7 @@
     "power_idle_watts": 9,
     "cpu_temp": 94,
     "ssd_temp": null,
-    "volume": null,
+    "volume": 0.7,
     "wireless_audio": null
   },
   {
@@ -5988,7 +5988,7 @@
     "power_idle_watts": 9,
     "cpu_temp": 98,
     "ssd_temp": null,
-    "volume": null,
+    "volume": 0.7,
     "wireless_audio": null
   },
   {
@@ -6044,7 +6044,7 @@
     "power_idle_watts": 10,
     "cpu_temp": 89,
     "ssd_temp": null,
-    "volume": null,
+    "volume": 0.75,
     "wireless_audio": null
   },
   {
@@ -6100,7 +6100,7 @@
     "power_idle_watts": 9,
     "cpu_temp": 89,
     "ssd_temp": null,
-    "volume": null,
+    "volume": 0.78,
     "wireless_audio": null
   },
   {
@@ -7444,7 +7444,7 @@
     "power_idle_watts": 12,
     "cpu_temp": 98,
     "ssd_temp": 58,
-    "volume": null,
+    "volume": 0.64,
     "wireless_audio": null
   },
   {
@@ -7946,7 +7946,7 @@
     "watts_perf": null,
     "cpu_temp_perf": null,
     "power_idle_watts": 9,
-    "cpu_temp": null,
+    "cpu_temp": 92,
     "ssd_temp": 54,
     "volume": 0.83,
     "wireless_audio": 5.8
@@ -7980,7 +7980,7 @@
     "coding": null,
     "photoshop": null,
     "premiere": null,
-    "h264": null,
+    "h264": 95,
     "av1": 525,
     "av1_hw": 79,
     "watts": 100,
@@ -7996,7 +7996,7 @@
     "coding_perf": null,
     "photoshop_perf": null,
     "premiere_perf": null,
-    "h264_perf": null,
+    "h264_perf": 93,
     "av1_perf": 522,
     "av1_hw_perf": null,
     "watts_perf": 109,
@@ -8118,5 +8118,229 @@
     "ssd_temp": 43,
     "volume": 0.73,
     "wireless_audio": 6
+  },
+  {
+    "id": "aoostar-wtr-pro-5825u",
+    "name": "AOOSTAR WTR Pro 5825U",
+    "photo": null,
+    "noise": {
+      "idle": 35,
+      "load_default": 38,
+      "load_performance": 38
+    },
+    "cb23s": 1457,
+    "cb23m": 8899,
+    "gb6s": 2013,
+    "gb6m": 7680,
+    "gb7s": null,
+    "gb7m": null,
+    "ai_tokens": null,
+    "gbai_cpu_half": 1306,
+    "gbai_cpu_single": 2957,
+    "gbai_cpu_quantised": 4155,
+    "gbai_gpu_half": 4176,
+    "gbai_gpu_single": 3046,
+    "gbai_gpu_quantised": 2318,
+    "firestrike": 3925,
+    "timespy": 1207,
+    "steelnomad": 1178,
+    "storage": 1900,
+    "coding": null,
+    "photoshop": 5630,
+    "premiere": 1723,
+    "h264": 175,
+    "av1": 997,
+    "av1_hw": null,
+    "watts": 49,
+    "cb23s_perf": null,
+    "cb23m_perf": 10996,
+    "gb6s_perf": null,
+    "gb6m_perf": 8523,
+    "gb7s_perf": null,
+    "gb7m_perf": null,
+    "firestrike_perf": 4363,
+    "timespy_perf": 1366,
+    "steelnomad_perf": 1315,
+    "coding_perf": null,
+    "photoshop_perf": 6087,
+    "premiere_perf": 1900,
+    "h264_perf": 148,
+    "av1_perf": 824,
+    "av1_hw_perf": null,
+    "watts_perf": 60,
+    "cpu_temp_perf": 79,
+    "power_idle_watts": 12,
+    "cpu_temp": 72,
+    "ssd_temp": 59,
+    "volume": 6.09,
+    "wireless_audio": null
+  },
+  {
+    "id": "mele-overclock-x5-i5-12450h",
+    "name": "MeLE Overclock X5 i5-12450H",
+    "photo": null,
+    "noise": {
+      "idle": 30,
+      "load_default": 48,
+      "load_performance": null
+    },
+    "cb23s": 1616,
+    "cb23m": 8472,
+    "gb6s": 2209,
+    "gb6m": 7324,
+    "gb7s": null,
+    "gb7m": null,
+    "ai_tokens": null,
+    "gbai_cpu_half": null,
+    "gbai_cpu_single": null,
+    "gbai_cpu_quantised": null,
+    "gbai_gpu_half": null,
+    "gbai_gpu_single": null,
+    "gbai_gpu_quantised": null,
+    "firestrike": 2628,
+    "timespy": 786,
+    "steelnomad": 582,
+    "storage": 1363,
+    "coding": null,
+    "photoshop": null,
+    "premiere": null,
+    "h264": 163,
+    "av1": 936,
+    "av1_hw": null,
+    "watts": 97,
+    "cb23s_perf": null,
+    "cb23m_perf": null,
+    "gb6s_perf": null,
+    "gb6m_perf": null,
+    "gb7s_perf": null,
+    "gb7m_perf": null,
+    "firestrike_perf": 2918,
+    "timespy_perf": 847,
+    "steelnomad_perf": 628,
+    "coding_perf": null,
+    "photoshop_perf": null,
+    "premiere_perf": null,
+    "h264_perf": null,
+    "av1_perf": null,
+    "av1_hw_perf": null,
+    "watts_perf": null,
+    "cpu_temp_perf": null,
+    "power_idle_watts": 15,
+    "cpu_temp": 100,
+    "ssd_temp": 67,
+    "volume": 0.57,
+    "wireless_audio": 6.7
+  },
+  {
+    "id": "minisforum-atomman-x7-ti-ultra-9-185h",
+    "name": "Minisforum Atomman X7 Ti Ultra 9 185H",
+    "photo": null,
+    "noise": {
+      "idle": 30,
+      "load_default": 37,
+      "load_performance": 42
+    },
+    "cb23s": 1872,
+    "cb23m": 16964,
+    "gb6s": 2492,
+    "gb6m": 13248,
+    "gb7s": null,
+    "gb7m": null,
+    "ai_tokens": null,
+    "gbai_cpu_half": null,
+    "gbai_cpu_single": null,
+    "gbai_cpu_quantised": null,
+    "gbai_gpu_half": null,
+    "gbai_gpu_single": null,
+    "gbai_gpu_quantised": null,
+    "firestrike": 7368,
+    "timespy": 3573,
+    "steelnomad": 3125,
+    "storage": 1391,
+    "coding": null,
+    "photoshop": null,
+    "premiere": null,
+    "h264": 94,
+    "av1": 551,
+    "av1_hw": 67,
+    "watts": 90,
+    "cb23s_perf": null,
+    "cb23m_perf": 18241,
+    "gb6s_perf": null,
+    "gb6m_perf": 13353,
+    "gb7s_perf": null,
+    "gb7m_perf": null,
+    "firestrike_perf": null,
+    "timespy_perf": null,
+    "steelnomad_perf": null,
+    "coding_perf": null,
+    "photoshop_perf": null,
+    "premiere_perf": null,
+    "h264_perf": 91,
+    "av1_perf": 545,
+    "av1_hw_perf": null,
+    "watts_perf": 97,
+    "cpu_temp_perf": 97,
+    "power_idle_watts": 14,
+    "cpu_temp": 97,
+    "ssd_temp": 45,
+    "volume": 1.01,
+    "wireless_audio": 7
+  },
+  {
+    "id": "minisforum-elitemini-ai370-hx-370",
+    "name": "Minisforum EliteMini AI370 HX 370",
+    "photo": null,
+    "noise": {
+      "idle": 29,
+      "load_default": 43,
+      "load_performance": 45
+    },
+    "cb23s": 2000,
+    "cb23m": 20256,
+    "gb6s": 2847,
+    "gb6m": 14950,
+    "gb7s": null,
+    "gb7m": null,
+    "ai_tokens": null,
+    "gbai_cpu_half": null,
+    "gbai_cpu_single": null,
+    "gbai_cpu_quantised": null,
+    "gbai_gpu_half": null,
+    "gbai_gpu_single": null,
+    "gbai_gpu_quantised": null,
+    "firestrike": 9833,
+    "timespy": 3606,
+    "steelnomad": 3295,
+    "storage": null,
+    "coding": null,
+    "photoshop": null,
+    "premiere": null,
+    "h264": 84,
+    "av1": 482,
+    "av1_hw": 72,
+    "watts": 89,
+    "cb23s_perf": null,
+    "cb23m_perf": 20815,
+    "gb6s_perf": null,
+    "gb6m_perf": 15058,
+    "gb7s_perf": null,
+    "gb7m_perf": null,
+    "firestrike_perf": null,
+    "timespy_perf": null,
+    "steelnomad_perf": null,
+    "coding_perf": null,
+    "photoshop_perf": null,
+    "premiere_perf": null,
+    "h264_perf": 82,
+    "av1_perf": 477,
+    "av1_hw_perf": null,
+    "watts_perf": 91,
+    "cpu_temp_perf": 95,
+    "power_idle_watts": 7,
+    "cpu_temp": 95,
+    "ssd_temp": null,
+    "volume": 0.78,
+    "wireless_audio": 7.5
   }
 ]
