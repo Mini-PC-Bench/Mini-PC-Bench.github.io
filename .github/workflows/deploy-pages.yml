@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [master]
   workflow_dispatch:
+    inputs:
+      run_e2e:
+        description: Run end-to-end tests before deploying
+        required: true
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -74,6 +80,7 @@ jobs:
 
   e2e:
     needs: build
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_e2e }}
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -99,8 +106,8 @@ jobs:
           if-no-files-found: ignore
 
   deploy:
-    needs: e2e
-    if: github.event_name != 'pull_request'
+    needs: [build, e2e]
+    if: ${{ always() && needs.build.result == 'success' && (needs.e2e.result == 'success' || needs.e2e.result == 'skipped') && github.event_name != 'pull_request' }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
