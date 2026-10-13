@@ -7730,7 +7730,7 @@
   {
     "id": "geekom-it13-i9-13900hk",
     "name": "GEEKOM IT13 i9-13900HK",
-    "photo": null,
+    "photo": "./images/devices/geekom-it13-i9-13900hk.webp",
     "noise": {
       "idle": 29,
       "load_default": 44,
