@@ -5,6 +5,7 @@ license.html
 robots.txt
 styles.css
 app.js
+frontend
 theme.js
 changelog.js
 devices.json

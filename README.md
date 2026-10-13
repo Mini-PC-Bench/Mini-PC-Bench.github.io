@@ -5,8 +5,9 @@ Static benchmark comparison page for mini PCs, designed to be hosted on GitHub P
 ## Files
 
 - `index.html` - main page markup
-- `styles.css` - page styles
-- `app.js` - client-side logic for loading data, rendering charts/table/comparison, and saving column visibility and the comparison basket
+- `styles.css` - ordered CSS entry importing the styles in `frontend/styles/`
+- `app.js` - application entry, shared state, table/filter/comparison coordination, and startup
+- `frontend/` - JavaScript modules for data, definitions, formatting, URL writing, detail markup, and charts; ordered CSS fragments
 - `theme.js` - shared light/dark theme behavior for site pages
 - `assets/mini-bench-logo.webp` - Mini Bench brand logo used in the site header
 - `devices.json` - benchmark dataset consumed by the page
@@ -31,6 +32,21 @@ Static benchmark comparison page for mini PCs, designed to be hosted on GitHub P
 - `license.html` - generated static license page, linked from the site footer
 - `robots.txt` - disallows known AI/scraper crawlers and direct crawling of the JSON datasets
 - `publish-files.txt` - allowlist of files and directories included in the GitHub Pages deployment
+
+## Frontend development
+
+Serve the repository over HTTP as before with `scripts/dev/serve.ps1` or the Docker web service (`docker compose up -d web`). `app.js` is a browser ES module and `styles.css` imports ordered CSS fragments, so source preview needs no bundling step or host Node installation. Keep `theme.js` as the independent deferred script shared by all pages.
+
+Deployment stages `publish-files.txt`, then `scripts/ci/minify-assets.ps1` bundles the application and CSS with the existing esbuild dependency before minifying and hashing. The HTML still references `app.js`, `theme.js`, and `styles.css`. Include `frontend/` when copying sources for an unbundled preview.
+
+Run the small module check in the existing Docker test image:
+
+```bash
+docker build -t geekbench-e2e -f Dockerfile.e2e .
+docker run --rm -e NODE_PATH=/tests/node_modules -v "$PWD:/work:ro" geekbench-e2e:latest node /work/tests/frontend/modules.test.js
+```
+
+With project dependencies available, the same check is `npm run test:frontend`; CI runs it before bundling. The existing E2E suite checks source or staged output using `SITE_DIR`. See [the rebase guide](frontend-migration.md) before moving WIP onto the modularized code.
 
 ## Recommendations
 
@@ -516,7 +532,7 @@ Treat the unresolved list as a work queue for the current import run:
 
 ## Default Visible Columns
 
-To change which optional columns are visible by default for first-time visitors, edit `DEFAULT_VISIBLE_COLUMNS` in `app.js`.
+To change which optional columns are visible by default for first-time visitors, edit `DEFAULT_VISIBLE_COLUMNS` in `frontend/table-columns.js`.
 
 Visitors can change visible columns from the `Columns` button in the table toolbar. Their selection is stored in local storage under:
 

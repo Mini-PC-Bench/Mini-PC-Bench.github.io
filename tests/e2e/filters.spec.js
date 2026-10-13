@@ -397,7 +397,7 @@ test('composite score stays dataset-relative when a filter is active', async ({ 
 test('filter updates retain matching rows, ranks, and device interactions', async ({ page }) => {
   await page.goto('/');
   await openFilters(page);
-  await page.waitForFunction(() => linksLoaded);
+  await page.waitForLoadState('networkidle');
   const response = await page.request.get('/devices.json');
   const devices = await response.json();
   const retained = devices.reduce((best, device) => device.cb23s > best.cb23s ? device : best);
@@ -439,7 +439,7 @@ test('filter updates retain matching rows, ranks, and device interactions', asyn
 test('rapid filter updates refresh the active view and switching restores current results', async ({ page }) => {
   await page.goto('/');
   await openFilters(page);
-  await page.waitForFunction(() => linksLoaded);
+  await page.waitForLoadState('networkidle');
   const response = await page.request.get('/devices.json');
   const devices = await response.json();
   const expectedCount = limit => devices.filter(device => device.watts != null && device.watts <= limit).length;
@@ -469,7 +469,7 @@ test('rapid filter updates refresh the active view and switching restores curren
 test('filtering recovers from no matches and sizes columns for newly restored devices', async ({ page }) => {
   await page.goto('/?cb23s_min=2200');
   await openFilters(page);
-  await page.waitForFunction(() => linksLoaded);
+  await page.waitForLoadState('networkidle');
   const { total } = await loadWattsFixture(page);
   await page.locator('#search').fill('no-device-matches-this-query');
   await expect(page.locator('#benchmark-table tbody')).toHaveText('No matching devices.');

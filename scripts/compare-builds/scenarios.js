@@ -71,6 +71,68 @@ const scenarios = [
     }
   },
   {
+    id: 'charts-single',
+    path: '/?view=charts',
+    description: 'Single-series volume chart',
+    async setup(page) {
+      await page.locator('.chart-tab[data-chart="volume"]').click();
+    }
+  },
+  {
+    id: 'charts-noise-grouped',
+    path: '/?view=charts',
+    description: 'Grouped noise chart with idle hidden and load sorting',
+    async setup(page) {
+      await page.locator('.chart-tab[data-chart="noise"]').click();
+      await page.locator('.chart-mode-btn[data-mode="grouped"]').click();
+      await page.locator('.legend-item[data-series="noise_idle"]').click();
+      await page.locator('.chart-sort-pill[data-sort="noise_load"]').click();
+    }
+  },
+  {
+    id: 'numeric-filters',
+    path: '/?watts_max=65&cb23m_min=5000&unknown=1',
+    description: 'Numeric ranges from URL including unknown measurements',
+    async setup(page) {
+      await page.locator('#filter-toggle').click();
+    }
+  },
+  {
+    id: 'comparison',
+    path: '/',
+    description: 'Two-device comparison with differences highlighted',
+    async setup(page) {
+      const boxes = page.locator('#benchmark-table tbody .compare-checkbox');
+      await boxes.nth(0).check();
+      await boxes.nth(1).check();
+      await page.locator('.tab-btn[data-view="compare"]').click();
+      await page.locator('#compare-diff-only').check();
+    }
+  },
+  {
+    id: 'dark-table',
+    path: '/',
+    description: 'Default table in dark theme',
+    async setup(page) {
+      await page.locator('#theme-toggle').click();
+    }
+  },
+  {
+    id: 'mobile-details',
+    path: '/',
+    description: 'Device details at a narrow viewport',
+    async setup(page) {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.locator('#benchmark-table tbody .device-name-trigger').first().click();
+      await page.locator('#device-detail-overlay .device-detail-dialog').waitFor({ state: 'visible' });
+    }
+  },
+  {
+    id: 'license',
+    path: '/license.html',
+    description: 'License page'
+  },
+  {
     id: 'changelog',
     path: '/changelog.html',
     description: 'Changelog page'

@@ -38,16 +38,16 @@ async function capture() {
   fs.mkdirSync(path.join(outDir, 'scenarios'), { recursive: true });
 
   const browser = await chromium.launch();
-  const context = await browser.newContext({
-    viewport: { width: 1440, height: 900 },
-    deviceScaleFactor: 1,
-    colorScheme: 'light',
-    reducedMotion: 'reduce'
-  });
 
   const summary = { label: args.label || args.baseUrl, baseUrl: args.baseUrl, scenarios: {} };
 
   for (const scenario of scenarios) {
+    const context = await browser.newContext({
+      viewport: { width: 1440, height: 900 },
+      deviceScaleFactor: 1,
+      colorScheme: 'light',
+      reducedMotion: 'reduce'
+    });
     const page = await context.newPage();
     const consoleErrors = [];
     const requestFailures = [];
@@ -84,7 +84,7 @@ async function capture() {
 
     summary.scenarios[scenario.id] = { description: scenario.description, metrics: state.metrics };
     console.log(`captured ${scenario.id} (${state.metrics.tableRowCount} table rows)`);
-    await page.close();
+    await context.close();
   }
 
   fs.writeFileSync(path.join(outDir, 'summary.json'), `${JSON.stringify(summary, null, 2)}\n`, 'utf8');

@@ -22,7 +22,8 @@ foreach ($asset in $assets) {
     
     Write-Host "Minifying $srcPath..."
     
-    & npx esbuild "$srcPath" --outfile="$destPath" --minify
+    [string[]]$bundleArgs = if ($srcPath -eq "theme.js") { @() } else { @("--bundle") }
+    & npx esbuild "$srcPath" --outfile="$destPath" @bundleArgs --minify
     
     if ($LASTEXITCODE -ne 0) {
         throw "esbuild failed for $srcPath"

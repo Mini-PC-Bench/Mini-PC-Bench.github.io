@@ -47,7 +47,7 @@ For each scenario the tool captures and diffs:
 Defined in [scenarios.js](./scenarios.js): default table, table sorted by
 multi core, filtered table, all optional columns enabled, device detail
 overlay, default chart, multi series noise chart, changelog page, and the 404
-page. Add a scenario there whenever you introduce a view or control worth
+page. Additional scenarios cover single-series and grouped charts, numeric URL filters, comparison, dark theme, mobile details, and the license page. Each scenario gets a fresh browser context so preferences and comparison selections cannot leak between captures. Add a scenario there whenever you introduce a view or control worth
 protecting.
 
 ## Options

@@ -59,6 +59,7 @@ function New-SiteBuild {
   $worktree = Join-Path $TargetDir "src"
   $site = Join-Path $TargetDir "site"
   $buildChangelog = Join-Path $worktree 'scripts/ci/build-changelog.ps1'
+  $buildLicense = Join-Path $worktree 'scripts/ci/build-license.ps1'
   $minifyAssets = Join-Path $worktree 'scripts/ci/minify-assets.ps1'
   New-Item -ItemType Directory -Force -Path $TargetDir | Out-Null
 
@@ -70,6 +71,9 @@ function New-SiteBuild {
       throw "Build script '$buildChangelog' is missing in ref '$Ref'."
     }
     Invoke-Native pwsh @('-NoProfile', '-File', $buildChangelog) -WorkingDirectory $worktree
+    if (Test-Path -LiteralPath $buildLicense -PathType Leaf) {
+      Invoke-Native pwsh @('-NoProfile', '-File', $buildLicense) -WorkingDirectory $worktree
+    }
 
     New-Item -ItemType Directory -Force -Path $site | Out-Null
     foreach ($rawPath in Get-Content (Join-Path $worktree 'publish-files.txt')) {

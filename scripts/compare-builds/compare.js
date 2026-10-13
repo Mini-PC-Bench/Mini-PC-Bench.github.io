@@ -169,6 +169,7 @@ function main() {
       const before = readLines(path.join(beforeScenario, artifact.file));
       const after = readLines(path.join(afterScenario, artifact.file));
       if (!before || !after) continue;
+      if (before.length === after.length && before.every((line, index) => line === after[index])) continue;
       const changes = diffLines(before, after);
       if (changes.length) differences.push({ kind: 'text', label: artifact.label, changes });
     }

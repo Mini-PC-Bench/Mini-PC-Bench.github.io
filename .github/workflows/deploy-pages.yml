@@ -64,6 +64,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Check frontend modules
+        run: npm run test:frontend
+
       - name: Check recommendations updater
         shell: pwsh
         run: ./scripts/source/update-recommendations.ps1 -SelfTest
