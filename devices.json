@@ -8122,7 +8122,7 @@
   {
     "id": "aoostar-wtr-pro-5825u",
     "name": "AOOSTAR WTR Pro 5825U",
-    "photo": null,
+    "photo": "./images/devices/aoostar-wtr-pro-5825u.webp",
     "noise": {
       "idle": 35,
       "load_default": 38,
@@ -8178,7 +8178,7 @@
   {
     "id": "mele-overclock-x5-i5-12450h",
     "name": "MeLE Overclock X5 i5-12450H",
-    "photo": null,
+    "photo": "./images/devices/mele-overclock-x5-i5-12450h.webp",
     "noise": {
       "idle": 30,
       "load_default": 48,
@@ -8234,7 +8234,7 @@
   {
     "id": "minisforum-atomman-x7-ti-ultra-9-185h",
     "name": "Minisforum Atomman X7 Ti Ultra 9 185H",
-    "photo": null,
+    "photo": "./images/devices/minisforum-atomman-x7-ti-ultra-9-185h.webp",
     "noise": {
       "idle": 30,
       "load_default": 37,
@@ -8290,7 +8290,7 @@
   {
     "id": "minisforum-elitemini-ai370-hx-370",
     "name": "Minisforum EliteMini AI370 HX 370",
-    "photo": null,
+    "photo": "./images/devices/minisforum-elitemini-ai370-hx-370.webp",
     "noise": {
       "idle": 29,
       "load_default": 43,

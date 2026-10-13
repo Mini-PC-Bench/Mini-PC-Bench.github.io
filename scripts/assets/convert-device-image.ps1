@@ -9,6 +9,10 @@
     produces a processed WebP tile in images/devices/<device-id>.webp using the
     cardglow Docker image.
 
+    Source filenames may use spaces in place of any dash in the device id.
+    Output filenames and photo URLs always use the dashed device id. When
+    both variants exist, the exact device-id filename takes precedence.
+
     The output is a 600x600 transparent-background PNG with the product
     photo centered and background removed. This works well with the UI's
     detail-photo container (220px height, object-fit: contain) in both
@@ -18,8 +22,8 @@
     The device id as used in devices.json (e.g. asus-rog-nuc-15-ultra-9-275hx).
 
 .PARAMETER All
-    Converts every source image with a filename that matches a device id in
-    devices.json and updates each matching photo property.
+    Converts source images matching device ids in devices.json, allowing
+    spaces in place of dashes, and updates each matching photo property.
 
 .PARAMETER BgTolerance
     Background removal tolerance (default: 30). Increase if white bg is not
@@ -103,15 +107,23 @@ if (-not (Test-Path $outputDir)) {
     New-Item -ItemType Directory -Path $outputDir | Out-Null
 }
 
+$sourceFiles = @(Get-ChildItem -File $sourceDir | Where-Object {
+    $_.Extension.TrimStart('.').ToLowerInvariant() -in $extensions
+})
+
+function Get-SourceDeviceId {
+    param([string]$BaseName)
+
+    return ($BaseName -replace ' +', '-').ToLowerInvariant()
+}
+
 if ($All) {
     $deviceIds = (Get-Content -Raw $devicesFile | ConvertFrom-Json).id
-    $sourceFiles = Get-ChildItem -File $sourceDir | Where-Object {
-        $_.Extension.TrimStart('.').ToLowerInvariant() -in $extensions -and $_.BaseName -in $deviceIds
-    }
-    $skipped = (Get-ChildItem -File $sourceDir | Where-Object {
-        $_.Extension.TrimStart('.').ToLowerInvariant() -in $extensions -and $_.BaseName -notin $deviceIds
+    $sourceDeviceIds = @($sourceFiles | ForEach-Object { Get-SourceDeviceId $_.BaseName })
+    $skipped = ($sourceFiles | Where-Object {
+        (Get-SourceDeviceId $_.BaseName) -notin $deviceIds
     }).Name
-    $deviceIdsToConvert = $sourceFiles.BaseName | Select-Object -Unique
+    $deviceIdsToConvert = @($deviceIds | Where-Object { $_ -in $sourceDeviceIds } | Select-Object -Unique)
     if ($skipped) {
         Write-Warning "Skipped source files without a matching device id: $($skipped -join ', ')"
     }
@@ -127,9 +139,14 @@ if ($All) {
 foreach ($id in $deviceIdsToConvert) {
     $id = $id.ToLowerInvariant()
     $sourceFile = $null
+    $matchingFiles = @($sourceFiles | Where-Object { (Get-SourceDeviceId $_.BaseName) -ieq $id } | Sort-Object Name)
+    $exactFiles = @($matchingFiles | Where-Object { $_.BaseName -ieq $id })
+    if ($exactFiles.Count -gt 0) {
+        $matchingFiles = $exactFiles
+    }
     foreach ($ext in $extensions) {
-        $sourceFile = Get-ChildItem -File $sourceDir | Where-Object {
-            $_.BaseName -ieq $id -and $_.Extension.TrimStart('.').ToLowerInvariant() -eq $ext
+        $sourceFile = $matchingFiles | Where-Object {
+            $_.Extension.TrimStart('.').ToLowerInvariant() -eq $ext
         } | Select-Object -First 1
         if ($sourceFile) {
             break
