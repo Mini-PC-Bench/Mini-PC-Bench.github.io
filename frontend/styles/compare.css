@@ -52,7 +52,9 @@ td.col-compare {
 
 .detail-actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
+  gap: 0.65rem;
   margin-bottom: 0.9rem;
 }
 

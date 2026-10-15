@@ -18,6 +18,7 @@ const COLUMN_STORAGE_KEY = 'minipc-benchmarks.visible-columns';
 const COMPARE_STORAGE_KEY = 'minipc-benchmarks.compare-selection';
 const COMPARE_DIFF_STORAGE_KEY = 'minipc-benchmarks.compare-diff-only';
 const COMPARE_MAX = 4;
+const FAVORITES_STORAGE_KEY = 'minipc-benchmarks.favorites';
 const META_SUFFIX = 'Cinebench R23 &nbsp;·&nbsp; Geekbench 6 &nbsp;·&nbsp; 3DMark &nbsp;·&nbsp; H264 &nbsp;·&nbsp; Power draw &nbsp;·&nbsp; Efficiency score';
 
 let DEVICES = [];
@@ -42,6 +43,8 @@ let recommendationsRequested = false;
 let compareSelection = [];
 let compareDiffOnly = false;
 let activeView = 'table';
+let favorites = new Set();
+let shortlistOnly = false;
 
 const benchmarkTable = document.getElementById('benchmark-table');
 const infoGrid = document.getElementById('info-grid');
@@ -50,6 +53,7 @@ const siteMetaEl = document.getElementById('site-meta');
 const chartBox = document.getElementById('chart-box');
 const infoGridCaptionEl = document.getElementById('info-grid-caption');
 const searchInputEl = document.getElementById('search');
+const shortlistToggle = document.getElementById('shortlist-toggle');
 const filterToolbarEl = document.getElementById('filter-toolbar');
 const filterToggleBtn = document.getElementById('filter-toggle');
 const filterSidebarEl = document.getElementById('filter-sidebar');
@@ -82,6 +86,8 @@ const { renderChart, renderChartMessage, renderLoadingChart } = createCharts({
   getFiltered,
   getActiveChart: () => activeChart,
   formatDeviceCountLabel,
+  getEmptyResultsMessage,
+  renderFavoriteButton,
   openDeviceDetail
 });
 
@@ -205,6 +211,7 @@ function renderDeviceDetail(device) {
     return renderDetailMetrics(group, device);
   }).filter(Boolean).join('');
   const compareAction = `<div class="detail-actions">
+    ${renderFavoriteButton(device, true)}
     <button type="button" class="detail-compare-toggle" data-device-id="${escapeHtml(device.id)}" aria-pressed="false">Add to comparison</button>
   </div>`;
   deviceDetailBody.innerHTML = `${compareAction}<div class="detail-feature-grid">${photo}${links}</div>${metrics}`;
@@ -790,8 +797,56 @@ function renderInfoCards() {
     </div>`).join('');
 }
 
+function loadFavorites() {
+  try {
+    const ids = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY) ?? '[]');
+    return new Set(Array.isArray(ids) ? ids.filter(id => typeof id === 'string' && findDeviceById(id)) : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function renderFavoriteButton(device, withLabel = false) {
+  const selected = favorites.has(device.id);
+  const action = selected ? 'Remove from shortlist' : 'Add to shortlist';
+  return `<button type="button" class="favorite-toggle${withLabel ? ' favorite-toggle-detail' : ''}" data-device-id="${escapeHtml(device.id)}" aria-pressed="${selected}" aria-label="${action}: ${escapeHtml(device.name)}" title="${action}"${withLabel ? ' data-with-label="true"' : ''}><span aria-hidden="true">${selected ? '★' : '☆'}</span>${withLabel ? `<span class="favorite-action">${action}</span>` : ''}</button>`;
+}
+
+function syncFavoriteControls() {
+  shortlistToggle.setAttribute('aria-pressed', String(shortlistOnly));
+  document.getElementById('shortlist-count').textContent = String(favorites.size);
+  document.querySelectorAll('.favorite-toggle').forEach(button => {
+    const selected = favorites.has(button.dataset.deviceId);
+    const action = selected ? 'Remove from shortlist' : 'Add to shortlist';
+    const device = findDeviceById(button.dataset.deviceId);
+    button.setAttribute('aria-pressed', String(selected));
+    button.setAttribute('aria-label', `${action}: ${device.name}`);
+    button.title = action;
+    button.firstElementChild.textContent = selected ? '★' : '☆';
+    if (button.dataset.withLabel) button.querySelector('.favorite-action').textContent = action;
+  });
+}
+
+function toggleFavorite(deviceId) {
+  if (!findDeviceById(deviceId)) return;
+  if (favorites.has(deviceId)) favorites.delete(deviceId);
+  else favorites.add(deviceId);
+  try {
+    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([...favorites]));
+  } catch {
+    // Keep favorites usable for this visit when browser storage is unavailable.
+  }
+  syncFavoriteControls();
+  if (shortlistOnly) scheduleFilterResults();
+}
+
+function getEmptyResultsMessage() {
+  if (shortlistOnly && !favorites.size) return 'No favorites yet. Turn off My Shortlist and star devices to save them here.';
+  return 'No matching devices.';
+}
+
 function getFiltered() {
-  return DEVICES.filter(device => deviceMatchesFilters(device, filterState));
+  return DEVICES.filter(device => (!shortlistOnly || favorites.has(device.id)) && deviceMatchesFilters(device, filterState));
 }
 
 function isAnyFilterActive() {
@@ -799,6 +854,7 @@ function isAnyFilterActive() {
 }
 
 function formatDeviceCountLabel(shownCount) {
+  if (shortlistOnly) return `Showing ${shownCount} of ${favorites.size} shortlisted devices`;
   return isAnyFilterActive()
     ? `Showing ${shownCount} of ${DEVICES.length} devices`
     : `${shownCount} devices`;
@@ -1098,7 +1154,7 @@ function renderTableCell(column, device, metrics) {
     const linkCount = device.links.length
       ? `<span class="device-name-meta">${device.links.length} link${device.links.length === 1 ? '' : 's'}</span>`
       : '<span class="device-name-meta">details</span>';
-    return `<td class="col-name"><button type="button" class="device-name-trigger" data-device-id="${escapeHtml(device.id)}"><span>${escapeHtml(device.name)}</span>${linkCount}</button></td>`;
+    return `<td class="col-name"><div class="device-name-actions">${renderFavoriteButton(device)}<button type="button" class="device-name-trigger" data-device-id="${escapeHtml(device.id)}"><span>${escapeHtml(device.name)}</span>${linkCount}</button></div></td>`;
   }
 
   if (column.id === 'watts') {
@@ -1204,7 +1260,7 @@ function renderTable({ reuseRows = false } = {}) {
       if (row !== cursor) tbody.insertBefore(row, cursor);
       cursor = row.nextElementSibling;
     });
-    if (!devices.length) tbody.innerHTML = '<tr><td class="table-message">No matching devices.</td></tr>';
+    if (!devices.length) tbody.innerHTML = `<tr><td class="table-message" colspan="${visible.length + 1}">${escapeHtml(getEmptyResultsMessage())}</td></tr>`;
     requestAnimationFrame(syncFloatingTableHeader);
     return;
   }
@@ -1222,7 +1278,7 @@ function renderTable({ reuseRows = false } = {}) {
       </tr>
     </thead>
     <tbody>
-      ${bodyHtml || '<tr><td class="table-message">No matching devices.</td></tr>'}
+      ${bodyHtml || `<tr><td class="table-message" colspan="${visible.length + 1}">${escapeHtml(getEmptyResultsMessage())}</td></tr>`}
     </tbody>`;
 
   renderFloatingTableHeader();
@@ -1277,6 +1333,8 @@ async function loadData() {
     }
     const data = await response.json();
     ({ DEVICES, MAX_H, MIN_L, FILTER_BOUNDS } = normalizeDevices(data));
+    favorites = loadFavorites();
+    syncFavoriteControls();
     compareSelection = loadCompareSelection();
     applyFiltersFromUrl();
     updateSiteMeta();
@@ -1327,6 +1385,17 @@ document.querySelectorAll('.tab-btn[data-view]').forEach(btn => {
 document.getElementById('changelog-link').addEventListener('click', event => {
   event.preventDefault();
   window.location.href = `./changelog.html?from=${encodeURIComponent(activeView)}`;
+});
+
+document.addEventListener('click', event => {
+  const button = event.target.closest('.favorite-toggle');
+  if (button) toggleFavorite(button.dataset.deviceId);
+});
+
+shortlistToggle.addEventListener('click', () => {
+  shortlistOnly = !shortlistOnly;
+  syncFavoriteControls();
+  scheduleFilterResults();
 });
 
 searchInputEl.addEventListener('input', event => {

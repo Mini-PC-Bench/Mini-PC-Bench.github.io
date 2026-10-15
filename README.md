@@ -541,3 +541,9 @@ minipc-benchmarks.visible-columns
 ```
 
 Use `Reset defaults` in the picker to restore the configured defaults.
+
+## Favorites and Shortlist
+
+Use the star beside a device in the table, charts, or device details to add or remove it from your shortlist. `My Shortlist` shows only saved devices in the table and charts, with search and numeric filters still applied. Charts show shortlisted devices that have data for the selected metric.
+
+Favorites have no fixed limit and are independent of the four-device Compare basket. They persist in this browser under the local storage key `minipc-benchmarks.favorites`; the `My Shortlist` toggle resets when the page reloads. Favorites are not included in shared links or synced between browsers. If browser storage is unavailable, favorites remain usable for the current visit.

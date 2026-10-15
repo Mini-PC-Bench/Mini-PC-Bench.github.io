@@ -88,7 +88,7 @@ const CHART_META = {
   }
 };
 
-export function createCharts({ chartBox, getDevices, getFiltered, getActiveChart, formatDeviceCountLabel, openDeviceDetail }) {
+export function createCharts({ chartBox, getDevices, getFiltered, getActiveChart, formatDeviceCountLabel, getEmptyResultsMessage, renderFavoriteButton, openDeviceDetail }) {
   const multiSeriesState = new Map();
 
   function renderChartMessage(message) {
@@ -236,7 +236,7 @@ export function createCharts({ chartBox, getDevices, getFiltered, getActiveChart
 
       if (state.mode === 'stacked') {
         return `<div class="chart-row">
-        <button type="button" class="chart-label${isTop ? ' top' : ''}" data-device-id="${escapeHtml(device.id)}" title="${escapeHtml(device.name)}">${escapeHtml(device.name)}</button>
+        <div class="chart-device">${renderFavoriteButton(device)}<button type="button" class="chart-label${isTop ? ' top' : ''}" data-device-id="${escapeHtml(device.id)}" title="${escapeHtml(device.name)}">${escapeHtml(device.name)}</button></div>
         <div class="chart-track chart-track-stacked">
           ${buildStackedSegments(device, enabledMeta, globalStackMax)}
         </div>
@@ -244,7 +244,7 @@ export function createCharts({ chartBox, getDevices, getFiltered, getActiveChart
       </div>`;
       } else {
         return `<div class="chart-row chart-row-grouped">
-        <button type="button" class="chart-label${isTop ? ' top' : ''}" data-device-id="${escapeHtml(device.id)}" title="${escapeHtml(device.name)}">${escapeHtml(device.name)}</button>
+        <div class="chart-device">${renderFavoriteButton(device)}<button type="button" class="chart-label${isTop ? ' top' : ''}" data-device-id="${escapeHtml(device.id)}" title="${escapeHtml(device.name)}">${escapeHtml(device.name)}</button></div>
         <div class="chart-track-group">
           ${buildGroupedTracks(device, enabledMeta, globalMax)}
         </div>
@@ -330,6 +330,11 @@ export function createCharts({ chartBox, getDevices, getFiltered, getActiveChart
       return;
     }
 
+    if (!getFiltered().length) {
+      renderChartMessage(getEmptyResultsMessage());
+      return;
+    }
+
     const meta = CHART_META[activeChart];
 
     if (meta.multiSeries) {
@@ -357,7 +362,7 @@ export function createCharts({ chartBox, getDevices, getFiltered, getActiveChart
       const color = index < 3 ? topColors[index] : dimColor;
       const isTop = index < 3;
       return `<div class="chart-row">
-      <button type="button" class="chart-label${isTop ? ' top' : ''}" data-device-id="${escapeHtml(device.id)}" title="${escapeHtml(device.name)}">${escapeHtml(device.name)}</button>
+      <div class="chart-device">${renderFavoriteButton(device)}<button type="button" class="chart-label${isTop ? ' top' : ''}" data-device-id="${escapeHtml(device.id)}" title="${escapeHtml(device.name)}">${escapeHtml(device.name)}</button></div>
       <div class="chart-track">
         <div class="chart-fill" data-w="${pct.toFixed(2)}" style="background:${color}"></div>
       </div>

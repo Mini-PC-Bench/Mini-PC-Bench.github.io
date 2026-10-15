@@ -2,6 +2,10 @@
 
 All notable changes to this project are documented here.
 
+## 2026-10-14
+
+- Added browser-saved favorites with star controls in the table, charts, and device details, plus a My Shortlist toggle that works with search and numeric filters independently of Compare.
+
 ## 2026-10-12
 
 - Added a Recommendations tab with Robtech's Top Mini PC Lists, grouped by year.
