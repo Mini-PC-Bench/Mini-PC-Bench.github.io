@@ -6832,9 +6832,9 @@
     "wireless_audio": 7.2
   },
   {
-    "id": "minisforum-ai-x1-h-255",
-    "name": "Minisforum AI X1 H 255",
-    "photo": "./images/devices/minisforum-ai-x1-h-255.webp",
+    "id": "minisforum-ai-x1-255",
+    "name": "Minisforum AI X1 255",
+    "photo": "./images/devices/minisforum-ai-x1-255.webp",
     "noise": {
       "idle": 29,
       "load_default": 40,
