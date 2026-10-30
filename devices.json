@@ -8346,7 +8346,7 @@
   {
     "id": "acemagic-tank-m1a-pro-ai-max-395",
     "name": "ACEMAGIC TANK M1A PRO+ AI MAX+ 395",
-    "photo": null,
+    "photo": "./images/devices/acemagic-tank-m1a-pro-ai-max-395.webp",
     "noise": {
       "idle": 29,
       "load_default": 36,
@@ -8402,7 +8402,7 @@
   {
     "id": "beelink-eqi-core-3-304",
     "name": "Beelink EQi Core 3 304",
-    "photo": null,
+    "photo": "./images/devices/beelink-eqi-core-3-304.webp",
     "noise": {
       "idle": 29,
       "load_default": 30,
@@ -8458,7 +8458,7 @@
   {
     "id": "bosgame-e6-eco-core-3-304",
     "name": "BOSGAME E6 Eco Core 3 304",
-    "photo": null,
+    "photo": "./images/devices/bosgame-e6-eco-core-3-304.webp",
     "noise": {
       "idle": 29,
       "load_default": 36,
@@ -8514,7 +8514,7 @@
   {
     "id": "geekom-a5-7730u",
     "name": "GEEKOM A5 7730U",
-    "photo": null,
+    "photo": "./images/devices/geekom-a5-7730u.webp",
     "noise": {
       "idle": 29,
       "load_default": 33,
@@ -8570,7 +8570,7 @@
   {
     "id": "minix-er947-ai-hx-470",
     "name": "MINIX ER947-AI HX 470",
-    "photo": null,
+    "photo": "./images/devices/minix-er947-ai-hx-470.webp",
     "noise": {
       "idle": 29,
       "load_default": 40,
