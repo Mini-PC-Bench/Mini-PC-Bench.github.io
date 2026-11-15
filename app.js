@@ -1,4 +1,4 @@
-import { FILTER_GROUPS, FILTER_DEFS, deviceMatchesFilters } from './frontend/filters.js';
+import { FILTER_GROUPS, FILTER_DEFS, createCpuFacet, cpuFacetChoices, deviceMatchesFilters } from './frontend/filters.js';
 import { TABLE_COLUMNS, DEFAULT_VISIBLE_COLUMNS } from './frontend/table-columns.js';
 import { BENCH_HIGHER, BENCH_LOWER, normalizeDevices, normalizeDeviceLinks } from './frontend/data.js';
 import { fmt, fmtD, escapeHtml, clamp } from './frontend/format.js';
@@ -8,6 +8,8 @@ import { createCharts } from './frontend/charts.js';
 
 const DATA_URL = './devices.json';
 const LINKS_URL = './device-links.json';
+const SPECS_URL = './device-specs.json';
+const LAN_SPEEDS = [1000, 2500, 5000, 10000];
 const RECOMMENDATIONS_URL = './recommendations.json';
 const DEVICE_QUERY_PARAM = 'device';
 const COMPARE_QUERY_PARAM = 'compare';
@@ -22,6 +24,8 @@ const FAVORITES_STORAGE_KEY = 'minipc-benchmarks.favorites';
 const META_SUFFIX = 'Cinebench R23 &nbsp;·&nbsp; Geekbench 6 &nbsp;·&nbsp; 3DMark &nbsp;·&nbsp; H264 &nbsp;·&nbsp; Power draw &nbsp;·&nbsp; Efficiency score';
 
 let DEVICES = [];
+let CPU_CHOICES = [];
+let HAS_LAN_DATA = false;
 let MAX_H = {};
 let MIN_L = {};
 let FILTER_BOUNDS = {};
@@ -29,6 +33,9 @@ let visibleColumns = new Set();
 let sortCol = 'composite';
 let sortDir = -1;
 let filterState = {
+  lanSpeed: null,
+  lanPorts: null,
+  cpu: [],
   q: '',
   ranges: {},
   includeUnknown: false
@@ -36,6 +43,7 @@ let filterState = {
 let filterUrlDebounceTimer = null;
 let filterRenderFrame = null;
 let tableLayoutDeviceIds = new Set();
+let detachedTableRows = new Map();
 let activeChart = 'cb23s';
 let activeDeviceId = null;
 let linksLoaded = false;
@@ -155,6 +163,8 @@ function urlParamNameForFilter(def) {
 function readFiltersFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const ranges = {};
+  const cpuRequested = new Set((params.get('cpu') ?? '').split(','));
+  const cpuChoices = CPU_CHOICES;
 
   FILTER_DEFS.forEach(def => {
     const raw = params.get(urlParamNameForFilter(def));
@@ -167,6 +177,9 @@ function readFiltersFromUrl() {
 
   return {
     q: getUrlParam(QUERY_TEXT_PARAM) ?? '',
+    cpu: [...cpuRequested].filter(id => cpuChoices.some(brand => brand.id === id || (!cpuRequested.has(brand.id) && brand.families.some(family => family.id === id)))),
+    lanSpeed: HAS_LAN_DATA && LAN_SPEEDS.includes(Number(params.get('lan_min'))) ? Number(params.get('lan_min')) : null,
+    lanPorts: HAS_LAN_DATA && params.get('lan_ports_min') === '2' ? 2 : null,
     ranges,
     includeUnknown: params.get(INCLUDE_UNKNOWN_PARAM) === '1'
   };
@@ -181,6 +194,9 @@ function writeFilterStateToUrl({ replace = true } = {}) {
   });
 
   updates[INCLUDE_UNKNOWN_PARAM] = filterState.includeUnknown ? '1' : null;
+  updates.lan_min = filterState.lanSpeed;
+  updates.lan_ports_min = filterState.lanPorts;
+  updates.cpu = filterState.cpu.length ? filterState.cpu.join(',') : null;
   writeUrlState(updates, { replace });
 }
 
@@ -194,6 +210,9 @@ function scheduleFilterUrlWrite() {
 function applyFiltersFromUrl() {
   const parsed = readFiltersFromUrl();
   filterState.q = parsed.q;
+  filterState.lanSpeed = parsed.lanSpeed;
+  filterState.lanPorts = parsed.lanPorts;
+  filterState.cpu = parsed.cpu;
   filterState.ranges = parsed.ranges;
   filterState.includeUnknown = parsed.includeUnknown;
 
@@ -416,6 +435,11 @@ function isMetricLowerBetter(metricId) {
 
 function compareMetricRow(metricId, devices) {
   const values = devices.map(device => device[metricId] ?? null);
+  if (metricId === 'cpu_model' || metricId === 'ethernet_ports_mbps') {
+    if (values.every(value => value === undefined)) return null;
+    const labels = values.map(value => formatDetailMetricValue(metricId, value));
+    return { metricId, values, labels, bestLabel: null, identical: labels.every(label => label === labels[0]) };
+  }
   const present = values.filter(value => typeof value === 'number' && Number.isFinite(value));
   if (!present.length) return null;
 
@@ -850,7 +874,7 @@ function getFiltered() {
 }
 
 function isAnyFilterActive() {
-  return filterState.q.trim().length > 0 || Object.keys(filterState.ranges).length > 0;
+  return filterState.q.trim().length > 0 || Object.keys(filterState.ranges).length > 0 || filterState.lanSpeed != null || filterState.lanPorts != null || filterState.cpu.length > 0;
 }
 
 function formatDeviceCountLabel(shownCount) {
@@ -885,8 +909,11 @@ function setFilterPanelOpen(isOpen, { restoreFocus = false, focus = true, save =
   benchmarkLayoutEl.classList.toggle('filters-collapsed', !isOpen);
   filterToggleBtn.setAttribute('aria-expanded', String(isOpen));
   document.getElementById('filter-toggle-label').textContent = isOpen ? 'Hide filters' : 'Show filters';
-  if (isOpen && focus) filterPanelEl.querySelector('details[open] input')?.focus({ preventScroll: true });
-  else if (restoreFocus && wasOpen) filterToggleBtn.focus({ preventScroll: true });
+  if (isOpen && focus) {
+    const firstInput = Array.from(filterPanelEl.querySelectorAll('details[open] :is(input, select):not(:disabled)'))
+      .find(input => !input.closest('details:not([open])') && input.getClientRects().length > 0);
+    (firstInput ?? filterPanelEl.querySelector('summary'))?.focus({ preventScroll: true });
+  } else if (restoreFocus && wasOpen) filterToggleBtn.focus({ preventScroll: true });
   if (save) saveFilterPanelPreference(isOpen);
   requestAnimationFrame(syncFloatingTableHeader);
 }
@@ -901,9 +928,10 @@ function scheduleFilterResults() {
   if (filterRenderFrame != null) return;
   filterRenderFrame = requestAnimationFrame(() => {
     filterRenderFrame = null;
-    countEl.textContent = formatDeviceCountLabel(getFiltered().length);
+    const filtered = getFiltered();
+    countEl.textContent = formatDeviceCountLabel(filtered.length);
     if (document.getElementById('table-view').classList.contains('active')) {
-      renderTable({ reuseRows: true });
+      renderTable({ reuseRows: true, filtered });
     } else if (document.getElementById('charts-view').classList.contains('active')) {
       renderChart();
     }
@@ -944,6 +972,11 @@ function clearAllFilters() {
   filterState.q = '';
   searchInputEl.value = '';
   filterState.ranges = {};
+  filterState.lanSpeed = null;
+  filterState.lanPorts = null;
+  filterState.cpu = [];
+  syncLanControls();
+  syncCpuControls();
   filterState.includeUnknown = false;
   FILTER_DEFS.forEach(def => syncFilterControlValue(def.id));
   const unknownCheckbox = document.getElementById('filter-include-unknown');
@@ -960,9 +993,15 @@ function updateFilterClearVisibility() {
 
 function renderFilterChips() {
   const active = FILTER_DEFS.filter(def => filterState.ranges[def.id] != null);
+  const lan = [['lanSpeed', filterState.lanSpeed == null ? null : `LAN: ≥ ${filterState.lanSpeed / 1000}G per port`], ['lanPorts', filterState.lanPorts == null ? null : 'LAN: 2+ ports']].filter(([, label]) => label);
+  const cpuChoices = CPU_CHOICES;
+  const cpu = filterState.cpu.map(id => {
+    const brand = cpuChoices.find(choice => choice.id === id || choice.families.some(family => family.id === id));
+    return { id, label: brand.id === id ? brand.label : `${brand.label} ${brand.families.find(family => family.id === id).label}` };
+  });
   updateFilterClearVisibility();
 
-  if (!active.length && !filterState.includeUnknown) {
+  if (!active.length && !lan.length && !cpu.length && !filterState.includeUnknown) {
     filterChipsEl.innerHTML = '';
     filterChipsEl.hidden = true;
     return;
@@ -976,7 +1015,7 @@ function renderFilterChips() {
       ${escapeHtml(def.label)}: ${symbol} ${fmt(value)}${def.unit}
       <button type="button" class="filter-chip-remove" data-filter="${def.id}" aria-label="Remove ${escapeHtml(def.label)} filter">&times;</button>
     </span>`;
-  }).join('') + (filterState.includeUnknown ? `
+  }).join('') + lan.map(([field, label]) => `<span class="filter-chip" data-filter="${field}">${label}<button type="button" class="filter-chip-remove" data-filter="${field}" aria-label="Remove ${label} filter">&times;</button></span>`).join('') + cpu.map(({ id, label }) => `<span class="filter-chip">CPU: ${escapeHtml(label)}<button type="button" class="filter-chip-remove" data-cpu="${id}" aria-label="Remove ${escapeHtml(label)} filter">&times;</button></span>`).join('') + (filterState.includeUnknown ? `
     <span class="filter-chip" data-filter="unknown">
       Including missing data
       <button type="button" class="filter-chip-remove" data-filter="unknown" aria-label="Exclude devices with missing data">&times;</button>
@@ -984,6 +1023,18 @@ function renderFilterChips() {
 
   filterChipsEl.querySelectorAll('.filter-chip-remove').forEach(btn => {
     btn.addEventListener('click', () => {
+      if (btn.dataset.cpu) {
+        filterState.cpu = filterState.cpu.filter(id => id !== btn.dataset.cpu);
+        syncCpuControls();
+        onFilterStateChanged();
+        return;
+      }
+      if (btn.dataset.filter === 'lanSpeed' || btn.dataset.filter === 'lanPorts') {
+        filterState[btn.dataset.filter] = null;
+        syncLanControls();
+        onFilterStateChanged();
+        return;
+      }
       if (btn.dataset.filter !== 'unknown') {
         clearFilterRange(btn.dataset.filter);
         return;
@@ -995,9 +1046,15 @@ function renderFilterChips() {
   });
 }
 
+function filterCoverageText(present) {
+  const pct = DEVICES.length ? Math.round(present / DEVICES.length * 100) : 0;
+  return `Data for ${present} of ${DEVICES.length} devices (${pct}%)`;
+}
+
 function renderFilterPanel() {
   const openGroups = new Set(Array.from(filterPanelEl.querySelectorAll('details[open]'), section => section.dataset.filterGroup));
   const firstRender = !filterPanelEl.childElementCount;
+  const cpuChoices = CPU_CHOICES;
   const rows = new Map(FILTER_DEFS.map(def => {
     const bounds = FILTER_BOUNDS[def.id] ?? { min: 0, max: 0, present: 0 };
     const active = filterState.ranges[def.id];
@@ -1005,7 +1062,7 @@ function renderFilterPanel() {
     return [def.id, `
       <div class="filter-row" data-filter-row="${def.id}" data-active="${active != null}">
         <label class="filter-label" for="filter-${def.id}-value">${escapeHtml(def.label)}</label>
-        <p id="filter-${def.id}-coverage" class="filter-coverage">Data for ${bounds.present} of ${DEVICES.length} devices (${DEVICES.length ? Math.round(bounds.present / DEVICES.length * 100) : 0}%)</p>
+        <p id="filter-${def.id}-coverage" class="filter-coverage">${filterCoverageText(bounds.present)}</p>
         <div class="filter-controls">
           <input type="range" id="filter-${def.id}-range" aria-label="${escapeHtml(def.label)} (${escapeHtml(def.unit)})" aria-describedby="filter-${def.id}-coverage" min="${bounds.min}" max="${bounds.max}" step="any" value="${value}">
           <input type="number" id="filter-${def.id}-value" aria-label="${escapeHtml(def.label)} (${escapeHtml(def.unit)})" aria-describedby="filter-${def.id}-coverage" min="${bounds.min}" max="${bounds.max}" step="any" placeholder="Any" value="${active ?? ''}">
@@ -1016,6 +1073,40 @@ function renderFilterPanel() {
   }));
 
   filterPanelEl.innerHTML = `
+    ${cpuChoices.length ? `
+    <details class="filter-section" data-filter-group="cpu" ${openGroups.has('cpu') || filterState.cpu.length ? 'open' : ''}>
+      <summary>Processor</summary>
+      <div class="filter-section-body cpu-filter-body">
+        <p class="filter-coverage">${filterCoverageText(DEVICES.filter(device => device.cpuFacet != null).length)}</p>
+        ${cpuChoices.map(brand => `<details class="cpu-brand" data-cpu-brand="${brand.id}" ${filterState.cpu.some(id => id === brand.id || brand.families.some(family => family.id === id)) ? 'open' : ''}>
+          <summary>${escapeHtml(brand.label)} <span class="filter-coverage">(${brand.count})</span></summary>
+          <div class="cpu-family-list">
+            <label class="filter-checkbox-label"><input type="checkbox" data-cpu="${brand.id}" ${filterState.cpu.includes(brand.id) ? 'checked' : ''}><span>All ${escapeHtml(brand.label)}</span></label>
+            ${brand.families.filter(family => family.id !== brand.id).map(family => `<label class="filter-checkbox-label"><input type="checkbox" data-cpu="${family.id}" data-brand="${brand.id}" ${filterState.cpu.includes(family.id) ? 'checked' : ''} ${filterState.cpu.includes(brand.id) ? 'disabled' : ''}><span>${escapeHtml(family.label)} (${family.count})</span></label>`).join('')}
+          </div>
+        </details>`).join('')}
+      </div>
+    </details>` : ''}
+    ${HAS_LAN_DATA ? `
+    <details class="filter-section" data-filter-group="lan" ${openGroups.has('lan') || filterState.lanSpeed != null || filterState.lanPorts != null ? 'open' : ''}>
+      <summary>LAN</summary>
+      <div class="filter-section-body">
+        <div class="filter-row">
+          <div class="filter-label-row">
+            <label class="filter-label" for="filter-lan-speed">Minimum port speed</label>
+            <span class="filter-info" tabindex="0" aria-label="About minimum port speed" aria-describedby="lan-rule">
+              <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><circle cx="8" cy="8" r="6.75" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 7.2v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="4.9" r="0.9" fill="currentColor"/></svg>
+              <span id="lan-rule" class="filter-info-tip" role="tooltip">At least one port supports this speed or faster.</span>
+            </span>
+          </div>
+          <p class="filter-coverage">${filterCoverageText(DEVICES.filter(device => device.ethernet_ports_mbps != null).length)}</p>
+          <div class="lan-controls">
+            <select id="filter-lan-speed" aria-describedby="lan-rule"><option value="">Any speed</option>${LAN_SPEEDS.map(speed => `<option value="${speed}" ${filterState.lanSpeed === speed ? 'selected' : ''}>${speed / 1000}G</option>`).join('')}</select>
+            <label class="filter-checkbox-label"><input type="checkbox" id="filter-lan-ports" ${filterState.lanPorts === 2 ? 'checked' : ''}><span>2+ ports</span></label>
+          </div>
+        </div>
+      </div>
+    </details>` : ''}
     ${FILTER_GROUPS.map(group => `
       <details class="filter-section" data-filter-group="${group.id}" ${firstRender || openGroups.has(group.id) || FILTER_DEFS.some(def => def.group === group.id && filterState.ranges[def.id] != null) ? 'open' : ''}>
         <summary>${escapeHtml(group.label)}</summary>
@@ -1079,11 +1170,46 @@ function renderFilterPanel() {
     onFilterStateChanged();
   });
 
+  document.getElementById('filter-lan-speed')?.addEventListener('change', event => {
+    filterState.lanSpeed = event.target.value ? Number(event.target.value) : null;
+    onFilterStateChanged();
+  });
+  document.getElementById('filter-lan-ports')?.addEventListener('change', event => {
+    filterState.lanPorts = event.target.checked ? 2 : null;
+    onFilterStateChanged();
+  });
+
+  filterPanelEl.querySelectorAll('input[data-cpu]').forEach(input => input.addEventListener('change', event => {
+    const { cpu: id, brand } = event.target.dataset;
+    if (brand && filterState.cpu.includes(brand)) return;
+    filterState.cpu = filterState.cpu.filter(selected => selected !== id);
+    if (event.target.checked) {
+      if (!brand) filterState.cpu = filterState.cpu.filter(selected => !cpuChoices.find(choice => choice.id === id)?.families.some(family => family.id === selected));
+      filterState.cpu.push(id);
+    }
+    syncCpuControls();
+    onFilterStateChanged();
+  }));
+
   document.getElementById('filter-clear')?.addEventListener('click', () => {
     clearAllFilters();
   });
 
   updateFilterClearVisibility();
+}
+
+function syncLanControls() {
+  const speed = document.getElementById('filter-lan-speed');
+  const ports = document.getElementById('filter-lan-ports');
+  if (speed) speed.value = filterState.lanSpeed ?? '';
+  if (ports) ports.checked = filterState.lanPorts === 2;
+}
+
+function syncCpuControls() {
+  filterPanelEl.querySelectorAll('input[data-cpu]').forEach(input => {
+    input.checked = filterState.cpu.includes(input.dataset.cpu);
+    input.disabled = !!input.dataset.brand && filterState.cpu.includes(input.dataset.brand);
+  });
 }
 
 function ensureValidSortColumn() {
@@ -1185,7 +1311,7 @@ function renderTableCell(column, device, metrics) {
   return `<td${classAttr}>${fmt(device[column.id])}</td>`;
 }
 
-function renderTable({ reuseRows = false } = {}) {
+function renderTable({ reuseRows = false, filtered = getFiltered() } = {}) {
   if (!DEVICES.length) {
     countEl.textContent = '';
     renderTableMessage('No devices available.');
@@ -1193,7 +1319,6 @@ function renderTable({ reuseRows = false } = {}) {
   }
 
   ensureValidSortColumn();
-  const filtered = getFiltered();
   const devices = getSorted(filtered);
   const visible = getVisibleColumns();
   const metrics = {
@@ -1241,13 +1366,30 @@ function renderTable({ reuseRows = false } = {}) {
       benchmarkTable.prepend(columns);
       benchmarkTable.style.minWidth = `${width}px`;
       benchmarkTable.style.tableLayout = 'fixed';
+      // Column widths are now fixed, so off-screen cells can skip layout and paint.
+      // Table cells ignore contain-intrinsic-size, so pin the measured row height
+      // to keep skipped rows from collapsing and the scroll height stable.
+      const rowHeight = tbody.rows[0]?.getBoundingClientRect().height;
+      if (rowHeight) benchmarkTable.style.setProperty('--locked-row-height', `${rowHeight}px`);
+      benchmarkTable.classList.add('table-layout-locked');
     }
     const rows = new Map(Array.from(tbody.rows, row => [row.dataset.rowId, row]));
     const ids = new Set(devices.map(device => device.id));
-    rows.forEach((row, id) => { if (!ids.has(id)) row.remove(); });
+    rows.forEach((row, id) => {
+      if (ids.has(id)) return;
+      row.remove();
+      // Keep filtered-out rows so relaxing a filter reinserts nodes instead of re-rendering HTML.
+      if (id) detachedTableRows.set(id, row);
+    });
+    let restoredRows = false;
     let cursor = tbody.firstElementChild;
     devices.forEach((device, index) => {
       let row = rows.get(device.id);
+      if (!row && detachedTableRows.has(device.id)) {
+        row = detachedTableRows.get(device.id);
+        detachedTableRows.delete(device.id);
+        restoredRows = true;
+      }
       if (!row) {
         tbody.insertAdjacentHTML('beforeend', renderRow(device, index));
         row = tbody.lastElementChild;
@@ -1261,12 +1403,20 @@ function renderTable({ reuseRows = false } = {}) {
       cursor = row.nextElementSibling;
     });
     if (!devices.length) tbody.innerHTML = `<tr><td class="table-message" colspan="${visible.length + 1}">${escapeHtml(getEmptyResultsMessage())}</td></tr>`;
+    // Detached rows missed favorite/compare updates made while they were filtered out.
+    if (restoredRows) {
+      syncFavoriteControls();
+      syncCompareControls();
+    }
     requestAnimationFrame(syncFloatingTableHeader);
     return;
   }
 
   const bodyHtml = devices.map(renderRow).join('');
 
+  detachedTableRows.clear();
+  benchmarkTable.classList.remove('table-layout-locked');
+  benchmarkTable.style.removeProperty('--locked-row-height');
   benchmarkTable.style.minWidth = '';
   benchmarkTable.style.tableLayout = '';
   tableLayoutDeviceIds = new Set(devices.map(device => device.id));
@@ -1327,6 +1477,14 @@ function setErrorState(message) {
 async function loadData() {
   setLoadingState();
   try {
+    // Specs are optional enrichment: fetch them alongside the catalog and never let
+    // a failure there block the benchmark data.
+    const specsRequest = fetch(SPECS_URL, { cache: 'no-store' })
+      .then(specsResponse => {
+        if (!specsResponse.ok) throw new Error(`HTTP ${specsResponse.status}`);
+        return specsResponse.json();
+      })
+      .then(data => ({ data }), error => ({ error: error.message }));
     const response = await fetch(DATA_URL, { cache: 'no-store' });
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
@@ -1335,6 +1493,8 @@ async function loadData() {
     ({ DEVICES, MAX_H, MIN_L, FILTER_BOUNDS } = normalizeDevices(data));
     favorites = loadFavorites();
     syncFavoriteControls();
+    const specs = await specsRequest;
+    showSpecsWarning(specs.error ?? applyDeviceSpecs(specs.data));
     compareSelection = loadCompareSelection();
     applyFiltersFromUrl();
     updateSiteMeta();
@@ -1348,8 +1508,62 @@ async function loadData() {
     loadLinks();
   } catch (error) {
     console.error(error);
-    setErrorState('Could not load devices.json. Serve this folder over HTTP or open the GitHub Pages site instead of using file://.');
+    setErrorState(`Could not load devices.json: ${error.message}. Serve this folder over HTTP or open the GitHub Pages site instead of using file://.`);
   }
+}
+
+const SPEC_FIELDS = ['cpu_model', 'cpu_brand', 'cpu_family', 'ethernet_ports_mbps'];
+
+// Returns why a specification record cannot be used, or null when it is valid.
+function specRecordProblem(record) {
+  if (!record || typeof record !== 'object' || Array.isArray(record)) return 'invalid record';
+  const unexpected = Object.keys(record).find(field => !SPEC_FIELDS.includes(field));
+  if (unexpected) return `unexpected field ${unexpected} (sync the data-only export)`;
+  const ports = record.ethernet_ports_mbps;
+  if (ports != null && (!Array.isArray(ports) || ports.some(speed => !LAN_SPEEDS.includes(speed)))) return 'invalid Ethernet ports';
+  for (const field of ['cpu_model', 'cpu_brand', 'cpu_family']) {
+    if (record[field] != null && (typeof record[field] !== 'string' || !record[field].trim())) return `invalid ${field}`;
+  }
+  if ((record.cpu_brand == null) !== (record.cpu_family == null)) return 'incomplete processor facet';
+  if (record.cpu_model != null && record.cpu_brand == null) return 'processor model is missing facets';
+  return null;
+}
+
+// Specs are all-or-nothing: any problem leaves every device without spec fields
+// (so nothing is shown as "Unknown" by mistake) and returns a message for the
+// banner. Benchmarks stay usable either way. Returns null on success.
+function applyDeviceSpecs(data) {
+  HAS_LAN_DATA = false;
+  CPU_CHOICES = [];
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return 'expected an object keyed by device ID';
+  const byId = new Map(DEVICES.map(device => [device.id, device]));
+  const problems = Object.entries(data)
+    .map(([id, record]) => {
+      const problem = byId.has(id) ? specRecordProblem(record) : 'unknown device ID';
+      return problem && `${id}: ${problem}`;
+    })
+    .filter(Boolean);
+  if (problems.length) {
+    console.error(`device-specs.json rejected:\n${problems.join('\n')}`);
+    return `${problems.length} invalid record${problems.length === 1 ? '' : 's'} (first: ${problems[0]})`;
+  }
+  for (const [id, record] of Object.entries(data)) {
+    const device = byId.get(id);
+    for (const field of SPEC_FIELDS) device[field] = record[field] ?? null;
+    device.cpuFacet = record.cpu_brand == null ? null : createCpuFacet(record.cpu_brand, record.cpu_family);
+  }
+  HAS_LAN_DATA = DEVICES.some(device => device.ethernet_ports_mbps != null);
+  CPU_CHOICES = cpuFacetChoices(DEVICES);
+  return null;
+}
+
+function showSpecsWarning(message) {
+  const warning = document.getElementById('specs-warning');
+  if (!warning) return;
+  warning.hidden = !message;
+  warning.textContent = message
+    ? `Could not load device-specs.json (${message}). Processor and LAN details and filters are unavailable; benchmark data is unaffected.`
+    : '';
 }
 
 async function loadLinks() {

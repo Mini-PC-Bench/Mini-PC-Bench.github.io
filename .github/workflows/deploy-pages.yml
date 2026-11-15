@@ -46,6 +46,12 @@ jobs:
       - name: Verify recommendations.json is valid JSON
         run: python3 -m json.tool recommendations.json > /dev/null
 
+      - name: Verify data-only device specifications
+        shell: pwsh
+        run: |
+          ./scripts/ci/validate-device-specs.ps1
+          ./tests/scripts/pull-device-specs.Tests.ps1
+
       - name: Stage public site
         shell: bash
         run: |

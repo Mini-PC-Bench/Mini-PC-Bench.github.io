@@ -1,6 +1,7 @@
 import { fmt, fmtD, escapeHtml } from './format.js';
 
 const DETAIL_METRIC_GROUPS = [
+  { title: 'Specifications', items: ['cpu_model', 'ethernet_ports_mbps'] },
   {
     title: 'Links',
     type: 'links'
@@ -24,6 +25,8 @@ const DETAIL_METRIC_GROUPS = [
 ];
 
 const DETAIL_METRICS = {
+  cpu_model: { label: 'Processor model' },
+  ethernet_ports_mbps: { label: 'Ethernet ports' },
   composite: { label: 'Composite score', decimals: 1 },
   efficiency: { label: 'Efficiency', decimals: 1 },
   composite_perf: { label: 'Performance composite score', decimals: 1 },
@@ -71,6 +74,17 @@ const DETAIL_METRICS = {
 };
 
 function formatDetailMetricValue(metricId, value) {
+  // undefined means no spec data was loaded for the device: omit the row.
+  // null is a reviewed "unknown" and is shown as such.
+  if ((metricId === 'cpu_model' || metricId === 'ethernet_ports_mbps') && value === undefined) return null;
+  if (metricId === 'cpu_model') return value ?? 'Unknown';
+  if (metricId === 'ethernet_ports_mbps') {
+    if (value == null) return 'Unknown';
+    if (!value.length) return 'No wired Ethernet';
+    const counts = new Map();
+    value.forEach(speed => counts.set(speed, (counts.get(speed) ?? 0) + 1));
+    return [...counts].sort((a, b) => b[0] - a[0]).map(([speed, count]) => `${count} × ${speed / 1000} GbE`).join(' + ');
+  }
   const config = DETAIL_METRICS[metricId] ?? {};
   if (value == null) return null;
   const formatted = typeof config.decimals === 'number' ? fmtD(value, config.decimals) : fmt(value);

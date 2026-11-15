@@ -82,7 +82,7 @@
                 <circle cx="11" cy="11" r="8" />
                 <path d="m21 21-4.35-4.35" />
               </svg>
-              <input id="search" type="search" aria-label="Filter by device name" placeholder="Filter by device name…" autocomplete="off" spellcheck="false">
+              <input id="search" type="search" aria-label="Filter by device name or processor" placeholder="Filter by device or processor…" autocomplete="off" spellcheck="false">
             </div>
             <button id="shortlist-toggle" class="shortlist-toggle" type="button" aria-pressed="false">My Shortlist <span id="shortlist-count">0</span></button>
             <span id="count" class="count" aria-live="polite"></span>
@@ -102,6 +102,7 @@
           </div>
 
           <div id="filter-chips" class="filter-chips" hidden></div>
+          <p id="specs-warning" class="specs-warning" role="alert" hidden></p>
         </div>
 
         <!-- ── Table View ── -->

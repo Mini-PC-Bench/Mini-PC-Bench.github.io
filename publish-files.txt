@@ -11,6 +11,7 @@ changelog.js
 devices.json
 device-links.json
 recommendations.json
+device-specs.json
 images
 favicon.ico
 favicon.svg

@@ -186,6 +186,18 @@ td {
   white-space: nowrap;
 }
 
+/* Set by renderTable once filtering fixes column widths. Skipping layout for
+   off-screen cells keeps re-showing many rows cheap. Rows keep the height
+   measured at lock time (a minimum for table rows), since skipped cells
+   would otherwise collapse to their padding. */
+table.table-layout-locked tbody td {
+  content-visibility: auto;
+}
+
+table.table-layout-locked tbody tr {
+  height: var(--locked-row-height, auto);
+}
+
 td:first-child {
   text-align: center;
   font-family: 'Outfit', sans-serif;

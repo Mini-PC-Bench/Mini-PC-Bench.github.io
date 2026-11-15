@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Rendering data without research metadata",
+  "type": "object",
+  "additionalProperties": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "cpu_brand": { "type": ["string", "null"], "minLength": 1 },
+      "cpu_family": { "type": ["string", "null"], "minLength": 1 },
+      "cpu_model": { "type": ["string", "null"], "minLength": 1 },
+      "ethernet_ports_mbps": {
+        "type": ["array", "null"],
+        "items": { "type": "integer", "enum": [1000, 2500, 5000, 10000] }
+      }
+    }
+  }
+}

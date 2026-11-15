@@ -225,7 +225,7 @@ test('filters use a grouped left sidebar on desktop and a left drawer on mobile'
   expect(sidebar.x + sidebar.width).toBeLessThanOrEqual(results.x);
   expect(toggle.x).toBeGreaterThanOrEqual(results.x);
   expect(toggle.x + toggle.width).toBeLessThanOrEqual(results.x + results.width);
-  for (const group of ['Benchmarks', 'Power', 'Physical', 'Noise']) {
+  for (const group of ['LAN', 'Benchmarks', 'Power', 'Noise', 'Physical']) {
     await expect(page.locator('.filter-section summary', { hasText: group })).toBeVisible();
   }
   await page.locator('.filter-section summary', { hasText: 'Benchmarks' }).click();

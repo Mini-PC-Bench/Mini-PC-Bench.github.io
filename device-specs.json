@@ -1,0 +1,1317 @@
+{
+  "acemagic-f5a-hx-370": {
+    "cpu_model": "AMD Ryzen AI 9 HX 370",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen AI 9"
+  },
+  "acemagic-f5a-hx-470": {
+    "cpu_model": "AMD Ryzen AI 9 HX 470",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen AI 9"
+  },
+  "acemagic-kron-k5-core-5-320": {
+    "cpu_model": "Intel Core 5 320",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core 5"
+  },
+  "acemagic-s1-n95": {
+    "cpu_model": "Intel Processor N95",
+    "ethernet_ports_mbps": [
+      1000,
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "acemagic-t8-plus-n100": {
+    "cpu_model": "Intel Processor N100",
+    "ethernet_ports_mbps": [
+      1000,
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "acemagic-tank-m1a-pro-ai-max-395": {
+    "cpu_model": "AMD Ryzen AI Max+ 395",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen AI Max"
+  },
+  "acemagic-vista-v1-n150": {
+    "cpu_model": "Intel Processor N150",
+    "ethernet_ports_mbps": [
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "acemagic-w1-8745hs": {
+    "cpu_model": "AMD Ryzen 7 8745HS",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "aiffro-k100-n100": {
+    "cpu_model": "Intel Processor N100",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "alliwava-u58-5825u": {
+    "cpu_model": "AMD Ryzen 7 5825U",
+    "ethernet_ports_mbps": [
+      1000
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "aoostar-godz-7435hs": {
+    "cpu_model": "AMD Ryzen 7 7435HS",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "aoostar-maco-h-255": {
+    "cpu_model": "AMD Ryzen 7 H 255",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "aoostar-n1-pro-n150": {
+    "cpu_model": "Intel Processor N150",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "aoostar-wtr-pro-5825u": {
+    "cpu_model": "AMD Ryzen 7 5825U",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "asus-nuc-14-pro-ai-ultra-9-288v": {
+    "cpu_model": "Intel Core Ultra 9 288V",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core Ultra 9"
+  },
+  "asus-nuc-14-pro-i3-100u": {
+    "cpu_model": "Intel Core 3 100U",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core 3"
+  },
+  "asus-nuc-14-pro-ultra-9-185h": {
+    "cpu_model": "Intel Core Ultra 9 185H",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core Ultra 9"
+  },
+  "asus-nuc-15-pro-ultra-9-285h": {
+    "cpu_model": "Intel Core Ultra 9 285H",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core Ultra 9"
+  },
+  "asus-nuc-16-pro-x7-358h": {
+    "cpu_model": "Intel Core Ultra X7 358H",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core Ultra X7"
+  },
+  "asus-pn64-12500h": {
+    "cpu_model": "Intel Core i5-12500H",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core i5"
+  },
+  "asus-rog-gr70-9955hx3d": {
+    "cpu_model": "AMD Ryzen 9 9955HX3D",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 9"
+  },
+  "asus-rog-nuc-15-ultra-9-275hx": {
+    "cpu_model": "Intel Core Ultra 9 275HX",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core Ultra 9"
+  },
+  "asus-rog-nuc-970-ultra-9-185h": {
+    "cpu_model": "Intel Core Ultra 9 185H",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core Ultra 9"
+  },
+  "beelink-eq12-n100": {
+    "cpu_model": "Intel Processor N100",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "beelink-eq12-pro-n305": {
+    "cpu_model": "Intel Core i3-N305",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core i3"
+  },
+  "beelink-eq13-n200": {
+    "cpu_model": "Intel Processor N200",
+    "ethernet_ports_mbps": [
+      1000,
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "beelink-eq14-n150": {
+    "cpu_model": "Intel Processor N150",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "beelink-eqi-core-3-304": {
+    "cpu_model": "Intel Core 3 304",
+    "ethernet_ports_mbps": [
+      10000,
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core 3"
+  },
+  "beelink-gti14-ultra-7-155h": {
+    "cpu_model": "Intel Core Ultra 7 155H",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core Ultra 7"
+  },
+  "beelink-gti15-ultra-9-285h": {
+    "cpu_model": "Intel Core Ultra 9 285H",
+    "ethernet_ports_mbps": [
+      10000,
+      10000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core Ultra 9"
+  },
+  "beelink-mini-s12-n95": {
+    "cpu_model": "Intel Processor N95",
+    "ethernet_ports_mbps": [
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "beelink-s12-pro-n100": {
+    "cpu_model": "Intel Processor N100",
+    "ethernet_ports_mbps": [
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "beelink-sei-12-i5-1235u": {
+    "cpu_model": "Intel Core i5-1235U",
+    "ethernet_ports_mbps": [
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core i5"
+  },
+  "beelink-ser10-max-hx-470": {
+    "cpu_model": "AMD Ryzen AI 9 HX 470",
+    "ethernet_ports_mbps": [
+      10000
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen AI 9"
+  },
+  "beelink-ser8-8845hs": {
+    "cpu_model": "AMD Ryzen 7 8845HS",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "beelink-ser9-h-255": {
+    "cpu_model": "AMD Ryzen 7 H 255",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "beelink-ser9-hx-370": {
+    "cpu_model": "AMD Ryzen AI 9 HX 370",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen AI 9"
+  },
+  "beelink-ser9-max-h350-ai-7-350": {
+    "cpu_model": "AMD Ryzen AI 7 350",
+    "ethernet_ports_mbps": [
+      10000
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen AI 7"
+  },
+  "blackview-mp60-n150": {
+    "cpu_model": "Intel Processor N150",
+    "ethernet_ports_mbps": [
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "blackview-mp80-n97": {
+    "cpu_model": "Intel Processor N97",
+    "ethernet_ports_mbps": [
+      1000,
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "bosgame-e6-eco-core-3-304": {
+    "cpu_model": "Intel Core 3 304",
+    "ethernet_ports_mbps": [
+      1000,
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core 3"
+  },
+  "bosgame-m4-neo-7840hs": {
+    "cpu_model": "AMD Ryzen 7 7840HS",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "bosgame-p3-plus-7840hs": {
+    "cpu_model": "AMD Ryzen 7 7840HS",
+    "ethernet_ports_mbps": [
+      1000,
+      1000
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "bosgame-vta-439-hx-470": {
+    "cpu_model": "AMD Ryzen AI 9 HX 470",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen AI 9"
+  },
+  "bosgame-vti-490-x7-358h": {
+    "cpu_model": "Intel Core Ultra X7 358H",
+    "ethernet_ports_mbps": [
+      2500,
+      10000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core Ultra X7"
+  },
+  "chuwi-aubox-8745hs": {
+    "cpu_model": "AMD Ryzen 7 8745HS",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "chuwi-aubox-i9-13900hk": {
+    "cpu_model": "Intel Core i9-13900HK",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core i9"
+  },
+  "chuwi-larkbox-s-i3-1220p": {
+    "cpu_model": "Intel Core i3-1220P",
+    "ethernet_ports_mbps": [
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core i3"
+  },
+  "chuwi-ubox-6600h": {
+    "cpu_model": "AMD Ryzen 5 6600H",
+    "ethernet_ports_mbps": [
+      1000,
+      1000
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 5"
+  },
+  "dreamquest-max-7430u": {
+    "cpu_model": "AMD Ryzen 5 7430U",
+    "ethernet_ports_mbps": [
+      1000,
+      1000
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 5"
+  },
+  "dreamquest-pro-n150": {
+    "cpu_model": "Intel Processor N150",
+    "ethernet_ports_mbps": [
+      1000,
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "dreamquest-pro-n95": {
+    "cpu_model": "Intel Processor N95",
+    "ethernet_ports_mbps": [
+      1000,
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "geekom-a5-7430u": {
+    "cpu_model": "AMD Ryzen 5 7430U",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 5"
+  },
+  "geekom-a5-7730u": {
+    "cpu_model": "AMD Ryzen 7 7730U",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "geekom-a5-pro-7530u": {
+    "cpu_model": "AMD Ryzen 5 7530U",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 5"
+  },
+  "geekom-a6-6800h": {
+    "cpu_model": "AMD Ryzen 7 6800H",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "geekom-a7-max-7940hs": {
+    "cpu_model": "AMD Ryzen 9 7940HS",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 9"
+  },
+  "geekom-a8-8745hs": {
+    "cpu_model": "AMD Ryzen 7 8745HS",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "geekom-a8-max-8945hs": {
+    "cpu_model": "AMD Ryzen 9 8945HS",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 9"
+  },
+  "geekom-gt1-mega-ultra-9-185h": {
+    "cpu_model": "Intel Core Ultra 9 185H",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core Ultra 9"
+  },
+  "geekom-it13-i7-13700h": {
+    "cpu_model": "Intel Core i7-13700H",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core i7"
+  },
+  "geekom-it13-i9-13900h": {
+    "cpu_model": "Intel Core i9-13900H",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core i9"
+  },
+  "geekom-it13-i9-13900hk": {
+    "cpu_model": "Intel Core i9-13900HK",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core i9"
+  },
+  "geekom-it13-max-ultra-9-185h": {
+    "cpu_model": "Intel Core Ultra 9 185H",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core Ultra 9"
+  },
+  "geekom-it15-ultra-9-285h": {
+    "cpu_model": "Intel Core Ultra 9 285H",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core Ultra 9"
+  },
+  "geekom-mini-air12-lite-n100": {
+    "cpu_model": "Intel Processor N100",
+    "ethernet_ports_mbps": [
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "geekom-miniair12-n100": {
+    "cpu_model": "Intel Processor N100",
+    "ethernet_ports_mbps": [
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "genmachine-li6000-pro-6800h": {
+    "cpu_model": "AMD Ryzen 7 6800H",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "getorli-gt103-6600h": {
+    "cpu_model": "AMD Ryzen 5 6600H",
+    "ethernet_ports_mbps": [
+      1000,
+      1000
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 5"
+  },
+  "gmktec-evo-x1-hx-370": {
+    "cpu_model": "AMD Ryzen AI 9 HX 370",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen AI 9"
+  },
+  "gmktec-evo-x1-pro-hx-470": {
+    "cpu_model": "AMD Ryzen AI 9 HX 470",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen AI 9"
+  },
+  "gmktec-evo-x2-ai-max-395": {
+    "cpu_model": "AMD Ryzen AI Max+ 395",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen AI Max"
+  },
+  "gmktec-g10-3500u": {
+    "cpu_model": "AMD Ryzen 5 3500U",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 5"
+  },
+  "gmktec-g2-plus-n150": {
+    "cpu_model": "Intel Processor N150",
+    "ethernet_ports_mbps": [
+      1000,
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "gmktec-g3-n100": {
+    "cpu_model": "Intel Processor N100",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "gmktec-k10-i9-13900hk": {
+    "cpu_model": "Intel Core i9-13900HK",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core i9"
+  },
+  "gmktec-k11-8945hs": {
+    "cpu_model": "AMD Ryzen 9 8945HS",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 9"
+  },
+  "gmktec-k12-h-255": {
+    "cpu_model": "AMD Ryzen 7 H 255",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "gmktec-k13-ultra-7-256v": {
+    "cpu_model": "Intel Core Ultra 7 256V",
+    "ethernet_ports_mbps": [
+      5000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core Ultra 7"
+  },
+  "gmktec-k17-ultra-5-226v": {
+    "cpu_model": "Intel Core Ultra 5 226V",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core Ultra 5"
+  },
+  "gmktec-k8-plus-8845hs": {
+    "cpu_model": "AMD Ryzen 7 8845HS",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "gmktec-m7-6850h": {
+    "cpu_model": "AMD Ryzen 7 PRO 6850H",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "gmktec-m7-pro-6950h": {
+    "cpu_model": "AMD Ryzen 9 PRO 6950H",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 9"
+  },
+  "gmktec-nucbox-g5-n97": {
+    "cpu_model": "Intel Processor N97",
+    "ethernet_ports_mbps": [
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "gmktec-nucbox-g9-n150": {
+    "cpu_model": "Intel Processor N150",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "gmktek-m6-ultra-7640hs": {
+    "cpu_model": "AMD Ryzen 5 7640HS",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 5"
+  },
+  "herk-pulsar-5825u": {
+    "cpu_model": "AMD Ryzen 7 5825U",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "infplane-hilbert-ai-max-395": {
+    "cpu_model": "AMD Ryzen AI Max+ 395",
+    "ethernet_ports_mbps": [
+      10000,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen AI Max"
+  },
+  "intel-nuc-11-e-i7-1165g7": {
+    "cpu_model": "Intel Core i7-1165G7",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core i7"
+  },
+  "intel-nuc-12-e-i7-12700h": {
+    "cpu_model": "Intel Core i7-12700H",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core i7"
+  },
+  "intel-nuc-12-pro-i5-1240p": {
+    "cpu_model": "Intel Core i5-1240P",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core i5"
+  },
+  "intel-nuc-12-pro-i7-1260p": {
+    "cpu_model": "Intel Core i7-1260P",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core i7"
+  },
+  "kamrui-ak2-plus-n100": {
+    "cpu_model": "Intel Processor N100",
+    "ethernet_ports_mbps": [
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "kamrui-am08-pro-7735hs": {
+    "cpu_model": "AMD Ryzen 7 7735HS",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "mele-overclock-4c-n95": {
+    "cpu_model": "Intel Processor N95",
+    "ethernet_ports_mbps": [
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "mele-overclock-x5-i5-12450h": {
+    "cpu_model": "Intel Core i5-12450H",
+    "ethernet_ports_mbps": [
+      1000,
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core i5"
+  },
+  "mele-quieter-4c-n100": {
+    "cpu_model": "Intel Processor N100",
+    "ethernet_ports_mbps": [
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "minisforum-ai-x1-255": {
+    "cpu_model": "AMD Ryzen 7 255",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "minisforum-ai-x1-pro-hx-370": {
+    "cpu_model": "AMD Ryzen AI 9 HX 370",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen AI 9"
+  },
+  "minisforum-ai-x1-pro-hx-470": {
+    "cpu_model": "AMD Ryzen AI 9 HX 470",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen AI 9"
+  },
+  "minisforum-atomman-g1-pro-8945hx": {
+    "cpu_model": "AMD Ryzen 9 8945HX",
+    "ethernet_ports_mbps": [
+      5000
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 9"
+  },
+  "minisforum-atomman-g7-pt-7945hx": {
+    "cpu_model": "AMD Ryzen 9 7945HX",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 9"
+  },
+  "minisforum-atomman-x7-ti-ultra-9-185h": {
+    "cpu_model": "Intel Core Ultra 9 185H",
+    "ethernet_ports_mbps": [
+      5000,
+      5000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core Ultra 9"
+  },
+  "minisforum-elitemini-ai370-hx-370": {
+    "cpu_model": "AMD Ryzen AI 9 HX 370",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen AI 9"
+  },
+  "minisforum-hx90g-5900hx": {
+    "cpu_model": "AMD Ryzen 9 5900HX",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 9"
+  },
+  "minisforum-hx99g-6900hx": {
+    "cpu_model": "AMD Ryzen 9 6900HX",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 9"
+  },
+  "minisforum-m1-pro-125h": {
+    "cpu_model": "Intel Core Ultra 5 125H",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core Ultra 5"
+  },
+  "minisforum-m2-air-304-core-3-304": {
+    "cpu_model": "Intel Core 3 304",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core 3"
+  },
+  "minisforum-m2-pro-x7-358h": {
+    "cpu_model": "Intel Core Ultra X7 358H",
+    "ethernet_ports_mbps": [
+      2500,
+      10000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core Ultra X7"
+  },
+  "minisforum-ms-01-i9-13900h": {
+    "cpu_model": "Intel Core i9-13900H",
+    "ethernet_ports_mbps": [
+      10000,
+      10000,
+      2500,
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core i9"
+  },
+  "minisforum-ms-03-ultra-9-386h": {
+    "cpu_model": "Intel Core Ultra 9 386H",
+    "ethernet_ports_mbps": [
+      10000,
+      2500,
+      10000,
+      10000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core Ultra 9"
+  },
+  "minisforum-ms-a2-9955hx": {
+    "cpu_model": "AMD Ryzen 9 9955HX",
+    "ethernet_ports_mbps": [
+      2500,
+      2500,
+      10000,
+      10000
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 9"
+  },
+  "minisforum-nucxi7-i7-11800h": {
+    "cpu_model": "Intel Core i7-11800H",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core i7"
+  },
+  "minisforum-uh125-pro-ultra-5-125h": {
+    "cpu_model": "Intel Core Ultra 5 125H",
+    "ethernet_ports_mbps": [
+      5000,
+      5000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core Ultra 5"
+  },
+  "minisforum-um580-5800h": {
+    "cpu_model": "AMD Ryzen 7 5800H",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "minisforum-um690-6900hx": {
+    "cpu_model": "AMD Ryzen 9 6900HX",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 9"
+  },
+  "minisforum-um690-slim-6900hx": {
+    "cpu_model": "AMD Ryzen 9 6900HX",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 9"
+  },
+  "minisforum-um750l-7545u": {
+    "cpu_model": "AMD Ryzen 5 7545U",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 5"
+  },
+  "minisforum-um760-7640hs": {
+    "cpu_model": "AMD Ryzen 5 7640HS",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 5"
+  },
+  "minisforum-um790-pro-7940hs": {
+    "cpu_model": "AMD Ryzen 9 7940HS",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 9"
+  },
+  "minisforum-um870-8745hs": {
+    "cpu_model": "AMD Ryzen 7 8745H",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "minisforum-um880-plus-8845hs": {
+    "cpu_model": "AMD Ryzen 7 8845HS",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "minisforum-um890-pro-8945hs": {
+    "cpu_model": "AMD Ryzen 9 8945HS",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 9"
+  },
+  "minisforum-x1-lite-h-255": {
+    "cpu_model": "AMD Ryzen 7 H 255",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "minix-er947-ai-hx-470": {
+    "cpu_model": "AMD Ryzen AI 9 HX 470",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen AI 9"
+  },
+  "minix-eu512-ai-ultra-5-125h": {
+    "cpu_model": "Intel Core Ultra 5 125H",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core Ultra 5"
+  },
+  "minix-eu715-ai-ultra-7-155h": {
+    "cpu_model": "Intel Core Ultra 7 155H",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core Ultra 7"
+  },
+  "minix-n304-ai-core-3-304": {
+    "cpu_model": "Intel Core 3 304",
+    "ethernet_ports_mbps": [
+      1000,
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core 3"
+  },
+  "minix-n713-i7-13620h": {
+    "cpu_model": "Intel Core i7-13620H",
+    "ethernet_ports_mbps": [
+      2500,
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core i7"
+  },
+  "minix-neo-z150-aero-n150": {
+    "cpu_model": "Intel Processor N150",
+    "ethernet_ports_mbps": [
+      1000,
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "minix-neo-z97-n97": {
+    "cpu_model": "Intel Processor N97",
+    "ethernet_ports_mbps": [
+      1000,
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "minix-ngc-n512-i5-12600h": {
+    "cpu_model": "Intel Core i5-12600H",
+    "ethernet_ports_mbps": [
+      2500,
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core i5"
+  },
+  "minix-ngc-nr660-6600h": {
+    "cpu_model": "AMD Ryzen 5 6600H",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 5"
+  },
+  "minix-nuc355-core-3-n355": {
+    "cpu_model": "Intel Core 3 N355",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core 3"
+  },
+  "minix-z100-0db-n100": {
+    "cpu_model": "Intel Processor N100",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "minix-z150-0db-n150": {
+    "cpu_model": "Intel Processor N150",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "minix-z300-0db-i3-n300": {
+    "cpu_model": "Intel Core i3-N300",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core i3"
+  },
+  "morefine-m6-n200": {
+    "cpu_model": "Intel Processor N200",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "morefine-m8s-plus-n150": {
+    "cpu_model": "Intel Processor N150",
+    "ethernet_ports_mbps": [
+      1000,
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "msi-cubi-nuc-1m-core-7-150u": {
+    "cpu_model": "Intel Core 7 150U",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core 7"
+  },
+  "msi-cubi-nuc-ai-1umg-ultra-7-155h": {
+    "cpu_model": "Intel Core Ultra 7 155H",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core Ultra 7"
+  },
+  "msi-cubi-z-ai-8m-8845hs": {
+    "cpu_model": "AMD Ryzen 7 8845HS",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "neosmay-ac8-n-n200": {
+    "cpu_model": "Intel Processor N200",
+    "ethernet_ports_mbps": [
+      1000,
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "neosmay-ac8-v2-n100": {
+    "cpu_model": "Intel Processor N100",
+    "ethernet_ports_mbps": [
+      1000,
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "peladn-ho5-hx-370": {
+    "cpu_model": "AMD Ryzen AI 9 HX 370",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen AI 9"
+  },
+  "peladn-wi6-n150": {
+    "cpu_model": "Intel Processor N150",
+    "ethernet_ports_mbps": [
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Processor N"
+  },
+  "peladn-wo4-5600h": {
+    "cpu_model": "AMD Ryzen 5 5600H",
+    "ethernet_ports_mbps": [
+      1000,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 5"
+  },
+  "peladn-wo4-r5-5500u": {
+    "cpu_model": "AMD Ryzen 5 5500U",
+    "ethernet_ports_mbps": [
+      1000,
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 5"
+  },
+  "reatan-s8-i9-12900h": {
+    "cpu_model": "Intel Core i9-12900H",
+    "ethernet_ports_mbps": [
+      2500,
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core i9"
+  },
+  "reatan-silver-9-i9-12900hk": {
+    "cpu_model": "Intel Core i9-12900HK",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core i9"
+  },
+  "soayan-exr1-8745hs": {
+    "cpu_model": "AMD Ryzen 7 8745HS",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "trigkey-r8-8745hs": {
+    "cpu_model": "AMD Ryzen 7 8745HS",
+    "ethernet_ports_mbps": [
+      2500
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 7"
+  },
+  "wo-we-h8-core-3-304": {
+    "cpu_model": "Intel Core 3 304",
+    "ethernet_ports_mbps": [
+      1000,
+      1000
+    ],
+    "cpu_brand": "Intel",
+    "cpu_family": "Core 3"
+  },
+  "wo-we-p5-3500u": {
+    "cpu_model": "AMD Ryzen 5 3500U",
+    "ethernet_ports_mbps": [
+      1000
+    ],
+    "cpu_brand": "AMD",
+    "cpu_family": "Ryzen 5"
+  }
+}

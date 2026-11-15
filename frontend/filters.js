@@ -3,8 +3,8 @@
 const FILTER_GROUPS = [
   { id: 'benchmarks', label: 'Benchmarks' },
   { id: 'power', label: 'Power' },
-  { id: 'physical', label: 'Physical' },
-  { id: 'noise', label: 'Noise' }
+  { id: 'noise', label: 'Noise' },
+  { id: 'physical', label: 'Physical' }
 ];
 const FILTER_DEFS = [
   { id: 'watts', group: 'power', label: 'Max power draw', unit: 'W', mode: 'max', step: 5 },
@@ -16,10 +16,62 @@ const FILTER_DEFS = [
   { id: 'cb23m', group: 'benchmarks', label: 'Min Cinebench R23 multi-core', unit: 'pts', mode: 'min', step: 500 }
 ];
 
+function slugCpuFacet(value) {
+  return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+// Builds a device's CPU facet with its filter ids computed once, so matching
+// does not re-slug every device on every filter change.
+function createCpuFacet(brand, family) {
+  const brandId = slugCpuFacet(brand);
+  return { brand, family, brandId, familyId: `${brandId}-${slugCpuFacet(family)}` };
+}
+
+function cpuFacetChoices(devices) {
+  const brands = new Map();
+  for (const device of devices) {
+    const facet = device.cpuFacet;
+    if (!facet) continue;
+    if (!brands.has(facet.brand)) brands.set(facet.brand, new Map());
+    const families = brands.get(facet.brand);
+    families.set(facet.family, (families.get(facet.family) ?? 0) + 1);
+  }
+  return [...brands].sort(([a], [b]) => a.localeCompare(b)).map(([brand, families]) => ({
+    id: slugCpuFacet(brand),
+    label: brand,
+    count: [...families.values()].reduce((sum, count) => sum + count, 0),
+    families: [...families].sort(([a], [b]) => a.localeCompare(b)).map(([family, count]) => ({
+      id: `${slugCpuFacet(brand)}-${slugCpuFacet(family)}`,
+      label: family,
+      count
+    }))
+  }));
+}
+
 // Pure: reads only its arguments plus FILTER_DEFS, so it never depends on render state.
 function deviceMatchesFilters(device, state) {
   const q = state.q.trim().toLowerCase();
-  if (q && !device.name.toLowerCase().includes(q)) return false;
+  if (q && !device.name.toLowerCase().includes(q) && !device.cpu_model?.toLowerCase().includes(q)) return false;
+
+  if (state.cpu?.length) {
+    if (!device.cpuFacet) {
+      if (!state.includeUnknown) return false;
+    } else {
+      const facet = device.cpuFacet;
+      const { brandId, familyId } = facet.brandId ? facet : createCpuFacet(facet.brand, facet.family);
+      if (!state.cpu.includes(brandId) && !state.cpu.includes(familyId)) return false;
+    }
+  }
+
+  if (state.lanSpeed != null || state.lanPorts != null) {
+    const ports = device.ethernet_ports_mbps;
+    if (ports == null) {
+      if (!state.includeUnknown) return false;
+    } else {
+      if (state.lanSpeed != null && !ports.some(speed => speed >= state.lanSpeed)) return false;
+      if (state.lanPorts != null && ports.length < state.lanPorts) return false;
+    }
+  }
 
   for (const def of FILTER_DEFS) {
     const limit = state.ranges[def.id];
@@ -38,4 +90,4 @@ function deviceMatchesFilters(device, state) {
   return true;
 }
 
-export { FILTER_GROUPS, FILTER_DEFS, deviceMatchesFilters };
+export { FILTER_GROUPS, FILTER_DEFS, createCpuFacet, cpuFacetChoices, deviceMatchesFilters };
