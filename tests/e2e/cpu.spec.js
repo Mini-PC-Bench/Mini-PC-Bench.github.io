@@ -22,6 +22,7 @@ test('mobile filter opening focuses a visible control with collapsed CPU brands'
 
 test('processor families combine as alternatives and persist in shared URLs', async ({ page }) => {
   const specs = await (await page.request.get('/device-specs.json')).json();
+  const devices = await (await page.request.get('/devices.json')).json();
   const ryzen7 = Object.values(specs).filter(spec => spec.cpu_brand === 'AMD' && spec.cpu_family === 'Ryzen 7').length;
   const intelN = Object.values(specs).filter(spec => spec.cpu_brand === 'Intel' && spec.cpu_family === 'Processor N').length;
   await page.goto('/');
@@ -41,7 +42,7 @@ test('processor families combine as alternatives and persist in shared URLs', as
   await expect(page.locator('input[data-cpu="amd-ryzen-7"]')).toBeDisabled();
   await expect(page.locator('input[data-cpu="amd-ryzen-7"]')).not.toBeChecked();
   await page.locator('#filter-clear').click();
-  await expect(rows(page)).toHaveCount(Object.keys(specs).length);
+  await expect(rows(page)).toHaveCount(devices.length);
   await expect.poll(() => new URL(page.url()).searchParams.has('cpu')).toBe(false);
 });
 
